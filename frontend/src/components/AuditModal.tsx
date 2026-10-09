@@ -335,50 +335,53 @@ export const AuditModal: React.FC<AuditModalProps> = ({
           </button>
         </div>
 
-        {/* Apple Segmented Control Tab Navigation */}
-        <div className="px-6 sm:px-8 py-3.5 bg-white/[0.01] border-b border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
-          <div className="flex flex-wrap items-center bg-black/50 p-1 rounded-2xl border border-white/[0.06] shadow-inner gap-1">
+        {/* Apple Segmented Control Tab Navigation: Strictly Single Row */}
+        <div className="px-6 sm:px-8 py-3 bg-white/[0.01] border-b border-white/[0.06] flex items-center justify-between gap-4 shrink-0 overflow-x-auto">
+          <div className="flex items-center flex-nowrap bg-black/50 p-1 rounded-lg border border-white/[0.06] shadow-inner gap-1 shrink-0">
             <button
+              type="button"
               onClick={() => setActiveTab('audit')}
-              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${activeTab === 'audit'
+              className={`flex items-center space-x-2 px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap shrink-0 transition-all ${activeTab === 'audit'
                 ? 'bg-white/[0.12] text-white shadow-sm border border-white/[0.08]'
                 : 'text-slate-400 hover:text-white hover:bg-white/[0.02]'
                 }`}
             >
-              <FileCheck className="w-3.5 h-3.5" />
+              <FileCheck className="w-3.5 h-3.5 shrink-0" />
               <span>{AUDIT_MODAL_STRINGS.tabAudit}</span>
             </button>
 
             <button
+              type="button"
               onClick={() => setActiveTab('governance')}
-              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${activeTab === 'governance'
+              className={`flex items-center space-x-2 px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap shrink-0 transition-all ${activeTab === 'governance'
                 ? 'bg-white/[0.12] text-white shadow-sm border border-white/[0.08]'
                 : 'text-slate-400 hover:text-white hover:bg-white/[0.02]'
                 }`}
             >
-              <UserCheck className="w-3.5 h-3.5" />
+              <UserCheck className="w-3.5 h-3.5 shrink-0" />
               <span>{AUDIT_MODAL_STRINGS.tabGovernance}</span>
               {pendingTickets.length > 0 && (
-                <span className="text-[10px] px-1.5 py-0.2 rounded-md font-bold bg-amber-500/25 text-amber-200 border border-amber-500/35 animate-pulse">
+                <span className="text-[10px] px-1.5 py-0.2 rounded-md font-bold bg-amber-500/25 text-amber-200 border border-amber-500/35 animate-pulse shrink-0">
                   {pendingTickets.length}
                 </span>
               )}
             </button>
 
             <button
+              type="button"
               onClick={() => setActiveTab('compliance')}
-              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${activeTab === 'compliance'
+              className={`flex items-center space-x-2 px-3 py-1.5 rounded-md text-xs font-medium whitespace-nowrap shrink-0 transition-all ${activeTab === 'compliance'
                 ? 'bg-white/[0.12] text-white shadow-sm border border-white/[0.08]'
                 : 'text-slate-400 hover:text-white hover:bg-white/[0.02]'
                 }`}
             >
-              <Shield className="w-3.5 h-3.5" />
+              <Shield className="w-3.5 h-3.5 shrink-0" />
               <span>{AUDIT_MODAL_STRINGS.tabCompliance}</span>
             </button>
           </div>
 
-          <div className="text-[11px] font-mono text-slate-400 flex items-center space-x-2">
-            <span className="relative flex h-2 w-2">
+          <div className="text-[11px] font-mono text-slate-400 flex items-center space-x-2 shrink-0 whitespace-nowrap hidden sm:flex">
+            <span className="relative flex h-2 w-2 shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
@@ -468,7 +471,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                       <button
                         key={tab.id}
                         onClick={() => setLogFilter(tab.id)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${logFilter === tab.id
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${logFilter === tab.id
                           ? 'bg-white/[0.12] text-white border border-white/[0.1] shadow-sm'
                           : 'text-slate-400 hover:text-white hover:bg-white/[0.03]'
                           }`}

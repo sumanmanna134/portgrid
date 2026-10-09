@@ -210,9 +210,9 @@
     "semantic_hash": "2aa0dae0a15cf2902a5b2f85ff648951"
   },
   "frontend/src/components/AuditModal.tsx": {
-    "mtime": 1791582427.940534,
-    "seen": 1791582498.254794,
-    "ast_hash": "55b954b3418fbe31433361b937b3cf91",
+    "mtime": 1791582715.2043633,
+    "seen": 1791582736.473997,
+    "ast_hash": "fa8da4caa4b12e2ffc354e95addd67f2",
     "semantic_hash": ""
   },
   "frontend/src/components/CatalogCard.tsx": {
