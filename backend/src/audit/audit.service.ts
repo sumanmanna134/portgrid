@@ -41,7 +41,10 @@ export interface VerificationResult {
 @Injectable()
 export class AuditService {
   private readonly logger = new Logger(AuditService.name);
-  private readonly auditFilePath = path.join(process.cwd(), 'data', 'audit.log');
+  private readonly auditFilePath = path.join(
+    process.env.DATA_DIR || path.join(process.cwd(), 'data'),
+    'audit.log',
+  );
   private readonly GENESIS_HASH = '0'.repeat(64);
   private lastHash: string = this.GENESIS_HASH;
 

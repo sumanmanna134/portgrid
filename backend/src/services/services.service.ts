@@ -20,7 +20,10 @@ export interface InstallServiceOptions {
 @Injectable()
 export class ServicesService {
   private readonly logger = new Logger(ServicesService.name);
-  private readonly storageFilePath = path.join(process.cwd(), 'data', 'instances.json');
+  private readonly storageFilePath = path.join(
+    process.env.DATA_DIR || path.join(process.cwd(), 'data'),
+    'instances.json',
+  );
   private instances: Map<string, InstalledServiceInstance> = new Map();
 
   constructor(

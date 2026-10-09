@@ -39,6 +39,10 @@ export class DockerService implements OnModuleInit {
   }
 
   private initDockerClient(): Docker {
+    if (process.env.DOCKER_SOCKET && fs.existsSync(process.env.DOCKER_SOCKET)) {
+      return new Docker({ socketPath: process.env.DOCKER_SOCKET });
+    }
+
     const homeDir = os.homedir();
     const macDockerSocket = path.join(homeDir, '.docker/run/docker.sock');
     const standardSocket = '/var/run/docker.sock';
