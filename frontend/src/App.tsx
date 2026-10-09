@@ -107,7 +107,7 @@ export const App: React.FC = () => {
     customName?: string;
     customEnginePort?: number;
     customUiPort?: number;
-  }) => {
+  }): Promise<InstalledServiceInstance | null> => {
     setInstallingId(options.blueprintId);
     try {
       const res = await fetch('/api/services/install', {
@@ -118,17 +118,15 @@ export const App: React.FC = () => {
 
       if (res.ok) {
         const newInstance = await res.json();
-        setSelectedBlueprintForInstall(null);
         await fetchServices();
         showToast(DASHBOARD_STRINGS.toastDeployed(newInstance.name));
-        setActiveTab('services');
-        setCredentialsService(newInstance);
+        return newInstance;
       } else {
         const errData = await res.json().catch(() => ({}));
-        alert(`${DASHBOARD_STRINGS.failedToInstallPrefix} ${errData.message || res.statusText}`);
+        throw new Error(errData.message || res.statusText);
       }
     } catch (err: any) {
-      alert(`${DASHBOARD_STRINGS.installErrorPrefix} ${err.message}`);
+      throw err;
     } finally {
       setInstallingId(null);
     }
@@ -441,6 +439,14 @@ export const App: React.FC = () => {
         isInstalling={!!installingId}
         onClose={() => setSelectedBlueprintForInstall(null)}
         onDeploy={handleInstall}
+        onViewCredentials={(newInstance) => {
+          setSelectedBlueprintForInstall(null);
+          setCredentialsService(newInstance);
+        }}
+        onDone={(newInstance) => {
+          setSelectedBlueprintForInstall(null);
+          setActiveTab('services');
+        }}
       />
 
       <CredentialsModal
