@@ -168,6 +168,15 @@ export const INSTALL_MODAL_STRINGS = {
   tokenAes256: 'AES-256',
   tokenFips140: 'FIPS-140',
   tokenSha256: 'SHA-256',
+  terminalLiveBadge: 'LIVE STREAM',
+  dragHintClean: 'Drag to rotate 3D topology',
+  serviceSummaryTitle: 'Service Online & Healthy',
+  allocatedPortsTitle: 'Allocated Port Endpoints',
+  enginePortBadge: 'Engine Port',
+  uiPortBadge: 'Admin Console',
+  doneButton: 'Done',
+  blueprintDefaultsBadge: 'Official Sandbox Defaults',
+  blueprintDefaultsDesc: (image: string, port: number) => `Standard container image ${image} bound to loopback socket :${port}.`,
 } as const;
 
 export const UNINSTALL_MODAL_STRINGS = {

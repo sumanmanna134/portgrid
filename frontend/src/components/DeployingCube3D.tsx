@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Check, ShieldCheck, Lock, Activity, Sparkles, Terminal } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Check, ShieldCheck, Sparkles } from 'lucide-react';
 import { INSTALL_MODAL_STRINGS } from '../constants/strings';
 
 interface DeployingCube3DProps {
-  step: number; // 1 to 5 (or 6 for completed)
+  step: number; // 1 to 5, or 6 for completed
   progress: number; // 0 to 100
   accentColor?: string;
   icon: React.ReactNode;
@@ -19,22 +19,22 @@ export const DeployingCube3D: React.FC<DeployingCube3DProps> = ({
   serviceName,
   port = 8080,
 }) => {
-  const [rotX, setRotX] = useState<number>(20);
-  const [rotY, setRotY] = useState<number>(-25);
+  const [rotX, setRotX] = useState<number>(18);
+  const [rotY, setRotY] = useState<number>(-22);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number; startRotX: number; startRotY: number }>({
     x: 0,
     y: 0,
-    startRotX: 20,
-    startRotY: -25,
+    startRotX: 18,
+    startRotY: -22,
   });
 
-  // Idle smooth rotation around Y axis
+  // Calm idle yaw drift
   useEffect(() => {
     if (isDragging) return;
     const interval = setInterval(() => {
-      setRotY((prev) => (prev + 0.45) % 360);
-    }, 30);
+      setRotY((prev) => (prev + 0.3) % 360);
+    }, 35);
     return () => clearInterval(interval);
   }, [isDragging]);
 
@@ -52,8 +52,8 @@ export const DeployingCube3D: React.FC<DeployingCube3DProps> = ({
     if (!isDragging) return;
     const deltaX = e.clientX - dragStart.x;
     const deltaY = e.clientY - dragStart.y;
-    const newRotX = Math.max(-25, Math.min(65, dragStart.startRotX - deltaY * 0.4));
-    const newRotY = (dragStart.startRotY + deltaX * 0.5) % 360;
+    const newRotX = Math.max(-15, Math.min(45, dragStart.startRotX - deltaY * 0.35));
+    const newRotY = (dragStart.startRotY + deltaX * 0.45) % 360;
     setRotX(newRotX);
     setRotY(newRotY);
   };
@@ -62,16 +62,37 @@ export const DeployingCube3D: React.FC<DeployingCube3DProps> = ({
     setIsDragging(false);
   };
 
-  // Cube dimensions
-  const cubeSize = 110; // 110x110x80 px
+  // Touch support for tablets / laptops
+  const handleTouchStart = (e: React.TouchEvent) => {
+    if (e.touches.length === 1) {
+      setIsDragging(true);
+      setDragStart({
+        x: e.touches[0].clientX,
+        y: e.touches[0].clientY,
+        startRotX: rotX,
+        startRotY: rotY,
+      });
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging || e.touches.length !== 1) return;
+    const deltaX = e.touches[0].clientX - dragStart.x;
+    const deltaY = e.touches[0].clientY - dragStart.y;
+    const newRotX = Math.max(-15, Math.min(45, dragStart.startRotX - deltaY * 0.35));
+    const newRotY = (dragStart.startRotY + deltaX * 0.45) % 360;
+    setRotX(newRotX);
+    setRotY(newRotY);
+  };
+
+  // Dimensions: 96x96x72 px
+  const cubeSize = 96;
   const halfSize = cubeSize / 2;
-  const depth = 80;
+  const depth = 72;
   const halfDepth = depth / 2;
 
   const isWireframe = step === 1;
-  const isCryptoActive = step >= 2;
   const isSolid = step >= 3;
-  const isSocketReady = step >= 4;
   const isMerkleSealed = step >= 5;
   const isDone = step >= 6 || progress >= 100;
 
@@ -81,17 +102,20 @@ export const DeployingCube3D: React.FC<DeployingCube3DProps> = ({
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
-      className={`relative w-full h-64 perspective-stage flex items-center justify-center select-none overflow-hidden ${
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleMouseUp}
+      className={`relative w-full h-44 sm:h-48 perspective-stage flex items-center justify-center select-none overflow-hidden ${
         isDragging ? 'cursor-grabbing' : 'cursor-grab'
       }`}
     >
-      {/* Background Radial Glow */}
+      {/* Ambient Floor Glow */}
       <div
-        className="absolute w-72 h-72 rounded-full pointer-events-none transition-all duration-700"
+        className="absolute w-56 h-56 rounded-full pointer-events-none transition-all duration-700 opacity-40"
         style={{
-          background: `radial-gradient(circle, ${accentColor}25 0%, transparent 70%)`,
-          filter: 'blur(20px)',
-          transform: `scale(${isDone ? 1.25 : 1})`,
+          background: `radial-gradient(circle, ${accentColor}30 0%, transparent 70%)`,
+          filter: 'blur(32px)',
+          transform: `scale(${isDone ? 1.15 : 0.95})`,
         }}
       />
 
@@ -102,216 +126,167 @@ export const DeployingCube3D: React.FC<DeployingCube3DProps> = ({
           transform: `rotateX(${rotX}deg) rotateY(${rotY}deg)`,
         }}
       >
-        {/* 3D Ground Shadow & Sonar Ripple */}
+        {/* Soft Floor Shadow Plane */}
         <div
-          className="absolute -top-[120px] -left-[120px] w-[240px] h-[240px] rounded-full preserve-3d pointer-events-none"
+          className="absolute -top-[90px] -left-[90px] w-[180px] h-[180px] rounded-full preserve-3d pointer-events-none"
           style={{
-            transform: 'rotateX(90deg) translateZ(-110px)',
-            background: `radial-gradient(circle, ${accentColor}35 0%, transparent 70%)`,
+            transform: 'rotateX(90deg) translateZ(-80px)',
+            background: `radial-gradient(circle, rgba(0,0,0,0.6) 0%, transparent 65%)`,
           }}
-        >
-          {/* Concentric rings */}
-          <div
-            className="absolute inset-4 rounded-full border border-dashed transition-colors duration-500"
-            style={{ borderColor: `${accentColor}40` }}
-          />
-          {/* Sonar pulse ring when socket is ready */}
-          {isSocketReady && (
-            <div
-              className="absolute inset-0 rounded-full border-2 animate-ping"
-              style={{ borderColor: accentColor }}
-            />
-          )}
-        </div>
+        />
 
-        {/* Orbiting Cryptographic Tokens Ring (Step 2+) */}
-        {isCryptoActive && (
-          <div
-            className="absolute -top-[100px] -left-[100px] w-[200px] h-[200px] rounded-full preserve-3d pointer-events-none animate-spin [animation-duration:14s]"
-            style={{
-              transform: 'rotateX(65deg) rotateZ(35deg)',
-              border: `1px dashed ${accentColor}60`,
-            }}
-          >
-            {/* Orbiting token nodes */}
-            <span
-              className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] font-mono px-1.5 py-0.5 rounded-full bg-black/80 font-bold border shadow-lg"
-              style={{ color: accentColor, borderColor: accentColor }}
-            >
-              {INSTALL_MODAL_STRINGS.tokenAes256}
-            </span>
-            <span
-              className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 text-[9px] font-mono px-1.5 py-0.5 rounded-full bg-black/80 font-bold border shadow-lg"
-              style={{ color: accentColor, borderColor: accentColor }}
-            >
-              {INSTALL_MODAL_STRINGS.tokenFips140}
-            </span>
-            <span
-              className="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] font-mono px-1.5 py-0.5 rounded-full bg-black/80 font-bold border shadow-lg"
-              style={{ color: accentColor, borderColor: accentColor }}
-            >
-              {INSTALL_MODAL_STRINGS.tokenSha256}
-            </span>
-          </div>
-        )}
-
-        {/* THE 3D CUBE CONTAINER */}
+        {/* 3D CUBE CONTAINER */}
         <div
-          className={`absolute -top-[55px] -left-[55px] w-[110px] h-[110px] preserve-3d transition-transform duration-500 ${
+          className={`absolute -top-[48px] -left-[48px] w-[96px] h-[96px] preserve-3d transition-all duration-500 ${
             isDone ? 'animate-float-3d' : ''
           }`}
           style={{
-            transform: `translate3d(0, ${isDone ? -10 : 0}px, 0)`,
+            transform: `translate3d(0, ${isDone ? -6 : 0}px, 0)`,
           }}
         >
-          {/* Laser Scanning Plane (Moving vertically across cube in steps 1-3) */}
-          {!isDone && (
-            <div
-              className="absolute left-0 right-0 h-1 pointer-events-none preserve-3d transition-all duration-300 animate-pulse"
-              style={{
-                background: `linear-gradient(90deg, transparent, ${accentColor}, #fff, ${accentColor}, transparent)`,
-                boxShadow: `0 0 15px ${accentColor}`,
-                transform: `rotateX(90deg) translateZ(${Math.sin(Date.now() / 300) * 40}px)`,
-              }}
-            />
-          )}
-
-          {/* 3D FACE 1: FRONT */}
+          {/* FACE 1: FRONT */}
           <div
             style={{
               transform: `translateZ(${halfDepth}px)`,
-              borderColor: isWireframe ? `${accentColor}70` : accentColor,
-              backgroundColor: isSolid ? `${accentColor}25` : 'rgba(0, 0, 0, 0.6)',
+              borderColor: isWireframe ? `${accentColor}50` : 'rgba(255, 255, 255, 0.12)',
+              backgroundColor: isSolid ? 'rgba(12, 17, 29, 0.85)' : 'rgba(10, 14, 24, 0.55)',
               boxShadow: isDone
-                ? `0 0 35px ${accentColor}80, inset 0 0 25px ${accentColor}40`
-                : `0 0 20px ${accentColor}30`,
+                ? `0 0 24px ${accentColor}40, inset 0 0 16px ${accentColor}20`
+                : '0 4px 20px rgba(0, 0, 0, 0.4)',
             }}
-            className={`absolute inset-0 rounded-2xl border-2 backdrop-blur-md p-3 flex flex-col justify-between backface-hidden transition-all duration-500 ${
+            className={`absolute inset-0 rounded-2xl border backdrop-blur-md p-2.5 flex flex-col justify-between backface-hidden transition-all duration-500 ${
               isWireframe ? 'border-dashed' : 'border-solid'
             }`}
           >
             <div className="flex items-center justify-between">
               <div
-                className="p-2 rounded-xl border shadow-inner transition-transform duration-300"
+                className="w-7 h-7 rounded-lg border flex items-center justify-center transition-all duration-300"
                 style={{
-                  backgroundColor: `${accentColor}30`,
-                  borderColor: `${accentColor}50`,
+                  backgroundColor: `${accentColor}18`,
+                  borderColor: `${accentColor}35`,
                 }}
               >
                 {icon}
               </div>
 
-              <span
-                className="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold border"
-                style={{
-                  backgroundColor: `${accentColor}25`,
-                  color: accentColor,
-                  borderColor: `${accentColor}50`,
-                }}
-              >
+              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-md font-medium bg-white/[0.04] border border-white/[0.08] text-slate-300">
                 :{port}
               </span>
             </div>
 
             <div>
-              <h4 className="text-xs font-bold text-white leading-tight truncate">
+              <h4 className="text-[11px] font-semibold text-white tracking-tight truncate">
                 {serviceName}
               </h4>
-              <div className="flex items-center justify-between mt-1 text-[10px] font-mono">
-                <span className="text-slate-300 font-semibold">{Math.round(progress)}%</span>
+              <div className="flex items-center justify-between mt-1 text-[9px] font-mono">
+                <span className="text-slate-400">{Math.round(progress)}%</span>
                 {isDone ? (
-                  <span className="inline-flex items-center gap-1 text-emerald-400 font-bold">
-                    <Check className="w-3 h-3" /> {INSTALL_MODAL_STRINGS.cubeReadyBadge}
+                  <span className="inline-flex items-center gap-0.5 text-emerald-400 font-medium">
+                    <Check className="w-2.5 h-2.5" />
+                    <span>{INSTALL_MODAL_STRINGS.cubeReadyBadge}</span>
                   </span>
                 ) : (
-                  <span className="w-2 h-2 rounded-full animate-ping" style={{ backgroundColor: accentColor }} />
+                  <span
+                    className="w-1.5 h-1.5 rounded-full animate-ping"
+                    style={{ backgroundColor: accentColor }}
+                  />
                 )}
               </div>
             </div>
           </div>
 
-          {/* 3D FACE 2: BACK */}
+          {/* FACE 2: BACK */}
           <div
             style={{
               transform: `rotateY(180deg) translateZ(${halfDepth}px)`,
-              borderColor: `${accentColor}50`,
-              backgroundColor: isSolid ? `${accentColor}20` : 'rgba(0, 0, 0, 0.6)',
+              borderColor: 'rgba(255, 255, 255, 0.08)',
+              backgroundColor: isSolid ? 'rgba(10, 15, 26, 0.75)' : 'rgba(8, 12, 20, 0.45)',
             }}
-            className={`absolute inset-0 rounded-2xl border backdrop-blur-md p-3 flex flex-col justify-between backface-hidden transition-all duration-500 ${
+            className={`absolute inset-0 rounded-2xl border backdrop-blur-md p-2.5 flex flex-col justify-between backface-hidden transition-all duration-500 ${
               isWireframe ? 'border-dashed' : 'border-solid'
             }`}
           >
-            <div className="text-[10px] font-mono text-slate-400 font-bold">{INSTALL_MODAL_STRINGS.cubeEnclaveFace}</div>
-            <div className="text-[9px] font-mono text-slate-300">{INSTALL_MODAL_STRINGS.cubeBindingFace}</div>
+            <div className="text-[8px] font-mono text-slate-500 tracking-wider uppercase font-semibold">
+              {INSTALL_MODAL_STRINGS.cubeEnclaveFace}
+            </div>
+            <div className="text-[8px] font-mono text-slate-400">
+              {INSTALL_MODAL_STRINGS.cubeBindingFace}
+            </div>
           </div>
 
-          {/* 3D FACE 3: TOP (ROOF) with Merkle Stamp */}
+          {/* FACE 3: TOP (ROOF) */}
           <div
             style={{
               transform: `rotateX(90deg) translateZ(${halfDepth}px)`,
               height: `${depth}px`,
               top: `${halfSize - halfDepth}px`,
-              borderColor: `${accentColor}60`,
-              backgroundColor: isSolid ? `${accentColor}30` : 'rgba(0, 0, 0, 0.5)',
-              boxShadow: isMerkleSealed ? `0 0 25px ${accentColor}60` : 'none',
+              borderColor: 'rgba(255, 255, 255, 0.1)',
+              backgroundColor: isSolid ? 'rgba(15, 22, 38, 0.85)' : 'rgba(10, 14, 24, 0.5)',
+              boxShadow: isMerkleSealed ? `0 0 16px ${accentColor}30` : 'none',
             }}
             className={`absolute left-0 right-0 rounded-xl border backdrop-blur-md backface-hidden flex items-center justify-center transition-all duration-500 ${
               isWireframe ? 'border-dashed' : 'border-solid'
             }`}
           >
             {isMerkleSealed ? (
-              <div className="flex items-center space-x-1.5 text-white font-mono text-[9px] font-bold bg-black/60 px-2 py-0.5 rounded-lg border border-white/20">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <div className="flex items-center space-x-1 text-white font-mono text-[8px] font-medium bg-black/60 px-1.5 py-0.5 rounded-md border border-white/10">
+                <ShieldCheck className="w-3 h-3 text-emerald-400" />
                 <span>{INSTALL_MODAL_STRINGS.cubeSealBadge}</span>
               </div>
             ) : (
               <div
-                className="w-10 h-10 rounded-lg border border-dashed opacity-40"
+                className="w-6 h-6 rounded-md border border-dashed opacity-30"
                 style={{ borderColor: accentColor }}
               />
             )}
           </div>
 
-          {/* 3D FACE 4: BOTTOM */}
+          {/* FACE 4: BOTTOM */}
           <div
             style={{
               transform: `rotateX(-90deg) translateZ(${halfDepth}px)`,
               height: `${depth}px`,
               top: `${halfSize - halfDepth}px`,
-              borderColor: `${accentColor}40`,
-              backgroundColor: `${accentColor}20`,
+              borderColor: 'rgba(255, 255, 255, 0.05)',
+              backgroundColor: 'rgba(6, 9, 16, 0.6)',
             }}
             className="absolute left-0 right-0 rounded-xl border border-dashed backdrop-blur-md backface-hidden"
           />
 
-          {/* 3D FACE 5: RIGHT WALL */}
+          {/* FACE 5: RIGHT WALL */}
           <div
             style={{
               transform: `rotateY(90deg) translateZ(${halfSize}px)`,
               width: `${depth}px`,
               left: `${halfSize - halfDepth}px`,
-              borderColor: `${accentColor}50`,
-              backgroundColor: isSolid ? `${accentColor}25` : 'rgba(0, 0, 0, 0.5)',
+              borderColor: 'rgba(255, 255, 255, 0.08)',
+              backgroundColor: isSolid ? 'rgba(12, 18, 30, 0.75)' : 'rgba(8, 12, 22, 0.45)',
             }}
             className={`absolute top-0 bottom-0 rounded-xl border backdrop-blur-md backface-hidden transition-all duration-500 ${
               isWireframe ? 'border-dashed' : 'border-solid'
             }`}
           />
 
-          {/* 3D FACE 6: LEFT WALL */}
+          {/* FACE 6: LEFT WALL */}
           <div
             style={{
               transform: `rotateY(-90deg) translateZ(${halfSize}px)`,
               width: `${depth}px`,
               left: `${halfSize - halfDepth}px`,
-              borderColor: `${accentColor}50`,
-              backgroundColor: isSolid ? `${accentColor}25` : 'rgba(0, 0, 0, 0.5)',
+              borderColor: 'rgba(255, 255, 255, 0.08)',
+              backgroundColor: isSolid ? 'rgba(12, 18, 30, 0.75)' : 'rgba(8, 12, 22, 0.45)',
             }}
             className={`absolute top-0 bottom-0 rounded-xl border backdrop-blur-md backface-hidden transition-all duration-500 ${
               isWireframe ? 'border-dashed' : 'border-solid'
             }`}
           />
         </div>
+      </div>
+
+      {/* Discrete Drag Rotate Hint Pill */}
+      <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 text-[10px] font-mono text-slate-500 bg-black/40 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/[0.06] flex items-center gap-1.5 pointer-events-none">
+        <Sparkles className="w-2.5 h-2.5 text-sky-400/80" />
+        <span>{INSTALL_MODAL_STRINGS.dragHintClean}</span>
       </div>
     </div>
   );
