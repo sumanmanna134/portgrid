@@ -32,11 +32,11 @@ export const COMMON_STRINGS = {
 
 export const NAVBAR_STRINGS = {
   brandName: 'PortGrid',
-  brandBadge: 'Console',
-  brandSubtitle: 'Local Cloud Infrastructure',
+  brandBadge: 'Control Center',
+  brandSubtitle: 'Local Cloud Platform',
   homeTab: 'Overview',
-  activeServicesTab: 'Active Services',
-  catalogTab: 'Catalog',
+  activeServicesTab: 'Running Services',
+  catalogTab: 'Service Catalog',
   securityShield: 'Security Shield',
   approvalSuffixSingle: ' Approval',
   approvalSuffixPlural: ' Approvals',
@@ -46,12 +46,12 @@ export const NAVBAR_STRINGS = {
 } as const;
 
 export const DASHBOARD_STRINGS = {
-  title: 'Active Infrastructure',
-  subtitle: 'Live cloud engines and paired administration consoles running on local cluster.',
+  title: 'Runtime Overview',
+  subtitle: 'Cloud engines and their admin consoles, running together on your local cluster.',
   deployButton: 'Deploy Service',
-  emptyTitle: 'No services deployed yet',
+  emptyTitle: 'No services deployed',
   emptySubtitle: 'Start your local stack by deploying PostgreSQL, Kafka, Redis, Keycloak or custom blueprints.',
-  browseCatalogButton: 'Browse Infrastructure Catalog',
+  browseCatalogButton: 'Browse Service Catalog',
   categories: ['All', 'Database', 'Cache', 'Message Broker', 'Identity', 'DevOps', 'Custom'] as const,
   toastDeployed: (name: string) => `Successfully deployed ${name}!`,
   toastOnboarded: (name: string) => `Successfully onboarded "${name}" to catalog!`,
@@ -72,15 +72,15 @@ export const DASHBOARD_STRINGS = {
 } as const;
 
 export const CATALOG_STRINGS = {
-  title: 'Infrastructure Catalog',
-  subtitle: 'Curated official engines & custom developer blueprints.',
+  title: 'Service Catalog',
+  subtitle: 'Discover supported services and reusable custom blueprints.',
   onboardCustomButton: 'Onboard Custom Service',
   searchPlaceholder: 'Filter catalog...',
   officialBadge: 'Official',
   customBadge: 'Custom',
   imageLabel: 'Image',
   defaultPortLabel: 'Default Port',
-  companionUiLabel: 'Companion UI',
+  companionUiLabel: 'Admin Console',
   deployButton: 'Deploy Service',
   deployingButton: 'Deploying container...',
   editCustomTooltip: 'Edit custom blueprint workflow',
@@ -88,15 +88,15 @@ export const CATALOG_STRINGS = {
 } as const;
 
 export const SERVICE_CARD_STRINGS = {
-  openWebConsole: 'Open Companion Web Console',
-  companionConsoleOffline: 'Companion Console (Service Offline)',
+  openWebConsole: 'Open Admin Web Console',
+  companionConsoleOffline: 'Admin Console Unavailable',
   offlineTooltip: 'Service is offline. Start the container to access web console.',
   offlineStatus: 'Offline',
-  configAndKeys: 'Config & Keys',
+  configAndKeys: 'Configuration & Secrets',
   logs: 'Logs',
-  logsTooltip: 'Container console logs',
+  logsTooltip: 'View Container Logs',
   delete: 'Delete',
-  deleteTooltip: 'Teardown and delete',
+  deleteTooltip: 'Remove Service',
   startTooltip: 'Start service',
   stopTooltip: 'Stop service',
 } as const;
@@ -374,7 +374,7 @@ export const HOMEPAGE_STRINGS = {
   deployBlockButton: 'Deploy to Local Cluster',
   viewBlueprintButton: 'View Full Blueprint',
   statusRunning: 'ONLINE IN CLUSTER',
-  statusAvailable: 'READY TO DEPLOY',
+  statusAvailable: 'READY',
 
   // 3D Block entities
   blockPostgresName: 'PostgreSQL Enterprise',
