@@ -5,14 +5,12 @@ import {
   Box,
   Layers,
   ChevronRight,
-  Cpu,
   Lock,
-  ExternalLink,
   FileCheck,
-  HardDrive,
-  Activity,
   Server,
   Zap,
+  Database,
+  CheckCircle2,
 } from 'lucide-react';
 import { ServiceBlueprint, InstalledServiceInstance } from '../types';
 import { HOMEPAGE_STRINGS } from '../constants/strings';
@@ -39,6 +37,7 @@ export const HomePage: React.FC<HomePageProps> = ({
   const [selectedBlockId, setSelectedBlockId] = useState<string>('postgres');
   const runningServiceIds = services.filter((s) => s.status === 'RUNNING').map((s) => s.blueprintId);
 
+  // 3D Block Definitions preserved for Next Release
   const blockDetails: Record<
     string,
     {
@@ -105,12 +104,12 @@ export const HomePage: React.FC<HomePageProps> = ({
       name: HOMEPAGE_STRINGS.blockMerkleName,
       category: HOMEPAGE_STRINGS.blockMerkleCategory,
       desc: HOMEPAGE_STRINGS.blockMerkleDesc,
-      port: 5001,
+      port: 8443,
       security: HOMEPAGE_STRINGS.blockMerkleSecurity,
       storage: HOMEPAGE_STRINGS.blockMerkleVolume,
       color: '#06b6d4',
       icon: <ShieldCheck className="w-5 h-5 text-cyan-400" />,
-      blueprintId: 'merkle',
+      blueprintId: 'postgres',
     },
     docker: {
       name: HOMEPAGE_STRINGS.blockDockerName,
@@ -120,48 +119,40 @@ export const HomePage: React.FC<HomePageProps> = ({
       security: HOMEPAGE_STRINGS.blockDockerSecurity,
       storage: HOMEPAGE_STRINGS.blockDockerVolume,
       color: '#38bdf8',
-      icon: <Cpu className="w-5 h-5 text-cyan-400" />,
-      blueprintId: 'docker',
+      icon: <Box className="w-5 h-5 text-sky-400" />,
+      blueprintId: 'postgres',
     },
   };
 
-  const activeBlock = blockDetails[selectedBlockId] || blockDetails.postgres;
+  const activeBlock = blockDetails[selectedBlockId] || blockDetails['postgres'];
   const isSelectedBlockRunning = runningServiceIds.includes(activeBlock.blueprintId);
 
+  // Top 4 quick deploy blueprints
+  const featuredBlueprints = blueprints.slice(0, 4);
+
   return (
-    <div className="space-y-16 py-2">
-      {/* 1. HERO SECTION */}
-      <section className="relative text-center max-w-4xl mx-auto space-y-5 pt-3">
-        {/* Compliance Status Badge */}
-        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-md bg-white/[0.04] border border-white/[0.08] text-xs">
-          <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-          <span className="font-medium text-slate-300">
-            {HOMEPAGE_STRINGS.heroBadge}
-          </span>
-          <span className="text-slate-600">|</span>
-          <span className="font-mono text-sky-400 font-semibold text-[11px] uppercase">
-            {HOMEPAGE_STRINGS.fipsBadge}
-          </span>
+    <div className="space-y-12 pb-12">
+      {/* 1. CLEAN TECHNICAL HERO */}
+      <section className="text-center pt-6 pb-2 space-y-5 max-w-3xl mx-auto">
+        <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-md bg-white/[0.04] border border-white/[0.08] text-[11px] font-medium text-slate-300">
+          <Layers className="w-3.5 h-3.5 text-sky-400" />
+          <span>{HOMEPAGE_STRINGS.heroBadge}</span>
         </div>
 
-        {/* Crisp Headline without Purple Gradients */}
-        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white leading-[1.12]">
+        <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight leading-tight">
           {HOMEPAGE_STRINGS.heroTitlePrefix}{' '}
-          <span className="text-sky-400">
-            {HOMEPAGE_STRINGS.heroTitleHighlight}
-          </span>
+          <span className="text-sky-400">{HOMEPAGE_STRINGS.heroTitleHighlight}</span>
         </h1>
 
-        {/* Concrete, Technical Subtitle */}
-        <p className="text-sm sm:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed font-normal">
+        <p className="text-sm text-slate-400 max-w-xl mx-auto leading-relaxed">
           {HOMEPAGE_STRINGS.heroSubtitle}
         </p>
 
-        {/* Professional Rectangular Buttons */}
-        <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+        {/* Action Buttons */}
+        <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
           <button
             onClick={onNavigateServices}
-            className="px-5 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-lg font-semibold text-xs flex items-center space-x-2 transition-all shadow-sm active:scale-95"
+            className="px-4 py-2 bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-lg font-semibold text-xs flex items-center space-x-2 transition-all shadow-sm active:scale-95"
           >
             <span>{HOMEPAGE_STRINGS.primaryCta}</span>
             <ArrowRight className="w-4 h-4" />
@@ -169,7 +160,7 @@ export const HomePage: React.FC<HomePageProps> = ({
 
           <button
             onClick={onNavigateCatalog}
-            className="px-4 py-2.5 bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 hover:text-white rounded-lg font-medium text-xs flex items-center space-x-2 transition-all border border-white/[0.1] active:scale-95"
+            className="px-4 py-2 bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 hover:text-white rounded-lg font-medium text-xs flex items-center space-x-2 transition-all border border-white/[0.1] active:scale-95"
           >
             <Box className="w-4 h-4 text-sky-400" />
             <span>{HOMEPAGE_STRINGS.secondaryCta}</span>
@@ -177,54 +168,54 @@ export const HomePage: React.FC<HomePageProps> = ({
 
           <button
             onClick={onOpenAudit}
-            className="px-4 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/15 text-emerald-300 rounded-lg font-medium text-xs flex items-center space-x-2 transition-all border border-emerald-500/20 active:scale-95"
+            className="px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500/15 text-emerald-300 rounded-lg font-medium text-xs flex items-center space-x-2 transition-all border border-emerald-500/20 active:scale-95"
           >
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
             <span>{HOMEPAGE_STRINGS.securityCta}</span>
           </button>
         </div>
 
-        {/* Telemetry KPI Metrics Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 max-w-3xl mx-auto">
-          <div className="glass-surface p-4 rounded-xl text-left border border-white/[0.06]">
-            <span className="text-[11px] text-slate-400 block font-normal">
+        {/* Telemetry Metric Strip */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 max-w-2xl mx-auto">
+          <div className="glass-surface p-3 rounded-lg text-left border border-white/[0.06]">
+            <span className="text-[11px] text-slate-400 block">
               {HOMEPAGE_STRINGS.statNodesLabel}
             </span>
-            <span className="text-xl font-bold font-mono text-white mt-1 block">
+            <span className="text-lg font-bold font-mono text-white mt-0.5 block">
               {blueprints.length || 6}{HOMEPAGE_STRINGS.nodesSuffix}
             </span>
           </div>
 
-          <div className="glass-surface p-4 rounded-xl text-left border border-white/[0.06]">
-            <span className="text-[11px] text-slate-400 block font-normal">
+          <div className="glass-surface p-3 rounded-lg text-left border border-white/[0.06]">
+            <span className="text-[11px] text-slate-400 block">
               {HOMEPAGE_STRINGS.statLatencyLabel}
             </span>
-            <span className="text-xl font-bold font-mono text-emerald-400 mt-1 block">
+            <span className="text-lg font-bold font-mono text-emerald-400 mt-0.5 block">
               {HOMEPAGE_STRINGS.statLatencyVal}
             </span>
           </div>
 
-          <div className="glass-surface p-4 rounded-xl text-left border border-white/[0.06]">
-            <span className="text-[11px] text-slate-400 block font-normal">
+          <div className="glass-surface p-3 rounded-lg text-left border border-white/[0.06]">
+            <span className="text-[11px] text-slate-400 block">
               {HOMEPAGE_STRINGS.statSecurityLabel}
             </span>
-            <span className="text-xl font-bold font-mono text-sky-400 mt-1 block">
+            <span className="text-lg font-bold font-mono text-sky-400 mt-0.5 block">
               {HOMEPAGE_STRINGS.statSecurityVal}
             </span>
           </div>
 
-          <div className="glass-surface p-4 rounded-xl text-left border border-white/[0.06]">
-            <span className="text-[11px] text-slate-400 block font-normal">
+          <div className="glass-surface p-3 rounded-lg text-left border border-white/[0.06]">
+            <span className="text-[11px] text-slate-400 block">
               {HOMEPAGE_STRINGS.statIntegrityLabel}
             </span>
-            <span className="text-xl font-bold font-mono text-cyan-400 mt-1 block">
+            <span className="text-lg font-bold font-mono text-cyan-400 mt-0.5 block">
               {HOMEPAGE_STRINGS.statIntegrityVal}
             </span>
           </div>
         </div>
       </section>
 
-      {/* 2. INTERACTIVE 3D BLOCKS STAGE & INSPECTOR (Deferred to Next Release) */}
+      {/* 2. INTERACTIVE 3D BLOCKS STAGE (Deferred to Next Release) */}
       {FEATURE_FLAGS.ENABLE_3D_INTERACTIVE && (
         <section className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
@@ -233,7 +224,7 @@ export const HomePage: React.FC<HomePageProps> = ({
                 <Layers className="w-4 h-4" />
                 <span>{HOMEPAGE_STRINGS.stageSectionBadge}</span>
               </div>
-              <h2 className="text-2xl font-bold text-white tracking-tight">
+              <h2 className="text-xl font-bold text-white tracking-tight">
                 {HOMEPAGE_STRINGS.stageSectionTitle}
               </h2>
               <p className="text-xs text-slate-400 mt-0.5 max-w-xl">
@@ -242,9 +233,7 @@ export const HomePage: React.FC<HomePageProps> = ({
             </div>
           </div>
 
-          {/* 3D Stage + Block Inspector Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* 3D Viewport (8 Cols) */}
             <div className="lg:col-span-8 w-full">
               <ThreeDClusterStage
                 onSelectBlock={setSelectedBlockId}
@@ -253,7 +242,6 @@ export const HomePage: React.FC<HomePageProps> = ({
               />
             </div>
 
-            {/* Interactive Block Inspector Drawer (4 Cols) */}
             <div className="lg:col-span-4 glass-surface rounded-xl p-5 border border-white/[0.08] shadow-lg space-y-4">
               <div className="flex items-start justify-between border-b border-white/[0.08] pb-3.5">
                 <div className="flex items-center space-x-3">
@@ -291,7 +279,6 @@ export const HomePage: React.FC<HomePageProps> = ({
                 {activeBlock.desc}
               </p>
 
-              {/* Hardware & Network Specs Matrix */}
               <div className="space-y-2 bg-black/40 p-3.5 rounded-lg border border-white/[0.05] text-xs font-mono">
                 <div className="flex items-center justify-between text-slate-400">
                   <span>{HOMEPAGE_STRINGS.specsPortLabel}</span>
@@ -321,7 +308,6 @@ export const HomePage: React.FC<HomePageProps> = ({
                 </div>
               </div>
 
-              {/* Deploy Trigger Button */}
               <div className="pt-1 space-y-2">
                 <button
                   onClick={() => onDeployBlueprint(activeBlock.blueprintId)}
@@ -344,213 +330,134 @@ export const HomePage: React.FC<HomePageProps> = ({
         </section>
       )}
 
-      {/* 3. DEFENSE-IN-DEPTH ARCHITECTURAL STACK */}
-      <section className="space-y-6">
-        <div className="text-center max-w-2xl mx-auto space-y-1.5">
-          <div className="inline-flex items-center space-x-1.5 text-xs font-semibold text-sky-400">
-            <Layers className="w-4 h-4" />
-            <span>{HOMEPAGE_STRINGS.archBadge}</span>
-          </div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">
-            {HOMEPAGE_STRINGS.archSectionTitle}
-          </h2>
-          <p className="text-xs text-slate-400">
-            {HOMEPAGE_STRINGS.archSectionSubtitle}
-          </p>
-        </div>
-
-        {/* 4 Clean Architecture Cards (No Wobble/Tilt) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="glass-surface p-5 rounded-xl border border-white/[0.07] hover:border-white/[0.15] transition-colors flex flex-col justify-between h-44">
-            <div className="space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
-                <ExternalLink className="w-4 h-4" />
-              </div>
-              <h4 className="text-sm font-semibold text-white tracking-tight">
-                {HOMEPAGE_STRINGS.layer1Title}
-              </h4>
-              <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                {HOMEPAGE_STRINGS.layer1Desc}
-              </p>
+      {/* 3. QUICK DEPLOY SERVICE BLUEPRINTS */}
+      <section className="space-y-4">
+        <div className="flex items-end justify-between">
+          <div>
+            <div className="flex items-center space-x-1.5 text-xs font-semibold text-sky-400 mb-0.5">
+              <Box className="w-3.5 h-3.5" />
+              <span>{HOMEPAGE_STRINGS.quickDeployBadge}</span>
             </div>
-          </div>
-
-          <div className="glass-surface p-5 rounded-xl border border-white/[0.07] hover:border-white/[0.15] transition-colors flex flex-col justify-between h-44">
-            <div className="space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-                <Lock className="w-4 h-4" />
-              </div>
-              <h4 className="text-sm font-semibold text-white tracking-tight">
-                {HOMEPAGE_STRINGS.layer2Title}
-              </h4>
-              <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                {HOMEPAGE_STRINGS.layer2Desc}
-              </p>
-            </div>
-          </div>
-
-          <div className="glass-surface p-5 rounded-xl border border-white/[0.07] hover:border-white/[0.15] transition-colors flex flex-col justify-between h-44">
-            <div className="space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-                <Cpu className="w-4 h-4" />
-              </div>
-              <h4 className="text-sm font-semibold text-white tracking-tight">
-                {HOMEPAGE_STRINGS.layer3Title}
-              </h4>
-              <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                {HOMEPAGE_STRINGS.layer3Desc}
-              </p>
-            </div>
-          </div>
-
-          <div className="glass-surface p-5 rounded-xl border border-white/[0.07] hover:border-white/[0.15] transition-colors flex flex-col justify-between h-44">
-            <div className="space-y-2">
-              <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
-                <ShieldCheck className="w-4 h-4" />
-              </div>
-              <h4 className="text-sm font-semibold text-white tracking-tight">
-                {HOMEPAGE_STRINGS.layer4Title}
-              </h4>
-              <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                {HOMEPAGE_STRINGS.layer4Desc}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. MISSION-CRITICAL FEATURES MATRIX */}
-      <section className="space-y-6">
-        <div className="text-center max-w-2xl mx-auto space-y-1.5">
-          <div className="inline-flex items-center space-x-1.5 text-xs font-semibold text-sky-400">
-            <ShieldCheck className="w-4 h-4" />
-            <span>{HOMEPAGE_STRINGS.featuresBadge}</span>
-          </div>
-          <h2 className="text-2xl font-bold text-white tracking-tight">
-            {HOMEPAGE_STRINGS.featuresSectionTitle}
-          </h2>
-          <p className="text-xs text-slate-400">
-            {HOMEPAGE_STRINGS.featuresSectionSubtitle}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div
-            onClick={onOpenAudit}
-            className="glass-surface p-5 rounded-xl border border-white/[0.07] hover:border-white/[0.18] transition-colors space-y-2.5 cursor-pointer"
-          >
-            <div className="w-9 h-9 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
-              <FileCheck className="w-4 h-4" />
-            </div>
-            <h4 className="text-sm font-semibold text-white tracking-tight">
-              {HOMEPAGE_STRINGS.feature1Title}
-            </h4>
-            <p className="text-xs text-slate-400 leading-relaxed font-normal">
-              {HOMEPAGE_STRINGS.feature1Desc}
+            <h2 className="text-lg font-semibold text-white tracking-tight">
+              {HOMEPAGE_STRINGS.quickDeployTitle}
+            </h2>
+            <p className="text-xs text-slate-400 mt-0.5">
+              {HOMEPAGE_STRINGS.quickDeploySubtitle}
             </p>
           </div>
 
-          <div
-            onClick={onOpenAudit}
-            className="glass-surface p-5 rounded-xl border border-white/[0.07] hover:border-white/[0.18] transition-colors space-y-2.5 cursor-pointer"
-          >
-            <div className="w-9 h-9 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-              <Lock className="w-4 h-4" />
-            </div>
-            <h4 className="text-sm font-semibold text-white tracking-tight">
-              {HOMEPAGE_STRINGS.feature2Title}
-            </h4>
-            <p className="text-xs text-slate-400 leading-relaxed font-normal">
-              {HOMEPAGE_STRINGS.feature2Desc}
-            </p>
-          </div>
-
-          <div className="glass-surface p-5 rounded-xl border border-white/[0.07] hover:border-white/[0.18] transition-colors space-y-2.5">
-            <div className="w-9 h-9 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
-              <HardDrive className="w-4 h-4" />
-            </div>
-            <h4 className="text-sm font-semibold text-white tracking-tight">
-              {HOMEPAGE_STRINGS.feature3Title}
-            </h4>
-            <p className="text-xs text-slate-400 leading-relaxed font-normal">
-              {HOMEPAGE_STRINGS.feature3Desc}
-            </p>
-          </div>
-
-          <div
-            onClick={onNavigateServices}
-            className="glass-surface p-5 rounded-xl border border-white/[0.07] hover:border-white/[0.18] transition-colors space-y-2.5 cursor-pointer"
-          >
-            <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
-              <Activity className="w-4 h-4" />
-            </div>
-            <h4 className="text-sm font-semibold text-white tracking-tight">
-              {HOMEPAGE_STRINGS.feature4Title}
-            </h4>
-            <p className="text-xs text-slate-400 leading-relaxed font-normal">
-              {HOMEPAGE_STRINGS.feature4Desc}
-            </p>
-          </div>
-
-          <div
+          <button
             onClick={onNavigateCatalog}
-            className="glass-surface p-5 rounded-xl border border-white/[0.07] hover:border-white/[0.18] transition-colors space-y-2.5 cursor-pointer"
+            className="text-xs font-medium text-sky-400 hover:text-sky-300 flex items-center space-x-1 transition-colors"
           >
-            <div className="w-9 h-9 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
-              <Server className="w-4 h-4" />
-            </div>
-            <h4 className="text-sm font-semibold text-white tracking-tight">
-              {HOMEPAGE_STRINGS.feature5Title}
-            </h4>
-            <p className="text-xs text-slate-400 leading-relaxed font-normal">
-              {HOMEPAGE_STRINGS.feature5Desc}
-            </p>
-          </div>
+            <span>{HOMEPAGE_STRINGS.secondaryCta}</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
 
-          <div className="glass-surface p-5 rounded-xl border border-white/[0.07] hover:border-white/[0.18] transition-colors space-y-2.5">
-            <div className="w-9 h-9 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
-              <Zap className="w-4 h-4" />
-            </div>
-            <h4 className="text-sm font-semibold text-white tracking-tight">
-              {HOMEPAGE_STRINGS.feature6Title}
-            </h4>
-            <p className="text-xs text-slate-400 leading-relaxed font-normal">
-              {HOMEPAGE_STRINGS.feature6Desc}
-            </p>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+          {featuredBlueprints.map((bp) => {
+            const isRunning = runningServiceIds.includes(bp.id);
+
+            return (
+              <div
+                key={bp.id}
+                className="glass-surface p-4 rounded-lg border border-white/[0.06] hover:border-white/[0.12] transition-colors flex flex-col justify-between space-y-3"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+                      <Database className="w-4 h-4" />
+                    </div>
+                    <span
+                      className={`text-[10px] font-mono px-2 py-0.5 rounded font-semibold border ${
+                        isRunning
+                          ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                          : 'bg-white/[0.04] text-slate-400 border-white/[0.06]'
+                      }`}
+                    >
+                      {isRunning ? HOMEPAGE_STRINGS.statusRunning : HOMEPAGE_STRINGS.statusAvailable}
+                    </span>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-semibold text-white tracking-tight">
+                      {bp.name}
+                    </h3>
+                    <div className="flex items-center space-x-2 text-[11px] text-slate-400 font-mono mt-0.5">
+                      <span>{bp.category}</span>
+                      <span>•</span>
+                      <span>{HOMEPAGE_STRINGS.portLabel} :{bp.engine.defaultPort}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => onDeployBlueprint(bp.id)}
+                  className="w-full py-1.5 px-3 bg-white/[0.04] hover:bg-sky-500 hover:text-slate-950 text-slate-200 rounded-lg font-medium text-xs flex items-center justify-center space-x-1.5 transition-all border border-white/[0.08]"
+                >
+                  <span>{HOMEPAGE_STRINGS.deployButton}</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            );
+          })}
         </div>
       </section>
 
-      {/* 5. BOTTOM CALL TO ACTION BANNER */}
-      <section className="glass-surface rounded-xl p-8 sm:p-10 border border-white/[0.08] text-center relative overflow-hidden">
-        <div className="relative z-10 max-w-2xl mx-auto space-y-4">
-          <h2 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-            {HOMEPAGE_STRINGS.ctaTitle}
+      {/* 4. PLATFORM GUARANTEES (3 CRISP CARDS) */}
+      <section className="space-y-4">
+        <div>
+          <div className="flex items-center space-x-1.5 text-xs font-semibold text-sky-400 mb-0.5">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>{HOMEPAGE_STRINGS.guaranteesBadge}</span>
+          </div>
+          <h2 className="text-lg font-semibold text-white tracking-tight">
+            {HOMEPAGE_STRINGS.guaranteesTitle}
           </h2>
-          <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-            {HOMEPAGE_STRINGS.ctaSubtitle}
+          <p className="text-xs text-slate-400 mt-0.5">
+            {HOMEPAGE_STRINGS.guaranteesSubtitle}
           </p>
+        </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
-            <button
-              onClick={onNavigateServices}
-              className="px-5 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-lg font-semibold text-xs flex items-center space-x-2 transition-all shadow-sm active:scale-95"
-            >
-              <span>{HOMEPAGE_STRINGS.ctaPrimary}</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-
-            <button
-              onClick={onNavigateCatalog}
-              className="px-4 py-2.5 bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 hover:text-white rounded-lg font-medium text-xs flex items-center space-x-2 transition-all border border-white/[0.1]"
-            >
-              <Box className="w-4 h-4 text-sky-400" />
-              <span>{HOMEPAGE_STRINGS.ctaSecondary}</span>
-            </button>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
+          <div className="glass-surface p-4 rounded-lg border border-white/[0.06] space-y-2">
+            <div className="w-7 h-7 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
+              <ShieldCheck className="w-3.5 h-3.5" />
+            </div>
+            <h3 className="text-xs font-semibold text-white tracking-tight">
+              {HOMEPAGE_STRINGS.card1Title}
+            </h3>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              {HOMEPAGE_STRINGS.card1Desc}
+            </p>
           </div>
 
-          <div className="pt-5 border-t border-white/[0.06] text-[11px] font-mono text-slate-500">
-            {HOMEPAGE_STRINGS.complianceBanner}
+          <div className="glass-surface p-4 rounded-lg border border-white/[0.06] space-y-2">
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+              <Lock className="w-3.5 h-3.5" />
+            </div>
+            <h3 className="text-xs font-semibold text-white tracking-tight">
+              {HOMEPAGE_STRINGS.card2Title}
+            </h3>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              {HOMEPAGE_STRINGS.card2Desc}
+            </p>
+          </div>
+
+          <div
+            onClick={onOpenAudit}
+            className="glass-surface p-4 rounded-lg border border-white/[0.06] hover:border-white/[0.12] transition-colors space-y-2 cursor-pointer"
+          >
+            <div className="w-7 h-7 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center text-cyan-400">
+              <FileCheck className="w-3.5 h-3.5" />
+            </div>
+            <h3 className="text-xs font-semibold text-white tracking-tight">
+              {HOMEPAGE_STRINGS.card3Title}
+            </h3>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              {HOMEPAGE_STRINGS.card3Desc}
+            </p>
           </div>
         </div>
       </section>

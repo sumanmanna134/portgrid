@@ -11,6 +11,7 @@ import {
   Check,
   Plus,
   Trash2,
+  Server,
 } from 'lucide-react';
 import { ServiceBlueprint } from '../types';
 import { WORKFLOW_MODAL_STRINGS, COMMON_STRINGS } from '../constants/strings';
@@ -285,12 +286,12 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-150">
-      <div className="glass-modal w-full max-w-3xl rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="glass-modal w-full max-w-3xl rounded-2xl border border-white/[0.08] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="px-6 py-4 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
           <div className="flex items-center space-x-3.5">
-            <div className="p-2 bg-gradient-to-tr from-sky-500 to-indigo-500 rounded-xl text-white shadow-sm">
-              <Sparkles className="w-5 h-5" />
+            <div className="p-2 bg-sky-500/10 border border-sky-500/20 rounded-lg text-sky-400">
+              <Code2 className="w-5 h-5" />
             </div>
             <div>
               <h3 className="text-base font-semibold text-white tracking-tight">
@@ -341,7 +342,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
 
         {/* Error Alert */}
         {errorMsg && (
-          <div className="mx-6 mt-4 p-3 bg-red-950/40 border border-red-500/30 rounded-xl flex items-center space-x-2 text-xs text-red-300">
+          <div className="mx-6 mt-4 p-3 bg-red-950/40 border border-red-500/30 rounded-lg flex items-center space-x-2 text-xs text-red-300">
             <AlertCircle className="w-4 h-4 text-red-400 shrink-0" />
             <span>{errorMsg}</span>
           </div>
@@ -351,7 +352,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
         <div className="p-6 overflow-y-auto space-y-5 text-xs text-slate-300 flex-1">
           {/* Preset templates selector */}
           {!editingBlueprint && (
-            <div className="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800/80">
+            <div className="flex items-center justify-between p-3 bg-slate-950 rounded-lg border border-slate-800/80">
               <span className="text-slate-400">{WORKFLOW_MODAL_STRINGS.quickStartLabel}</span>
               <div className="flex items-center space-x-2">
                 <button
@@ -397,7 +398,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                       value={id}
                       onChange={(e) => setId(e.target.value)}
                       placeholder={WORKFLOW_MODAL_STRINGS.serviceIdPlaceholder}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono disabled:opacity-50"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono disabled:opacity-50"
                     />
                   </div>
                   <div>
@@ -407,7 +408,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder={WORKFLOW_MODAL_STRINGS.displayNamePlaceholder}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-sky-500 font-medium"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-sky-500 font-medium"
                     />
                   </div>
                   <div>
@@ -415,7 +416,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                     <select
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-sky-500"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-sky-500"
                     >
                       <option value="Database">Database</option>
                       <option value="Cache">Cache</option>
@@ -432,7 +433,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                     <select
                       value={icon}
                       onChange={(e) => setIcon(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white focus:outline-none focus:border-sky-500"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white focus:outline-none focus:border-sky-500"
                     >
                       <option value="Database">Database</option>
                       <option value="Zap">Zap (Lightning/Cache)</option>
@@ -449,7 +450,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                     placeholder={WORKFLOW_MODAL_STRINGS.descriptionPlaceholder}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-sky-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-sky-500"
                   />
                 </div>
               </div>
@@ -468,7 +469,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                       value={engineImage}
                       onChange={(e) => setEngineImage(e.target.value)}
                       placeholder={WORKFLOW_MODAL_STRINGS.dockerImagePlaceholder}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
                     />
                   </div>
                   <div>
@@ -478,7 +479,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                       value={enginePort}
                       onChange={(e) => setEnginePort(e.target.value)}
                       placeholder={WORKFLOW_MODAL_STRINGS.defaultPortPlaceholder}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
                     />
                   </div>
                 </div>
@@ -490,7 +491,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                     value={engineVolumeMount}
                     onChange={(e) => setEngineVolumeMount(e.target.value)}
                     placeholder={WORKFLOW_MODAL_STRINGS.volumeMountPlaceholder}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
                   />
                 </div>
 
@@ -518,7 +519,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                             setEngineEnvKeys(copy);
                           }}
                           placeholder={WORKFLOW_MODAL_STRINGS.keyPlaceholder}
-                          className="w-1/3 bg-slate-950 border border-slate-800 rounded-xl p-2 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
+                          className="w-1/3 bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
                         />
                         <input
                           type="text"
@@ -529,7 +530,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                             setEngineEnvKeys(copy);
                           }}
                           placeholder={WORKFLOW_MODAL_STRINGS.valuePlaceholder}
-                          className="flex-1 bg-slate-950 border border-slate-800 rounded-xl p-2 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
+                          className="flex-1 bg-slate-950 border border-slate-800 rounded-lg p-2 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
                         />
                         <button
                           type="button"
@@ -571,7 +572,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                         value={uiName}
                         onChange={(e) => setUiName(e.target.value)}
                         placeholder={WORKFLOW_MODAL_STRINGS.uiConsoleNamePlaceholder}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-sky-500"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-sky-500"
                       />
                     </div>
                     <div>
@@ -581,7 +582,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                         value={uiImage}
                         onChange={(e) => setUiImage(e.target.value)}
                         placeholder={WORKFLOW_MODAL_STRINGS.uiDockerImagePlaceholder}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
                       />
                     </div>
                     <div>
@@ -591,7 +592,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                         value={uiPort}
                         onChange={(e) => setUiPort(e.target.value)}
                         placeholder={WORKFLOW_MODAL_STRINGS.uiPortPlaceholder}
-                        className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
                       />
                     </div>
                   </div>
@@ -624,7 +625,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                     value={uriFormatter}
                     onChange={(e) => setUriFormatter(e.target.value)}
                     placeholder={WORKFLOW_MODAL_STRINGS.connUriPlaceholder}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
                   />
                 </div>
 
@@ -635,7 +636,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                     value={envSnippetFormatter}
                     onChange={(e) => setEnvSnippetFormatter(e.target.value)}
                     placeholder={WORKFLOW_MODAL_STRINGS.envSnippetPlaceholder}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
                   />
                 </div>
               </div>
@@ -661,7 +662,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                 rows={18}
                 value={jsonText}
                 onChange={(e) => setJsonText(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl p-4 text-emerald-400 font-mono text-xs focus:outline-none focus:border-sky-500 leading-relaxed"
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-4 text-emerald-400 font-mono text-xs focus:outline-none focus:border-sky-500 leading-relaxed"
               />
             </div>
           )}
