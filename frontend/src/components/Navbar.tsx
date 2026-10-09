@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers, Box, Cpu, Activity, Sparkles, Terminal, ShieldCheck } from 'lucide-react';
+import { Layers, Box, Cpu, Activity, LayoutGrid, Terminal, ShieldCheck } from 'lucide-react';
 import { NAVBAR_STRINGS } from '../constants/strings';
 
 interface NavbarProps {
@@ -53,7 +53,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.02]'
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+            <LayoutGrid className="w-3.5 h-3.5 text-sky-400" />
             <span>{NAVBAR_STRINGS.homeTab}</span>
           </button>
 
@@ -68,7 +68,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Box className="w-3.5 h-3.5" />
             <span>{NAVBAR_STRINGS.activeServicesTab}</span>
             <span
-              className={`text-[10px] px-1.5 py-0.2 rounded-full font-semibold ${
+              className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-semibold ${
                 activeTab === 'services'
                   ? 'bg-sky-500/20 text-sky-300 border border-sky-400/30'
                   : 'bg-white/[0.06] text-slate-400'

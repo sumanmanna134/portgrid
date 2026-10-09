@@ -53,8 +53,8 @@ export const CredentialsModal: React.FC<CredentialsModalProps> = ({ service, onC
     (service.blueprintId === 'postgresql' ? 'admin@portgrid.com' : username);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-150">
-      <div className="glass-modal w-full max-w-2xl rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150">
+      <div className="glass-modal w-full max-w-2xl rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="px-6 py-5 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.02]">
           <div className="flex items-center space-x-3.5">
@@ -273,7 +273,7 @@ export const CredentialsModal: React.FC<CredentialsModalProps> = ({ service, onC
         <div className="px-6 py-4 bg-white/[0.02] border-t border-white/[0.08] flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-xl text-xs font-medium transition-colors"
+            className="px-4 py-2 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg text-xs font-medium transition-colors border border-white/[0.08]"
           >
             {COMMON_STRINGS.close}
           </button>

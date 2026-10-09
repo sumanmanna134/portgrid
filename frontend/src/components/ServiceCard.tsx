@@ -38,7 +38,7 @@ const getCategoryIcon = (blueprintId: string) => {
   if (blueprintId.includes('keycloak'))
     return <Key className="w-4 h-4 text-amber-400" />;
   if (blueprintId.includes('jenkins'))
-    return <GitBranch className="w-4 h-4 text-purple-400" />;
+    return <GitBranch className="w-4 h-4 text-cyan-400" />;
   return <Database className="w-4 h-4 text-sky-400" />;
 };
 
@@ -87,7 +87,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
   const isRunning = service.status === 'RUNNING';
 
   return (
-    <div className="glass-surface glass-surface-hover rounded-2xl p-5 shadow-[0_4px_24px_-4px_rgba(0,0,0,0.4)] flex flex-col justify-between transition-all duration-200">
+    <div className="glass-surface glass-surface-hover rounded-xl p-5 shadow-sm flex flex-col justify-between transition-all duration-150 border border-white/[0.08]">
       <div>
         {/* Card Header */}
         <div className="flex items-start justify-between mb-3.5">
@@ -213,7 +213,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           <div>
             <div className="flex items-center justify-between text-[11px] mb-1">
               <span className="text-slate-400 flex items-center gap-1.5">
-                <Activity className="w-3.5 h-3.5 text-purple-400" /> {COMMON_STRINGS.memory}
+                <Activity className="w-3.5 h-3.5 text-amber-400" /> {COMMON_STRINGS.memory}
               </span>
               <span className="font-mono font-medium text-slate-200">
                 {metrics
@@ -225,7 +225,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
             </div>
             <div className="w-full bg-white/[0.06] rounded-full h-1 overflow-hidden">
               <div
-                className="bg-purple-400 h-1 rounded-full transition-all duration-500"
+                className="bg-amber-400 h-1 rounded-full transition-all duration-500"
                 style={{ width: `${Math.min(100, Math.max(2, metrics?.memoryPercent || 0))}%` }}
               ></div>
             </div>
@@ -261,7 +261,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
       <div className="grid grid-cols-4 gap-2 pt-2 border-t border-white/[0.06]">
         <button
           onClick={() => onOpenCredentials(service)}
-          className="col-span-2 py-2 px-3 bg-white/[0.04] hover:bg-white/[0.08] text-sky-300 hover:text-white rounded-xl text-xs font-medium flex items-center justify-center space-x-1.5 transition-all border border-white/[0.06] active:scale-[0.98]"
+          className="col-span-2 py-2 px-3 bg-white/[0.04] hover:bg-white/[0.08] text-sky-300 hover:text-white rounded-lg text-xs font-medium flex items-center justify-center space-x-1.5 transition-all border border-white/[0.06] active:scale-[0.98]"
         >
           <Key className="w-3.5 h-3.5" />
           <span>{SERVICE_CARD_STRINGS.configAndKeys}</span>
@@ -269,7 +269,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
 
         <button
           onClick={() => onOpenLogs(service)}
-          className="py-2 px-2 bg-white/[0.03] hover:bg-white/[0.06] text-slate-300 hover:text-white rounded-xl text-xs font-medium flex items-center justify-center space-x-1 transition-all border border-white/[0.05]"
+          className="py-2 px-2 bg-white/[0.03] hover:bg-white/[0.06] text-slate-300 hover:text-white rounded-lg text-xs font-medium flex items-center justify-center space-x-1 transition-all border border-white/[0.05]"
           title={SERVICE_CARD_STRINGS.logsTooltip}
         >
           <Terminal className="w-3.5 h-3.5" />
@@ -278,7 +278,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
 
         <button
           onClick={() => onUninstall(service)}
-          className="py-2 px-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 rounded-xl text-xs font-medium flex items-center justify-center space-x-1 transition-all border border-rose-500/20"
+          className="py-2 px-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 rounded-lg text-xs font-medium flex items-center justify-center space-x-1 transition-all border border-rose-500/20"
           title={SERVICE_CARD_STRINGS.deleteTooltip}
         >
           <Trash2 className="w-3.5 h-3.5" />

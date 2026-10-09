@@ -1,14 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Check, ShieldCheck, Sparkles } from 'lucide-react';
+import {
+  Network,
+  Lock,
+  Cpu,
+  Activity,
+  ShieldCheck,
+  Check,
+  Layers,
+} from 'lucide-react';
 import { INSTALL_MODAL_STRINGS } from '../constants/strings';
 
 interface DeployingCube3DProps {
-  step: number; // 1 to 5, or 6 for completed
+  step: number; // 1 to 5, 6 is completed
   progress: number; // 0 to 100
   accentColor?: string;
   icon: React.ReactNode;
   serviceName: string;
   port?: number;
+  selectedBlockIndex: number;
+  onSelectBlock: (index: number) => void;
 }
 
 export const DeployingCube3D: React.FC<DeployingCube3DProps> = ({
@@ -18,23 +28,25 @@ export const DeployingCube3D: React.FC<DeployingCube3DProps> = ({
   icon,
   serviceName,
   port = 8080,
+  selectedBlockIndex,
+  onSelectBlock,
 }) => {
-  const [rotX, setRotX] = useState<number>(18);
-  const [rotY, setRotY] = useState<number>(-22);
+  const [rotX, setRotX] = useState<number>(20);
+  const [rotY, setRotY] = useState<number>(-25);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const [dragStart, setDragStart] = useState<{ x: number; y: number; startRotX: number; startRotY: number }>({
     x: 0,
     y: 0,
-    startRotX: 18,
-    startRotY: -22,
+    startRotX: 20,
+    startRotY: -25,
   });
 
   // Calm idle yaw drift
   useEffect(() => {
     if (isDragging) return;
     const interval = setInterval(() => {
-      setRotY((prev) => (prev + 0.3) % 360);
-    }, 35);
+      setRotY((prev) => (prev + 0.25) % 360);
+    }, 40);
     return () => clearInterval(interval);
   }, [isDragging]);
 
@@ -62,7 +74,6 @@ export const DeployingCube3D: React.FC<DeployingCube3DProps> = ({
     setIsDragging(false);
   };
 
-  // Touch support for tablets / laptops
   const handleTouchStart = (e: React.TouchEvent) => {
     if (e.touches.length === 1) {
       setIsDragging(true);
@@ -85,16 +96,51 @@ export const DeployingCube3D: React.FC<DeployingCube3DProps> = ({
     setRotY(newRotY);
   };
 
-  // Dimensions: 96x96x72 px
-  const cubeSize = 96;
-  const halfSize = cubeSize / 2;
-  const depth = 72;
-  const halfDepth = depth / 2;
-
-  const isWireframe = step === 1;
-  const isSolid = step >= 3;
-  const isMerkleSealed = step >= 5;
   const isDone = step >= 6 || progress >= 100;
+
+  // 5 Architectural Blocks in the Enclave Stack (stacked vertically: layer 0 at bottom to layer 4 at top)
+  const blocks = [
+    {
+      id: 1,
+      title: INSTALL_MODAL_STRINGS.block1Title,
+      spec: INSTALL_MODAL_STRINGS.block1Spec,
+      icon: <Network className="w-3.5 h-3.5 text-sky-400" />,
+      color: '#0ea5e9',
+      yOffset: 48, // Base layer
+    },
+    {
+      id: 2,
+      title: INSTALL_MODAL_STRINGS.block2Title,
+      spec: INSTALL_MODAL_STRINGS.block2Spec,
+      icon: <Lock className="w-3.5 h-3.5 text-amber-400" />,
+      color: '#f59e0b',
+      yOffset: 24,
+    },
+    {
+      id: 3,
+      title: INSTALL_MODAL_STRINGS.block3Title,
+      spec: INSTALL_MODAL_STRINGS.block3Spec,
+      icon: <Cpu className="w-3.5 h-3.5 text-emerald-400" />,
+      color: '#10b981',
+      yOffset: 0, // Middle container runtime
+    },
+    {
+      id: 4,
+      title: INSTALL_MODAL_STRINGS.block4Title,
+      spec: `${INSTALL_MODAL_STRINGS.block4Spec} (:${port})`,
+      icon: <Activity className="w-3.5 h-3.5 text-cyan-400" />,
+      color: '#06b6d4',
+      yOffset: -24,
+    },
+    {
+      id: 5,
+      title: INSTALL_MODAL_STRINGS.block5Title,
+      spec: INSTALL_MODAL_STRINGS.block5Spec,
+      icon: <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />,
+      color: '#34d399',
+      yOffset: -48, // Top Merkle seal
+    },
+  ];
 
   return (
     <div
@@ -105,17 +151,17 @@ export const DeployingCube3D: React.FC<DeployingCube3DProps> = ({
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleMouseUp}
-      className={`relative w-full h-44 sm:h-48 perspective-stage flex items-center justify-center select-none overflow-hidden ${
+      className={`relative w-full h-56 perspective-stage flex items-center justify-center select-none overflow-hidden ${
         isDragging ? 'cursor-grabbing' : 'cursor-grab'
       }`}
     >
-      {/* Ambient Floor Glow */}
+      {/* Subtle Ambient Ground Glow */}
       <div
-        className="absolute w-56 h-56 rounded-full pointer-events-none transition-all duration-700 opacity-40"
+        className="absolute w-52 h-52 rounded-full pointer-events-none transition-all duration-700 opacity-25"
         style={{
-          background: `radial-gradient(circle, ${accentColor}30 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${accentColor}25 0%, transparent 70%)`,
           filter: 'blur(32px)',
-          transform: `scale(${isDone ? 1.15 : 0.95})`,
+          transform: `scale(${isDone ? 1.1 : 0.95})`,
         }}
       />
 
@@ -128,165 +174,165 @@ export const DeployingCube3D: React.FC<DeployingCube3DProps> = ({
       >
         {/* Soft Floor Shadow Plane */}
         <div
-          className="absolute -top-[90px] -left-[90px] w-[180px] h-[180px] rounded-full preserve-3d pointer-events-none"
+          className="absolute -top-[80px] -left-[80px] w-[160px] h-[160px] rounded-full preserve-3d pointer-events-none"
           style={{
-            transform: 'rotateX(90deg) translateZ(-80px)',
-            background: `radial-gradient(circle, rgba(0,0,0,0.6) 0%, transparent 65%)`,
+            transform: 'rotateX(90deg) translateZ(-85px)',
+            background: 'radial-gradient(circle, rgba(0,0,0,0.55) 0%, transparent 65%)',
           }}
         />
 
-        {/* 3D CUBE CONTAINER */}
+        {/* 3D MODULAR BLOCK-BY-BLOCK ENCLAVE STACK */}
         <div
-          className={`absolute -top-[48px] -left-[48px] w-[96px] h-[96px] preserve-3d transition-all duration-500 ${
+          className={`preserve-3d transition-transform duration-500 ${
             isDone ? 'animate-float-3d' : ''
           }`}
-          style={{
-            transform: `translate3d(0, ${isDone ? -6 : 0}px, 0)`,
-          }}
         >
-          {/* FACE 1: FRONT */}
-          <div
-            style={{
-              transform: `translateZ(${halfDepth}px)`,
-              borderColor: isWireframe ? `${accentColor}50` : 'rgba(255, 255, 255, 0.12)',
-              backgroundColor: isSolid ? 'rgba(12, 17, 29, 0.85)' : 'rgba(10, 14, 24, 0.55)',
-              boxShadow: isDone
-                ? `0 0 24px ${accentColor}40, inset 0 0 16px ${accentColor}20`
-                : '0 4px 20px rgba(0, 0, 0, 0.4)',
-            }}
-            className={`absolute inset-0 rounded-2xl border backdrop-blur-md p-2.5 flex flex-col justify-between backface-hidden transition-all duration-500 ${
-              isWireframe ? 'border-dashed' : 'border-solid'
-            }`}
-          >
-            <div className="flex items-center justify-between">
+          {blocks.map((blk, idx) => {
+            const isAssembled = step >= blk.id;
+            const isSelected = selectedBlockIndex === idx;
+            const blockWidth = 120;
+            const blockHeight = 22;
+            const blockDepth = 90;
+
+            return (
               <div
-                className="w-7 h-7 rounded-lg border flex items-center justify-center transition-all duration-300"
+                key={blk.id}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onSelectBlock(idx);
+                }}
+                className={`preserve-3d absolute -left-[60px] cursor-pointer transition-all duration-500`}
                 style={{
-                  backgroundColor: `${accentColor}18`,
-                  borderColor: `${accentColor}35`,
+                  top: `${blk.yOffset}px`,
+                  opacity: isAssembled ? 1 : 0.35,
+                  transform: `translate3d(0, ${isAssembled ? 0 : -35}px, 0) scale3d(${
+                    isSelected ? 1.05 : 1
+                  }, ${isSelected ? 1.05 : 1}, ${isSelected ? 1.05 : 1})`,
                 }}
               >
-                {icon}
+                {/* FRONT FACE */}
+                <div
+                  style={{
+                    width: `${blockWidth}px`,
+                    height: `${blockHeight}px`,
+                    transform: `translateZ(${blockDepth / 2}px)`,
+                    borderColor: isSelected
+                      ? '#38bdf8'
+                      : isAssembled
+                      ? 'rgba(255, 255, 255, 0.16)'
+                      : 'rgba(255, 255, 255, 0.08)',
+                    backgroundColor: isAssembled
+                      ? isSelected
+                        ? 'rgba(14, 165, 233, 0.35)'
+                        : 'rgba(11, 16, 28, 0.88)'
+                      : 'rgba(11, 16, 28, 0.3)',
+                    boxShadow: isSelected
+                      ? '0 0 16px rgba(14, 165, 233, 0.4)'
+                      : '0 2px 8px rgba(0,0,0,0.4)',
+                  }}
+                  className={`absolute rounded-lg border backdrop-blur-md px-2 flex items-center justify-between transition-colors`}
+                >
+                  <div className="flex items-center space-x-1.5 truncate">
+                    <span className="shrink-0">{blk.icon}</span>
+                    <span className="text-[10px] font-medium text-slate-200 truncate">
+                      {blk.title}
+                    </span>
+                  </div>
+
+                  {isAssembled && (
+                    <span className="shrink-0 text-[8px] font-mono text-emerald-400 font-semibold flex items-center gap-0.5">
+                      <Check className="w-2.5 h-2.5" />
+                    </span>
+                  )}
+                </div>
+
+                {/* BACK FACE */}
+                <div
+                  style={{
+                    width: `${blockWidth}px`,
+                    height: `${blockHeight}px`,
+                    transform: `rotateY(180deg) translateZ(${blockDepth / 2}px)`,
+                    borderColor: 'rgba(255, 255, 255, 0.08)',
+                    backgroundColor: 'rgba(9, 14, 24, 0.8)',
+                  }}
+                  className="absolute rounded-lg border backdrop-blur-md"
+                />
+
+                {/* TOP FACE */}
+                <div
+                  style={{
+                    width: `${blockWidth}px`,
+                    height: `${blockDepth}px`,
+                    transform: `rotateX(90deg) translateZ(${blockDepth / 2}px)`,
+                    top: `${(blockHeight - blockDepth) / 2}px`,
+                    borderColor: isSelected
+                      ? 'rgba(56, 189, 248, 0.5)'
+                      : 'rgba(255, 255, 255, 0.1)',
+                    backgroundColor: isAssembled
+                      ? isSelected
+                        ? 'rgba(14, 165, 233, 0.25)'
+                        : 'rgba(15, 22, 38, 0.85)'
+                      : 'rgba(15, 22, 38, 0.2)',
+                  }}
+                  className={`absolute rounded-lg border backdrop-blur-md flex items-center justify-center`}
+                >
+                  {/* Subtle technical cross-wire */}
+                  <div className="w-8 h-8 rounded border border-white/[0.06] border-dashed opacity-40" />
+                </div>
+
+                {/* BOTTOM FACE */}
+                <div
+                  style={{
+                    width: `${blockWidth}px`,
+                    height: `${blockDepth}px`,
+                    transform: `rotateX(-90deg) translateZ(${blockDepth / 2}px)`,
+                    top: `${(blockHeight - blockDepth) / 2}px`,
+                    borderColor: 'rgba(255, 255, 255, 0.06)',
+                    backgroundColor: 'rgba(6, 9, 16, 0.6)',
+                  }}
+                  className="absolute rounded-lg border backdrop-blur-md"
+                />
+
+                {/* RIGHT FACE */}
+                <div
+                  style={{
+                    width: `${blockDepth}px`,
+                    height: `${blockHeight}px`,
+                    transform: `rotateY(90deg) translateZ(${blockWidth / 2}px)`,
+                    left: `${(blockWidth - blockDepth) / 2}px`,
+                    borderColor: 'rgba(255, 255, 255, 0.08)',
+                    backgroundColor: 'rgba(10, 15, 26, 0.8)',
+                  }}
+                  className="absolute rounded-lg border backdrop-blur-md"
+                />
+
+                {/* LEFT FACE */}
+                <div
+                  style={{
+                    width: `${blockDepth}px`,
+                    height: `${blockHeight}px`,
+                    transform: `rotateY(-90deg) translateZ(${blockWidth / 2}px)`,
+                    left: `${(blockWidth - blockDepth) / 2}px`,
+                    borderColor: 'rgba(255, 255, 255, 0.08)',
+                    backgroundColor: 'rgba(10, 15, 26, 0.8)',
+                  }}
+                  className="absolute rounded-lg border backdrop-blur-md"
+                />
               </div>
-
-              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-md font-medium bg-white/[0.04] border border-white/[0.08] text-slate-300">
-                :{port}
-              </span>
-            </div>
-
-            <div>
-              <h4 className="text-[11px] font-semibold text-white tracking-tight truncate">
-                {serviceName}
-              </h4>
-              <div className="flex items-center justify-between mt-1 text-[9px] font-mono">
-                <span className="text-slate-400">{Math.round(progress)}%</span>
-                {isDone ? (
-                  <span className="inline-flex items-center gap-0.5 text-emerald-400 font-medium">
-                    <Check className="w-2.5 h-2.5" />
-                    <span>{INSTALL_MODAL_STRINGS.cubeReadyBadge}</span>
-                  </span>
-                ) : (
-                  <span
-                    className="w-1.5 h-1.5 rounded-full animate-ping"
-                    style={{ backgroundColor: accentColor }}
-                  />
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* FACE 2: BACK */}
-          <div
-            style={{
-              transform: `rotateY(180deg) translateZ(${halfDepth}px)`,
-              borderColor: 'rgba(255, 255, 255, 0.08)',
-              backgroundColor: isSolid ? 'rgba(10, 15, 26, 0.75)' : 'rgba(8, 12, 20, 0.45)',
-            }}
-            className={`absolute inset-0 rounded-2xl border backdrop-blur-md p-2.5 flex flex-col justify-between backface-hidden transition-all duration-500 ${
-              isWireframe ? 'border-dashed' : 'border-solid'
-            }`}
-          >
-            <div className="text-[8px] font-mono text-slate-500 tracking-wider uppercase font-semibold">
-              {INSTALL_MODAL_STRINGS.cubeEnclaveFace}
-            </div>
-            <div className="text-[8px] font-mono text-slate-400">
-              {INSTALL_MODAL_STRINGS.cubeBindingFace}
-            </div>
-          </div>
-
-          {/* FACE 3: TOP (ROOF) */}
-          <div
-            style={{
-              transform: `rotateX(90deg) translateZ(${halfDepth}px)`,
-              height: `${depth}px`,
-              top: `${halfSize - halfDepth}px`,
-              borderColor: 'rgba(255, 255, 255, 0.1)',
-              backgroundColor: isSolid ? 'rgba(15, 22, 38, 0.85)' : 'rgba(10, 14, 24, 0.5)',
-              boxShadow: isMerkleSealed ? `0 0 16px ${accentColor}30` : 'none',
-            }}
-            className={`absolute left-0 right-0 rounded-xl border backdrop-blur-md backface-hidden flex items-center justify-center transition-all duration-500 ${
-              isWireframe ? 'border-dashed' : 'border-solid'
-            }`}
-          >
-            {isMerkleSealed ? (
-              <div className="flex items-center space-x-1 text-white font-mono text-[8px] font-medium bg-black/60 px-1.5 py-0.5 rounded-md border border-white/10">
-                <ShieldCheck className="w-3 h-3 text-emerald-400" />
-                <span>{INSTALL_MODAL_STRINGS.cubeSealBadge}</span>
-              </div>
-            ) : (
-              <div
-                className="w-6 h-6 rounded-md border border-dashed opacity-30"
-                style={{ borderColor: accentColor }}
-              />
-            )}
-          </div>
-
-          {/* FACE 4: BOTTOM */}
-          <div
-            style={{
-              transform: `rotateX(-90deg) translateZ(${halfDepth}px)`,
-              height: `${depth}px`,
-              top: `${halfSize - halfDepth}px`,
-              borderColor: 'rgba(255, 255, 255, 0.05)',
-              backgroundColor: 'rgba(6, 9, 16, 0.6)',
-            }}
-            className="absolute left-0 right-0 rounded-xl border border-dashed backdrop-blur-md backface-hidden"
-          />
-
-          {/* FACE 5: RIGHT WALL */}
-          <div
-            style={{
-              transform: `rotateY(90deg) translateZ(${halfSize}px)`,
-              width: `${depth}px`,
-              left: `${halfSize - halfDepth}px`,
-              borderColor: 'rgba(255, 255, 255, 0.08)',
-              backgroundColor: isSolid ? 'rgba(12, 18, 30, 0.75)' : 'rgba(8, 12, 22, 0.45)',
-            }}
-            className={`absolute top-0 bottom-0 rounded-xl border backdrop-blur-md backface-hidden transition-all duration-500 ${
-              isWireframe ? 'border-dashed' : 'border-solid'
-            }`}
-          />
-
-          {/* FACE 6: LEFT WALL */}
-          <div
-            style={{
-              transform: `rotateY(-90deg) translateZ(${halfSize}px)`,
-              width: `${depth}px`,
-              left: `${halfSize - halfDepth}px`,
-              borderColor: 'rgba(255, 255, 255, 0.08)',
-              backgroundColor: isSolid ? 'rgba(12, 18, 30, 0.75)' : 'rgba(8, 12, 22, 0.45)',
-            }}
-            className={`absolute top-0 bottom-0 rounded-xl border backdrop-blur-md backface-hidden transition-all duration-500 ${
-              isWireframe ? 'border-dashed' : 'border-solid'
-            }`}
-          />
+            );
+          })}
         </div>
       </div>
 
-      {/* Discrete Drag Rotate Hint Pill */}
-      <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2 text-[10px] font-mono text-slate-500 bg-black/40 backdrop-blur-md px-2.5 py-0.5 rounded-full border border-white/[0.06] flex items-center gap-1.5 pointer-events-none">
-        <Sparkles className="w-2.5 h-2.5 text-sky-400/80" />
+      {/* Discrete Drag Rotate Hint */}
+      <div className="absolute bottom-2 left-3 text-[10px] font-mono text-slate-500 bg-black/40 backdrop-blur-md px-2.5 py-0.5 rounded-md border border-white/[0.06] flex items-center gap-1.5 pointer-events-none">
+        <Layers className="w-3 h-3 text-sky-400" />
         <span>{INSTALL_MODAL_STRINGS.dragHintClean}</span>
+      </div>
+
+      {/* Assembled Counter Badge */}
+      <div className="absolute top-3 right-3 text-[10px] font-mono font-medium text-slate-300 bg-black/50 backdrop-blur-md px-2.5 py-1 rounded-md border border-white/[0.08]">
+        {INSTALL_MODAL_STRINGS.blocksAssembledCount(Math.min(5, step), 5)}
       </div>
     </div>
   );

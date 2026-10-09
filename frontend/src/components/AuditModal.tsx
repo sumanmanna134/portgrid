@@ -420,7 +420,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                   <button
                     onClick={verifyChain}
                     disabled={isVerifying}
-                    className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-md active:scale-95 shrink-0 disabled:opacity-50"
+                    className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-sm active:scale-95 shrink-0 disabled:opacity-50"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${isVerifying ? 'animate-spin' : ''}`} />
                     <span>{AUDIT_MODAL_STRINGS.verifyChainButton}</span>
@@ -437,7 +437,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                     </div>
                   </div>
                   <div className="flex items-center space-x-2.5 px-3 py-2 rounded-xl bg-black/40 border border-white/[0.05]">
-                    <Lock className="w-4 h-4 text-purple-400 shrink-0" />
+                    <Lock className="w-4 h-4 text-amber-400 shrink-0" />
                     <div className="truncate">
                       <span className="text-[10px] text-slate-400 block font-mono">{AUDIT_MODAL_STRINGS.storageEncryptionLabel}</span>
                       <span className="text-xs font-medium text-white truncate">{AUDIT_MODAL_STRINGS.storageEncryptionValue}</span>
@@ -551,7 +551,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                                             ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/25'
                                             : log.action.includes('STOP')
                                               ? 'bg-amber-500/15 text-amber-300 border-amber-500/25'
-                                              : 'bg-purple-500/15 text-purple-300 border-purple-500/25'
+                                              : 'bg-sky-500/15 text-sky-300 border-sky-500/25'
                                         }`}
                                     >
                                       {log.action}
@@ -688,7 +688,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                   >
                     <div className="pr-4 space-y-1">
                       <div className="flex items-center space-x-2">
-                        <Key className="w-3.5 h-3.5 text-purple-400" />
+                        <Key className="w-3.5 h-3.5 text-amber-400" />
                         <span className="text-xs font-semibold text-white">
                           {AUDIT_MODAL_STRINGS.cryptoShreddingTitle}
                         </span>
@@ -699,7 +699,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                     </div>
                     {/* iOS style toggle switch */}
                     <div
-                      className={`w-11 h-6 rounded-full transition-colors flex items-center p-1 shrink-0 ${settings.cryptoShreddingEnabled ? 'bg-purple-500' : 'bg-slate-700'
+                      className={`w-11 h-6 rounded-full transition-colors flex items-center p-1 shrink-0 ${settings.cryptoShreddingEnabled ? 'bg-sky-500' : 'bg-slate-700'
                         }`}
                     >
                       <div
@@ -959,7 +959,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="px-5 py-2 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-xl text-xs font-medium transition-colors active:scale-95 shadow-sm"
+            className="px-5 py-2 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-lg text-xs font-medium transition-colors active:scale-95 border border-white/[0.08]"
           >
             {COMMON_STRINGS.close}
           </button>

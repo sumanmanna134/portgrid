@@ -1,7 +1,7 @@
 {
   "name": "portgrid",
   "version": "1.0.0",
-  "description": "PortGrid — Local Developer Infrastructure Orchestrator & PaaS",
+  "description": "PortGrid: Local Developer Infrastructure Orchestrator & PaaS",
   "scripts": {
     "dev:backend": "npm --prefix backend run start:dev",
     "dev:frontend": "npm --prefix frontend run dev",

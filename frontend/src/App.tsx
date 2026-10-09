@@ -252,9 +252,9 @@ export const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-[#080c14] text-slate-100 flex flex-col font-['Inter',sans-serif]">
-      {/* Apple-style floating toast notification */}
+      {/* Floating toast notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 glass-modal border border-white/[0.1] text-white px-4 py-3 rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.8)] flex items-center space-x-2.5 text-xs font-medium animate-in slide-in-from-bottom-5">
+        <div className="fixed bottom-6 right-6 z-50 glass-modal border border-white/[0.1] text-white px-4 py-3 rounded-lg shadow-lg flex items-center space-x-2.5 text-xs font-medium">
           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           <span>{toastMessage}</span>
         </div>
@@ -304,7 +304,7 @@ export const App: React.FC = () => {
 
               <button
                 onClick={() => setActiveTab('catalog')}
-                className="px-3.5 py-2 bg-sky-500 hover:bg-sky-400 text-white text-xs font-medium rounded-xl flex items-center space-x-2 transition-all shadow-[0_2px_12px_rgba(14,165,233,0.3)] active:scale-95"
+                className="px-3.5 py-2 bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-semibold rounded-lg flex items-center space-x-2 transition-all shadow-sm active:scale-95"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>{DASHBOARD_STRINGS.deployButton}</span>
@@ -312,19 +312,19 @@ export const App: React.FC = () => {
             </div>
 
             {services.length === 0 ? (
-              <div className="glass-surface rounded-3xl p-12 text-center max-w-md mx-auto my-12 border border-white/[0.06] shadow-xl">
-                <div className="w-14 h-14 bg-white/[0.04] border border-white/[0.08] rounded-2xl flex items-center justify-center mx-auto mb-4 text-sky-400 shadow-inner">
-                  <Box className="w-7 h-7" />
+              <div className="glass-surface rounded-xl p-10 text-center max-w-md mx-auto my-12 border border-white/[0.06] shadow-lg">
+                <div className="w-12 h-12 bg-white/[0.04] border border-white/[0.08] rounded-xl flex items-center justify-center mx-auto mb-4 text-sky-400 shadow-inner">
+                  <Box className="w-6 h-6" />
                 </div>
                 <h3 className="text-sm font-semibold text-white mb-1">{DASHBOARD_STRINGS.emptyTitle}</h3>
-                <p className="text-xs text-slate-400 mb-6 leading-relaxed font-normal">
+                <p className="text-xs text-slate-400 mb-5 leading-relaxed font-normal">
                   {DASHBOARD_STRINGS.emptySubtitle}
                 </p>
                 <button
                   onClick={() => setActiveTab('catalog')}
-                  className="px-4 py-2 bg-sky-500 hover:bg-sky-400 text-white text-xs font-medium rounded-xl inline-flex items-center space-x-2 transition-colors shadow-sm"
+                  className="px-4 py-2 bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-semibold rounded-lg inline-flex items-center space-x-2 transition-colors shadow-sm"
                 >
-                  <Sparkles className="w-3.5 h-3.5" />
+                  <Plus className="w-3.5 h-3.5" />
                   <span>{DASHBOARD_STRINGS.browseCatalogButton}</span>
                 </button>
               </div>
@@ -362,22 +362,22 @@ export const App: React.FC = () => {
                   setEditingCustomBlueprint(null);
                   setIsWorkflowEditorOpen(true);
                 }}
-                className="px-3.5 py-2 bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white text-xs font-medium rounded-xl flex items-center space-x-2 transition-all shadow-[0_2px_12px_rgba(99,102,241,0.25)] active:scale-95 shrink-0"
+                className="px-3.5 py-2 bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-semibold rounded-lg flex items-center space-x-2 transition-all shadow-sm active:scale-95 shrink-0"
               >
-                <Sparkles className="w-3.5 h-3.5" />
+                <Plus className="w-3.5 h-3.5" />
                 <span>{CATALOG_STRINGS.onboardCustomButton}</span>
               </button>
             </div>
 
-            {/* Apple / Google Style Filter Bar & Search */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-2 bg-white/[0.02] border border-white/[0.06] rounded-2xl">
+            {/* Filter Bar & Search */}
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-2 bg-white/[0.02] border border-white/[0.06] rounded-xl">
               {/* Category Segmented Control */}
               <div className="flex flex-wrap items-center gap-1">
                 {categories.map((cat) => (
                   <button
                     key={cat}
                     onClick={() => setCatalogCategory(cat)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
                       catalogCategory === cat
                         ? 'bg-white/[0.12] text-white shadow-sm border border-white/[0.1]'
                         : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
@@ -396,7 +396,7 @@ export const App: React.FC = () => {
                   value={catalogSearch}
                   onChange={(e) => setCatalogSearch(e.target.value)}
                   placeholder={CATALOG_STRINGS.searchPlaceholder}
-                  className="w-full bg-black/40 border border-white/[0.06] rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500/50"
+                  className="w-full bg-black/40 border border-white/[0.06] rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500/50"
                 />
               </div>
             </div>

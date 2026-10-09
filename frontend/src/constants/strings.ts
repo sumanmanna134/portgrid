@@ -174,9 +174,23 @@ export const INSTALL_MODAL_STRINGS = {
   allocatedPortsTitle: 'Allocated Port Endpoints',
   enginePortBadge: 'Engine Port',
   uiPortBadge: 'Admin Console',
-  doneButton: 'Done',
   blueprintDefaultsBadge: 'Official Sandbox Defaults',
   blueprintDefaultsDesc: (image: string, port: number) => `Standard container image ${image} bound to loopback socket :${port}.`,
+
+  // Interactive 3D Block-by-Block Strings
+  block1Title: 'Network Enclave',
+  block1Spec: '127.0.0.1 Loopback Bridge Subnet',
+  block2Title: 'Cryptographic Vault',
+  block2Spec: 'FIPS 140-2 AES-256 Entropy Key',
+  block3Title: 'Container Runtime & Volume',
+  block3Spec: 'Linux cgroups • No-New-Privileges',
+  block4Title: 'TCP Loopback Handshake',
+  block4Spec: 'Sub-millisecond socket readiness verified',
+  block5Title: 'Merkle Audit Ledger',
+  block5Spec: 'SHA-256 state transition proof chained',
+  blockClickHint: 'Click any block in the 3D stack to inspect enclave specs',
+  blockInspectingTitle: 'Enclave Block Specification',
+  blocksAssembledCount: (active: number, total: number) => `${active} of ${total} Blocks Assembled`,
 } as const;
 
 export const UNINSTALL_MODAL_STRINGS = {
@@ -393,13 +407,13 @@ export const WORKFLOW_MODAL_STRINGS = {
 } as const;
 
 export const HOMEPAGE_STRINGS = {
-  heroBadge: 'Deterministic Local Cloud & Enclave Orchestration',
-  heroTitlePrefix: 'Autonomous Local Infrastructure with',
-  heroTitleHighlight: 'Deterministic Isolation & 3D Topology',
-  heroSubtitle: 'Deploy enterprise-grade databases, event streams, and zero-trust security enclaves locally. Guaranteed loopback isolation, SHA-256 Merkle audit trails, and automated Maker-Checker governance.',
+  heroBadge: 'Deterministic Local Cloud Infrastructure',
+  heroTitlePrefix: 'Local Developer Infrastructure with',
+  heroTitleHighlight: 'Deterministic Loopback Enclaves',
+  heroSubtitle: 'Orchestrate production-grade databases, message queues, and IAM services locally. Enforce strict 127.0.0.1 loopback isolation, FIPS 140-2 AES-256 encrypted storage, and SHA-256 Merkle audit logs.',
   primaryCta: 'Launch Cloud Console',
-  secondaryCta: 'Explore 3D Catalog',
-  securityCta: 'Security Enclave (FIPS 140-2)',
+  secondaryCta: 'Explore Service Catalog',
+  securityCta: 'Security & Governance (FIPS 140-2)',
   statNodesLabel: 'Cluster Blueprint Blocks',
   statLatencyLabel: 'Loopback Wire Latency',
   statLatencyVal: '< 0.4 ms',

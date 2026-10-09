@@ -57,8 +57,8 @@ export const UninstallModal: React.FC<UninstallModalProps> = ({
   if (!isOpen || !service) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-150">
-      <div className="glass-modal w-full max-w-md rounded-3xl shadow-[0_25px_60px_-15px_rgba(0,0,0,0.85)] overflow-hidden flex flex-col border border-rose-500/20">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in duration-150">
+      <div className="glass-modal w-full max-w-md rounded-2xl shadow-xl overflow-hidden flex flex-col border border-rose-500/20">
         {/* Header */}
         <div className="px-6 py-5 border-b border-white/[0.08] flex items-center justify-between bg-rose-500/[0.04]">
           <div className="flex items-center space-x-3.5">
@@ -243,7 +243,7 @@ export const UninstallModal: React.FC<UninstallModalProps> = ({
             <>
               <button
                 onClick={onClose}
-                className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-white rounded-xl text-xs font-medium transition-colors"
+                className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-white rounded-lg text-xs font-medium transition-colors"
               >
                 {COMMON_STRINGS.dismiss}
               </button>
@@ -253,7 +253,7 @@ export const UninstallModal: React.FC<UninstallModalProps> = ({
                     onClose();
                     onOpenGovernance();
                   }}
-                  className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-md active:scale-95"
+                  className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-sm active:scale-95"
                 >
                   <span>{UNINSTALL_MODAL_STRINGS.openGovernanceCenter}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -265,19 +265,19 @@ export const UninstallModal: React.FC<UninstallModalProps> = ({
               <button
                 onClick={onClose}
                 disabled={isUninstalling}
-                className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-white rounded-xl text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-white rounded-lg text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed border border-white/[0.08]"
               >
                 {COMMON_STRINGS.cancel}
               </button>
               <button
                 onClick={() => onConfirm(service.id, removeVolumes)}
                 disabled={isUninstalling}
-                className={`px-4 py-2 rounded-xl text-xs font-medium flex items-center space-x-1.5 transition-all shadow-lg ${
+                className={`px-4 py-2 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-sm ${
                   isUninstalling
                     ? 'bg-rose-950/60 text-rose-300/60 cursor-not-allowed border border-rose-500/20 shadow-none'
                     : makerCheckerEnabled
-                    ? 'bg-amber-600 hover:bg-amber-500 text-white shadow-amber-600/25 active:scale-95'
-                    : 'bg-rose-600 hover:bg-rose-500 text-white shadow-rose-600/25 active:scale-95'
+                    ? 'bg-amber-500 hover:bg-amber-400 text-slate-950 active:scale-95'
+                    : 'bg-rose-600 hover:bg-rose-500 text-white active:scale-95'
                 }`}
               >
                 {isUninstalling ? (

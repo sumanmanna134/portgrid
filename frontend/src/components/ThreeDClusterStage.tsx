@@ -144,11 +144,11 @@ export const ThreeDClusterStage: React.FC<ThreeDClusterStageProps> = ({
         port: 5001,
         security: HOMEPAGE_STRINGS.blockMerkleSecurity,
         storage: HOMEPAGE_STRINGS.blockMerkleVolume,
-        accentColor: '#a855f7', // Purple
-        glowColor: 'rgba(168, 85, 247, 0.45)',
-        borderColor: 'rgba(168, 85, 247, 0.5)',
-        bgFace: 'rgba(88, 28, 135, 0.4)',
-        icon: <ShieldCheck className="w-5 h-5 text-purple-400" />,
+        accentColor: '#06b6d4', // Cyan
+        glowColor: 'rgba(6, 182, 212, 0.45)',
+        borderColor: 'rgba(6, 182, 212, 0.5)',
+        bgFace: 'rgba(8, 47, 73, 0.4)',
+        icon: <ShieldCheck className="w-5 h-5 text-cyan-400" />,
         coords: { x: 140, y: 50, z: -60 },
         explodedCoords: { x: 220, y: 110, z: -120 },
       },
@@ -310,9 +310,9 @@ export const ThreeDClusterStage: React.FC<ThreeDClusterStageProps> = ({
 
         <button
           onClick={() => setIsExploded(!isExploded)}
-          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
+          className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
             isExploded
-              ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30 shadow-sm'
+              ? 'bg-sky-500/20 text-sky-300 border border-sky-500/30 shadow-sm'
               : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
           }`}
           title={isExploded ? HOMEPAGE_STRINGS.compactViewButton : HOMEPAGE_STRINGS.explodedViewButton}
@@ -325,7 +325,7 @@ export const ThreeDClusterStage: React.FC<ThreeDClusterStageProps> = ({
 
         <button
           onClick={resetCamera}
-          className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-white/[0.05] transition-all"
+          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/[0.05] transition-all"
           title={HOMEPAGE_STRINGS.resetCameraButton}
         >
           <RotateCcw className="w-3.5 h-3.5" />
@@ -333,7 +333,7 @@ export const ThreeDClusterStage: React.FC<ThreeDClusterStageProps> = ({
       </div>
 
       {/* Floating Status Badge (Top Left) */}
-      <div className="absolute top-4 left-4 z-30 flex items-center space-x-2 bg-black/60 backdrop-blur-xl px-3.5 py-1.5 rounded-2xl border border-white/[0.08]">
+      <div className="absolute top-4 left-4 z-30 flex items-center space-x-2 bg-black/60 backdrop-blur-xl px-3 py-1.5 rounded-lg border border-white/[0.08]">
         <span className="relative flex h-2 w-2">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
           <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
