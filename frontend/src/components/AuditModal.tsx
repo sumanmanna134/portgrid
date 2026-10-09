@@ -281,7 +281,6 @@ export const AuditModal: React.FC<AuditModalProps> = ({
     else if (logFilter === 'STATE') matchesCategory = log.action.includes('START') || log.action.includes('STOP');
     else if (logFilter === 'GOVERNANCE') matchesCategory = log.action.includes('CONFIG') || log.action.includes('AUDIT');
 
-    // 2. Search Query
     let matchesSearch = true;
     if (searchQuery.trim().length > 0) {
       const q = searchQuery.toLowerCase();
@@ -297,32 +296,31 @@ export const AuditModal: React.FC<AuditModalProps> = ({
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="glass-modal w-full max-w-5xl h-[90vh] max-h-[900px] rounded-3xl shadow-[0_30px_90px_-20px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col border border-white/[0.1] bg-[#090d16]/95 backdrop-blur-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="glass-modal w-full max-w-5xl h-[88vh] max-h-[880px] rounded-3xl shadow-[0_30px_90px_-20px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col border border-white/[0.1] bg-[#090d16]/95 backdrop-blur-2xl">
         {/* Top Header */}
-        <div className="px-6 sm:px-8 py-4.5 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.015] shrink-0">
-          <div className="flex items-center space-x-3.5">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-slate-950 shadow-[0_2px_16px_rgba(16,185,129,0.3)] border border-emerald-300/30">
+        <div className="px-6 sm:px-8 pt-6 pb-5 border-b border-white/[0.08] flex items-center justify-between gap-4 bg-white/[0.015] shrink-0">
+          <div className="flex items-center space-x-4 min-w-0">
+            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-slate-950 shadow-[0_2px_16px_rgba(16,185,129,0.3)] border border-emerald-300/30 shrink-0">
               <ShieldCheck className="w-5 h-5 text-slate-950" />
             </div>
-            <div>
-              <div className="flex items-center space-x-2.5">
-                <h3 className="text-base font-semibold text-white tracking-tight">
+            <div className="min-w-0 space-y-1">
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">
                   Security & Governance Center
                 </h3>
                 <span
-                  className={`text-[10px] uppercase font-bold tracking-wider px-2.5 py-0.5 rounded-full border ${
-                    settings.securityProfile === 'BANK_GRADE_STRICT'
-                      ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
-                      : 'bg-sky-500/15 text-sky-300 border-sky-500/30'
-                  }`}
+                  className={`text-[10px] font-mono font-bold tracking-wider px-2.5 py-0.5 rounded-full border shrink-0 ${settings.securityProfile === 'BANK_GRADE_STRICT'
+                    ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                    : 'bg-sky-500/15 text-sky-300 border-sky-500/30'
+                    }`}
                 >
                   {settings.securityProfile === 'BANK_GRADE_STRICT'
                     ? 'Bank-Grade Strict (Four-Eyes Active)'
                     : 'Standard Developer Mode'}
                 </span>
               </div>
-              <p className="text-xs text-slate-400 mt-0.5 font-normal">
+              <p className="text-xs text-slate-400 font-normal leading-relaxed truncate sm:overflow-visible">
                 Maker-Checker dual authorization, NIST SP 800-88 cryptographic shredding, and Merkle audit ledger
               </p>
             </div>
@@ -330,22 +328,21 @@ export const AuditModal: React.FC<AuditModalProps> = ({
 
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/[0.08] transition-colors"
+            className="p-2 text-slate-400 hover:text-white rounded-xl hover:bg-white/[0.08] transition-colors shrink-0"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Apple Segmented Control Tab Navigation */}
-        <div className="px-6 sm:px-8 py-3 bg-white/[0.01] border-b border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
-          <div className="flex items-center bg-black/50 p-1 rounded-2xl border border-white/[0.06] shadow-inner">
+        <div className="px-6 sm:px-8 py-3.5 bg-white/[0.01] border-b border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
+          <div className="flex flex-wrap items-center bg-black/50 p-1 rounded-2xl border border-white/[0.06] shadow-inner gap-1">
             <button
               onClick={() => setActiveTab('audit')}
-              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                activeTab === 'audit'
-                  ? 'bg-white/[0.12] text-white shadow-sm border border-white/[0.08]'
-                  : 'text-slate-400 hover:text-white hover:bg-white/[0.02]'
-              }`}
+              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${activeTab === 'audit'
+                ? 'bg-white/[0.12] text-white shadow-sm border border-white/[0.08]'
+                : 'text-slate-400 hover:text-white hover:bg-white/[0.02]'
+                }`}
             >
               <FileCheck className="w-3.5 h-3.5" />
               <span>Cryptographic Audit Trail</span>
@@ -353,11 +350,10 @@ export const AuditModal: React.FC<AuditModalProps> = ({
 
             <button
               onClick={() => setActiveTab('governance')}
-              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                activeTab === 'governance'
-                  ? 'bg-white/[0.12] text-white shadow-sm border border-white/[0.08]'
-                  : 'text-slate-400 hover:text-white hover:bg-white/[0.02]'
-              }`}
+              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${activeTab === 'governance'
+                ? 'bg-white/[0.12] text-white shadow-sm border border-white/[0.08]'
+                : 'text-slate-400 hover:text-white hover:bg-white/[0.02]'
+                }`}
             >
               <UserCheck className="w-3.5 h-3.5" />
               <span>Dual-Control Approvals</span>
@@ -370,11 +366,10 @@ export const AuditModal: React.FC<AuditModalProps> = ({
 
             <button
               onClick={() => setActiveTab('compliance')}
-              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                activeTab === 'compliance'
-                  ? 'bg-white/[0.12] text-white shadow-sm border border-white/[0.08]'
-                  : 'text-slate-400 hover:text-white hover:bg-white/[0.02]'
-              }`}
+              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${activeTab === 'compliance'
+                ? 'bg-white/[0.12] text-white shadow-sm border border-white/[0.08]'
+                : 'text-slate-400 hover:text-white hover:bg-white/[0.02]'
+                }`}
             >
               <Shield className="w-3.5 h-3.5" />
               <span>Fintech Compliance Spec</span>
@@ -472,11 +467,10 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                       <button
                         key={tab.id}
                         onClick={() => setLogFilter(tab.id)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                          logFilter === tab.id
-                            ? 'bg-white/[0.12] text-white border border-white/[0.1] shadow-sm'
-                            : 'text-slate-400 hover:text-white hover:bg-white/[0.03]'
-                        }`}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${logFilter === tab.id
+                          ? 'bg-white/[0.12] text-white border border-white/[0.1] shadow-sm'
+                          : 'text-slate-400 hover:text-white hover:bg-white/[0.03]'
+                          }`}
                       >
                         {tab.label}
                       </button>
@@ -530,9 +524,8 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                               <React.Fragment key={log.id}>
                                 <tr
                                   onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
-                                  className={`hover:bg-white/[0.025] transition-colors cursor-pointer select-none ${
-                                    isExpanded ? 'bg-white/[0.03]' : ''
-                                  }`}
+                                  className={`hover:bg-white/[0.025] transition-colors cursor-pointer select-none ${isExpanded ? 'bg-white/[0.03]' : ''
+                                    }`}
                                 >
                                   {/* Timestamp */}
                                   <td className="py-2.5 px-4 text-slate-400 whitespace-nowrap text-[11px]">
@@ -549,17 +542,16 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                                   {/* Action Badge */}
                                   <td className="py-2.5 px-4 whitespace-nowrap">
                                     <span
-                                      className={`px-2.5 py-0.5 rounded-md text-[10px] font-semibold tracking-wide border ${
-                                        log.action.includes('INSTALL') && !log.action.includes('UNINSTALL')
-                                          ? 'bg-sky-500/15 text-sky-300 border-sky-500/25'
-                                          : log.action.includes('UNINSTALL')
+                                      className={`px-2.5 py-0.5 rounded-md text-[10px] font-semibold tracking-wide border ${log.action.includes('INSTALL') && !log.action.includes('UNINSTALL')
+                                        ? 'bg-sky-500/15 text-sky-300 border-sky-500/25'
+                                        : log.action.includes('UNINSTALL')
                                           ? 'bg-rose-500/15 text-rose-300 border-rose-500/25'
                                           : log.action.includes('START')
-                                          ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/25'
-                                          : log.action.includes('STOP')
-                                          ? 'bg-amber-500/15 text-amber-300 border-amber-500/25'
-                                          : 'bg-purple-500/15 text-purple-300 border-purple-500/25'
-                                      }`}
+                                            ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/25'
+                                            : log.action.includes('STOP')
+                                              ? 'bg-amber-500/15 text-amber-300 border-amber-500/25'
+                                              : 'bg-purple-500/15 text-purple-300 border-purple-500/25'
+                                        }`}
                                     >
                                       {log.action}
                                     </span>
@@ -678,14 +670,12 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                     </div>
                     {/* iOS style toggle switch */}
                     <div
-                      className={`w-11 h-6 rounded-full transition-colors flex items-center p-1 shrink-0 ${
-                        settings.makerCheckerEnabled ? 'bg-emerald-500' : 'bg-slate-700'
-                      }`}
+                      className={`w-11 h-6 rounded-full transition-colors flex items-center p-1 shrink-0 ${settings.makerCheckerEnabled ? 'bg-emerald-500' : 'bg-slate-700'
+                        }`}
                     >
                       <div
-                        className={`w-4 h-4 rounded-full bg-white transition-transform ${
-                          settings.makerCheckerEnabled ? 'translate-x-5' : 'translate-x-0'
-                        }`}
+                        className={`w-4 h-4 rounded-full bg-white transition-transform ${settings.makerCheckerEnabled ? 'translate-x-5' : 'translate-x-0'
+                          }`}
                       />
                     </div>
                   </div>
@@ -708,14 +698,12 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                     </div>
                     {/* iOS style toggle switch */}
                     <div
-                      className={`w-11 h-6 rounded-full transition-colors flex items-center p-1 shrink-0 ${
-                        settings.cryptoShreddingEnabled ? 'bg-purple-500' : 'bg-slate-700'
-                      }`}
+                      className={`w-11 h-6 rounded-full transition-colors flex items-center p-1 shrink-0 ${settings.cryptoShreddingEnabled ? 'bg-purple-500' : 'bg-slate-700'
+                        }`}
                     >
                       <div
-                        className={`w-4 h-4 rounded-full bg-white transition-transform ${
-                          settings.cryptoShreddingEnabled ? 'translate-x-5' : 'translate-x-0'
-                        }`}
+                        className={`w-4 h-4 rounded-full bg-white transition-transform ${settings.cryptoShreddingEnabled ? 'translate-x-5' : 'translate-x-0'
+                          }`}
                       />
                     </div>
                   </div>
@@ -875,13 +863,12 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                               </td>
                               <td className="py-2.5 px-4">
                                 <span
-                                  className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
-                                    t.status === 'EXECUTED'
-                                      ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25'
-                                      : t.status === 'APPROVED'
+                                  className={`px-2 py-0.5 rounded text-[10px] font-semibold ${t.status === 'EXECUTED'
+                                    ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25'
+                                    : t.status === 'APPROVED'
                                       ? 'bg-sky-500/15 text-sky-300 border border-sky-500/25'
                                       : 'bg-rose-500/15 text-rose-300 border border-rose-500/25'
-                                  }`}
+                                    }`}
                                 >
                                   {t.status}
                                 </span>
