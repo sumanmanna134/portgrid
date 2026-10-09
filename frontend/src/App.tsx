@@ -9,6 +9,7 @@ import { InstallModal } from './components/InstallModal';
 import { WorkflowEditorModal } from './components/WorkflowEditorModal';
 import { AuditModal } from './components/AuditModal';
 import { ServiceBlueprint, InstalledServiceInstance, ApprovalTicket, GovernanceSettings } from './types';
+import { DASHBOARD_STRINGS, CATALOG_STRINGS } from './constants/strings';
 import { Plus, Box, Sparkles, CheckCircle2, Search, Filter } from 'lucide-react';
 
 export const App: React.FC = () => {
@@ -118,15 +119,15 @@ export const App: React.FC = () => {
         const newInstance = await res.json();
         setSelectedBlueprintForInstall(null);
         await fetchServices();
-        showToast(`Successfully deployed ${newInstance.name}!`);
+        showToast(DASHBOARD_STRINGS.toastDeployed(newInstance.name));
         setActiveTab('services');
         setCredentialsService(newInstance);
       } else {
         const errData = await res.json().catch(() => ({}));
-        alert(`Failed to install service: ${errData.message || res.statusText}`);
+        alert(`${DASHBOARD_STRINGS.failedToInstallPrefix} ${errData.message || res.statusText}`);
       }
     } catch (err: any) {
-      alert(`Install error: ${err.message}`);
+      alert(`${DASHBOARD_STRINGS.installErrorPrefix} ${err.message}`);
     } finally {
       setInstallingId(null);
     }
@@ -143,15 +144,15 @@ export const App: React.FC = () => {
 
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
-      throw new Error(err.message || 'Failed to save custom blueprint');
+      throw new Error(err.message || DASHBOARD_STRINGS.failedToSaveBlueprint);
     }
 
     await fetchCatalog();
-    showToast(`Successfully onboarded "${blueprint.name}" to catalog!`);
+    showToast(DASHBOARD_STRINGS.toastOnboarded(blueprint.name));
   };
 
   const handleDeleteCustomBlueprint = async (blueprintId: string) => {
-    if (!confirm(`Are you sure you want to remove this custom service blueprint from the catalog?`)) {
+    if (!confirm(DASHBOARD_STRINGS.confirmRemoveBlueprint)) {
       return;
     }
 
@@ -159,13 +160,13 @@ export const App: React.FC = () => {
       const res = await fetch(`/api/catalog/custom/${blueprintId}`, { method: 'DELETE' });
       if (res.ok) {
         await fetchCatalog();
-        showToast('Custom service blueprint removed.');
+        showToast(DASHBOARD_STRINGS.toastBlueprintRemoved);
       } else {
         const err = await res.json().catch(() => ({}));
-        alert(`Delete failed: ${err.message}`);
+        alert(`${DASHBOARD_STRINGS.deleteFailedPrefix} ${err.message}`);
       }
     } catch (err: any) {
-      alert(`Delete error: ${err.message}`);
+      alert(`${DASHBOARD_STRINGS.deleteErrorPrefix} ${err.message}`);
     }
   };
 
@@ -184,7 +185,7 @@ export const App: React.FC = () => {
           // Maker-Checker ticket generated per Four-Eyes Principle
           setCreatedApprovalTicket(data.ticket);
           await fetchGovernance();
-          showToast(`Dual-authorization ticket #${data.ticket.id} submitted for Checker approval.`);
+          showToast(DASHBOARD_STRINGS.toastDualAuthSubmitted(data.ticket.id));
         } else {
           // Direct execution with visual delay
           const elapsed = Date.now() - startTime;
@@ -197,13 +198,13 @@ export const App: React.FC = () => {
           setCreatedApprovalTicket(null);
           await fetchServices();
           await fetchGovernance();
-          showToast('Service successfully de-provisioned and NIST SP 800-88 sanitized.');
+          showToast(DASHBOARD_STRINGS.toastSanitized);
         }
       } else {
-        alert(`Uninstall error: ${data.message || res.statusText}`);
+        alert(`${DASHBOARD_STRINGS.uninstallErrorPrefix} ${data.message || res.statusText}`);
       }
     } catch (err: any) {
-      alert(`Uninstall error: ${err.message}`);
+      alert(`${DASHBOARD_STRINGS.uninstallErrorPrefix} ${err.message}`);
     } finally {
       setIsUninstalling(false);
     }
@@ -213,9 +214,9 @@ export const App: React.FC = () => {
     try {
       await fetch(`/api/services/${serviceId}/stop`, { method: 'POST' });
       await fetchServices();
-      showToast('Service stopped.');
+      showToast(DASHBOARD_STRINGS.toastStopped);
     } catch (err: any) {
-      alert(`Stop error: ${err.message}`);
+      alert(`${DASHBOARD_STRINGS.stopErrorPrefix} ${err.message}`);
     }
   };
 
@@ -223,9 +224,9 @@ export const App: React.FC = () => {
     try {
       await fetch(`/api/services/${serviceId}/start`, { method: 'POST' });
       await fetchServices();
-      showToast('Service started.');
+      showToast(DASHBOARD_STRINGS.toastStarted);
     } catch (err: any) {
-      alert(`Start error: ${err.message}`);
+      alert(`${DASHBOARD_STRINGS.startErrorPrefix} ${err.message}`);
     }
   };
 
@@ -248,7 +249,7 @@ export const App: React.FC = () => {
     return matchesSearch && matchesCategory;
   });
 
-  const categories = ['All', 'Database', 'Cache', 'Message Broker', 'Identity', 'DevOps', 'Custom'];
+  const categories = DASHBOARD_STRINGS.categories;
 
   return (
     <div className="min-h-screen bg-[#080c14] text-slate-100 flex flex-col font-['Inter',sans-serif]">
@@ -277,9 +278,9 @@ export const App: React.FC = () => {
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <h1 className="text-xl font-semibold text-white tracking-tight">Active Infrastructure</h1>
+                <h1 className="text-xl font-semibold text-white tracking-tight">{DASHBOARD_STRINGS.title}</h1>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Live cloud engines and paired administration consoles running on local cluster.
+                  {DASHBOARD_STRINGS.subtitle}
                 </p>
               </div>
 
@@ -288,7 +289,7 @@ export const App: React.FC = () => {
                 className="px-3.5 py-2 bg-sky-500 hover:bg-sky-400 text-white text-xs font-medium rounded-xl flex items-center space-x-2 transition-all shadow-[0_2px_12px_rgba(14,165,233,0.3)] active:scale-95"
               >
                 <Plus className="w-3.5 h-3.5" />
-                <span>Deploy Service</span>
+                <span>{DASHBOARD_STRINGS.deployButton}</span>
               </button>
             </div>
 
@@ -297,16 +298,16 @@ export const App: React.FC = () => {
                 <div className="w-14 h-14 bg-white/[0.04] border border-white/[0.08] rounded-2xl flex items-center justify-center mx-auto mb-4 text-sky-400 shadow-inner">
                   <Box className="w-7 h-7" />
                 </div>
-                <h3 className="text-sm font-semibold text-white mb-1">No services deployed yet</h3>
+                <h3 className="text-sm font-semibold text-white mb-1">{DASHBOARD_STRINGS.emptyTitle}</h3>
                 <p className="text-xs text-slate-400 mb-6 leading-relaxed font-normal">
-                  Start your local stack by deploying PostgreSQL, Kafka, Redis, Keycloak or custom blueprints.
+                  {DASHBOARD_STRINGS.emptySubtitle}
                 </p>
                 <button
                   onClick={() => setActiveTab('catalog')}
                   className="px-4 py-2 bg-sky-500 hover:bg-sky-400 text-white text-xs font-medium rounded-xl inline-flex items-center space-x-2 transition-colors shadow-sm"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>Browse Infrastructure Catalog</span>
+                  <span>{DASHBOARD_STRINGS.browseCatalogButton}</span>
                 </button>
               </div>
             ) : (
@@ -332,9 +333,9 @@ export const App: React.FC = () => {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h1 className="text-xl font-semibold text-white tracking-tight">Infrastructure Catalog</h1>
+                <h1 className="text-xl font-semibold text-white tracking-tight">{CATALOG_STRINGS.title}</h1>
                 <p className="text-xs text-slate-400 mt-0.5">
-                  Curated official engines & custom developer blueprints.
+                  {CATALOG_STRINGS.subtitle}
                 </p>
               </div>
 
@@ -346,7 +347,7 @@ export const App: React.FC = () => {
                 className="px-3.5 py-2 bg-gradient-to-r from-sky-500 to-indigo-600 hover:from-sky-400 hover:to-indigo-500 text-white text-xs font-medium rounded-xl flex items-center space-x-2 transition-all shadow-[0_2px_12px_rgba(99,102,241,0.25)] active:scale-95 shrink-0"
               >
                 <Sparkles className="w-3.5 h-3.5" />
-                <span>Onboard Custom Service</span>
+                <span>{CATALOG_STRINGS.onboardCustomButton}</span>
               </button>
             </div>
 
@@ -376,7 +377,7 @@ export const App: React.FC = () => {
                   type="text"
                   value={catalogSearch}
                   onChange={(e) => setCatalogSearch(e.target.value)}
-                  placeholder="Filter catalog..."
+                  placeholder={CATALOG_STRINGS.searchPlaceholder}
                   className="w-full bg-black/40 border border-white/[0.06] rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-sky-500/50"
                 />
               </div>

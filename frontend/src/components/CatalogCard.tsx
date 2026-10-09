@@ -14,6 +14,7 @@ import {
   Sliders,
 } from 'lucide-react';
 import { ServiceBlueprint } from '../types';
+import { CATALOG_STRINGS } from '../constants/strings';
 
 interface CatalogCardProps {
   blueprint: ServiceBlueprint;
@@ -65,12 +66,12 @@ export const CatalogCard: React.FC<CatalogCardProps> = ({
             {isOfficial ? (
               <span className="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full bg-sky-500/10 text-sky-400 border border-sky-500/20 flex items-center gap-1 shadow-sm">
                 <ShieldCheck className="w-3 h-3 text-sky-400" />
-                <span>Official</span>
+                <span>{CATALOG_STRINGS.officialBadge}</span>
               </span>
             ) : (
               <span className="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-300 border border-purple-500/20 flex items-center gap-1 shadow-sm">
                 <Sparkles className="w-3 h-3 text-purple-400" />
-                <span>Custom</span>
+                <span>{CATALOG_STRINGS.customBadge}</span>
               </span>
             )}
           </div>
@@ -87,7 +88,7 @@ export const CatalogCard: React.FC<CatalogCardProps> = ({
                   <button
                     onClick={() => onEdit(blueprint)}
                     className="p-1 text-slate-400 hover:text-white rounded hover:bg-white/[0.08] transition-colors"
-                    title="Edit custom blueprint workflow"
+                    title={CATALOG_STRINGS.editCustomTooltip}
                   >
                     <Edit3 className="w-3 h-3" />
                   </button>
@@ -96,7 +97,7 @@ export const CatalogCard: React.FC<CatalogCardProps> = ({
                   <button
                     onClick={() => onDelete(blueprint.id)}
                     className="p-1 text-slate-400 hover:text-rose-400 rounded hover:bg-white/[0.08] transition-colors"
-                    title="Delete custom blueprint"
+                    title={CATALOG_STRINGS.deleteCustomTooltip}
                   >
                     <Trash2 className="w-3 h-3" />
                   </button>
@@ -117,21 +118,21 @@ export const CatalogCard: React.FC<CatalogCardProps> = ({
         {/* Cloud Specifications Grid */}
         <div className="space-y-1.5 mb-5 text-xs">
           <div className="flex items-center justify-between text-slate-400 bg-black/40 px-3 py-1.5 rounded-lg border border-white/[0.04]">
-            <span className="text-slate-500 text-[11px]">Image</span>
+            <span className="text-slate-500 text-[11px]">{CATALOG_STRINGS.imageLabel}</span>
             <span className="font-mono text-slate-300 text-[11px] truncate max-w-[170px]">
               {blueprint.engine.image}
             </span>
           </div>
 
           <div className="flex items-center justify-between text-slate-400 bg-black/40 px-3 py-1.5 rounded-lg border border-white/[0.04]">
-            <span className="text-slate-500 text-[11px]">Default Port</span>
+            <span className="text-slate-500 text-[11px]">{CATALOG_STRINGS.defaultPortLabel}</span>
             <span className="font-mono font-medium text-sky-400">{blueprint.engine.defaultPort}</span>
           </div>
 
           {blueprint.companionUi && (
             <div className="flex items-center justify-between text-slate-400 bg-emerald-500/[0.06] px-3 py-1.5 rounded-lg border border-emerald-500/15">
               <span className="text-emerald-400 flex items-center gap-1 text-[11px]">
-                <Sparkles className="w-3 h-3" /> Companion UI
+                <Sparkles className="w-3 h-3" /> {CATALOG_STRINGS.companionUiLabel}
               </span>
               <span className="font-medium text-emerald-300 text-[11px]">
                 {blueprint.companionUi.name}
@@ -155,11 +156,11 @@ export const CatalogCard: React.FC<CatalogCardProps> = ({
           {isInstalling ? (
             <>
               <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-300" />
-              <span>Deploying container...</span>
+              <span>{CATALOG_STRINGS.deployingButton}</span>
             </>
           ) : (
             <>
-              <span>Deploy Service</span>
+              <span>{CATALOG_STRINGS.deployButton}</span>
               <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
             </>
           )}
@@ -168,3 +169,4 @@ export const CatalogCard: React.FC<CatalogCardProps> = ({
     </div>
   );
 };
+

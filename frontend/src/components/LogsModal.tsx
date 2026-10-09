@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { X, Terminal, RefreshCw, Copy, Check } from 'lucide-react';
 import { InstalledServiceInstance } from '../types';
+import { LOGS_MODAL_STRINGS, COMMON_STRINGS } from '../constants/strings';
 
 interface LogsModalProps {
   service: InstalledServiceInstance | null;
@@ -8,7 +9,7 @@ interface LogsModalProps {
 }
 
 export const LogsModal: React.FC<LogsModalProps> = ({ service, onClose }) => {
-  const [logs, setLogs] = useState<string>('Connecting to container log stream...');
+  const [logs, setLogs] = useState<string>(LOGS_MODAL_STRINGS.connecting);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -18,9 +19,9 @@ export const LogsModal: React.FC<LogsModalProps> = ({ service, onClose }) => {
     try {
       const res = await fetch(`/api/services/${service.id}/logs`);
       const data = await res.text();
-      setLogs(data || 'No logs recorded yet.');
+      setLogs(data || LOGS_MODAL_STRINGS.noLogs);
     } catch (err: any) {
-      setLogs(`Error fetching logs: ${err.message}`);
+      setLogs(`${LOGS_MODAL_STRINGS.errorFetchingPrefix} ${err.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -56,7 +57,7 @@ export const LogsModal: React.FC<LogsModalProps> = ({ service, onClose }) => {
               <h3 className="text-sm font-semibold text-white tracking-tight flex items-center gap-2">
                 <span>{service.name}</span>
                 <span className="text-[10px] font-mono text-slate-500 px-2 py-0.5 rounded bg-white/[0.04]">
-                  stdout/stderr
+                  {LOGS_MODAL_STRINGS.streamLabel}
                 </span>
               </h3>
             </div>
@@ -66,14 +67,14 @@ export const LogsModal: React.FC<LogsModalProps> = ({ service, onClose }) => {
               onClick={fetchLogs}
               disabled={isLoading}
               className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-white/[0.08] transition-colors"
-              title="Refresh logs"
+              title={LOGS_MODAL_STRINGS.refreshTooltip}
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin text-sky-400' : ''}`} />
             </button>
             <button
               onClick={copyLogs}
               className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-white/[0.08] transition-colors"
-              title="Copy logs"
+              title={LOGS_MODAL_STRINGS.copyTooltip}
             >
               {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
             </button>
@@ -93,15 +94,16 @@ export const LogsModal: React.FC<LogsModalProps> = ({ service, onClose }) => {
 
         {/* Footer */}
         <div className="px-6 py-3 bg-white/[0.02] border-t border-white/[0.06] flex justify-between items-center text-[11px] text-slate-500">
-          <span>Tail limit: 100 entries • Auto-buffered</span>
+          <span>{LOGS_MODAL_STRINGS.tailNotice}</span>
           <button
             onClick={onClose}
             className="px-4 py-1.5 bg-white/[0.06] hover:bg-white/[0.1] text-white rounded-xl text-xs font-medium transition-colors"
           >
-            Close
+            {COMMON_STRINGS.close}
           </button>
         </div>
       </div>
     </div>
   );
 };
+

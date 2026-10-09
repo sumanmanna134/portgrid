@@ -13,6 +13,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { ServiceBlueprint } from '../types';
+import { WORKFLOW_MODAL_STRINGS, COMMON_STRINGS } from '../constants/strings';
 
 interface WorkflowEditorModalProps {
   isOpen: boolean;
@@ -206,14 +207,14 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
         const parsed = JSON.parse(jsonText);
         return parsed;
       } catch (err: any) {
-        throw new Error(`Invalid JSON syntax: ${err.message}`);
+        throw new Error(`${WORKFLOW_MODAL_STRINGS.errInvalidJsonPrefix} ${err.message}`);
       }
     }
 
     // Build from form
-    if (!id.trim()) throw new Error('Service Identifier (ID) is required.');
-    if (!name.trim()) throw new Error('Display Name is required.');
-    if (!engineImage.trim()) throw new Error('Engine Docker Image is required.');
+    if (!id.trim()) throw new Error(WORKFLOW_MODAL_STRINGS.errIdRequired);
+    if (!name.trim()) throw new Error(WORKFLOW_MODAL_STRINGS.errNameRequired);
+    if (!engineImage.trim()) throw new Error(WORKFLOW_MODAL_STRINGS.errImageRequired);
 
     const envMap: Record<string, string> = {};
     for (const item of engineEnvKeys) {
@@ -269,7 +270,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
       // Guard check: cannot overwrite official blueprints
       const cleanId = blueprint.id.trim().toLowerCase();
       if (['postgresql', 'redis', 'kafka', 'keycloak', 'jenkins', 'rabbitmq'].includes(cleanId)) {
-        throw new Error(`'${cleanId}' is an official system service and cannot be overwritten.`);
+        throw new Error(WORKFLOW_MODAL_STRINGS.errOfficialOverwrite(cleanId));
       }
 
       setIsSaving(true);
@@ -293,9 +294,11 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
             </div>
             <div>
               <h3 className="text-base font-semibold text-white tracking-tight">
-                {editingBlueprint ? `Edit Blueprint: ${editingBlueprint.name}` : 'Onboard New Service Blueprint'}
+                {editingBlueprint
+                  ? WORKFLOW_MODAL_STRINGS.titleEdit(editingBlueprint.name)
+                  : WORKFLOW_MODAL_STRINGS.titleNew}
               </h3>
-              <p className="text-xs text-slate-400 font-normal">Define custom infrastructure workflows and container definitions</p>
+              <p className="text-xs text-slate-400 font-normal">{WORKFLOW_MODAL_STRINGS.subtitle}</p>
             </div>
           </div>
 
@@ -308,7 +311,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                   editorMode === 'form' ? 'bg-sky-500 text-white shadow-sm' : 'text-slate-400 hover:text-white'
                 }`}
               >
-                Workflow Form
+                {WORKFLOW_MODAL_STRINGS.formModeTab}
               </button>
               <button
                 onClick={() => {
@@ -323,7 +326,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                 }`}
               >
                 <Code2 className="w-3.5 h-3.5" />
-                <span>JSON Schema</span>
+                <span>{WORKFLOW_MODAL_STRINGS.jsonModeTab}</span>
               </button>
             </div>
 
@@ -349,7 +352,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
           {/* Preset templates selector */}
           {!editingBlueprint && (
             <div className="flex items-center justify-between p-3 bg-slate-950 rounded-xl border border-slate-800/80">
-              <span className="text-slate-400">Quick-start from blueprint template:</span>
+              <span className="text-slate-400">{WORKFLOW_MODAL_STRINGS.quickStartLabel}</span>
               <div className="flex items-center space-x-2">
                 <button
                   type="button"
@@ -383,32 +386,32 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
               <div className="space-y-3">
                 <h4 className="font-bold text-white text-sm border-b border-slate-800 pb-1.5 flex items-center gap-1.5">
                   <Sliders className="w-4 h-4 text-sky-400" />
-                  1. Basic Information
+                  {WORKFLOW_MODAL_STRINGS.sec1Title}
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-slate-400 mb-1 font-semibold">Service ID (Unique slug)</label>
+                    <label className="block text-slate-400 mb-1 font-semibold">{WORKFLOW_MODAL_STRINGS.serviceIdLabel}</label>
                     <input
                       type="text"
                       disabled={!!editingBlueprint}
                       value={id}
                       onChange={(e) => setId(e.target.value)}
-                      placeholder="e.g. mongodb"
+                      placeholder={WORKFLOW_MODAL_STRINGS.serviceIdPlaceholder}
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-sky-500 font-mono disabled:opacity-50"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1 font-semibold">Display Name</label>
+                    <label className="block text-slate-400 mb-1 font-semibold">{WORKFLOW_MODAL_STRINGS.displayNameLabel}</label>
                     <input
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      placeholder="e.g. MongoDB 7 & Mongo Express"
+                      placeholder={WORKFLOW_MODAL_STRINGS.displayNamePlaceholder}
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-sky-500 font-medium"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1 font-semibold">Category</label>
+                    <label className="block text-slate-400 mb-1 font-semibold">{WORKFLOW_MODAL_STRINGS.categoryLabel}</label>
                     <select
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
@@ -425,7 +428,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                     </select>
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1 font-semibold">Icon</label>
+                    <label className="block text-slate-400 mb-1 font-semibold">{WORKFLOW_MODAL_STRINGS.iconLabel}</label>
                     <select
                       value={icon}
                       onChange={(e) => setIcon(e.target.value)}
@@ -440,12 +443,12 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                   </div>
                 </div>
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Description</label>
+                  <label className="block text-slate-400 mb-1 font-semibold">{WORKFLOW_MODAL_STRINGS.descriptionLabel}</label>
                   <textarea
                     rows={2}
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Short summary of this service..."
+                    placeholder={WORKFLOW_MODAL_STRINGS.descriptionPlaceholder}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-sky-500"
                   />
                 </div>
@@ -455,38 +458,38 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
               <div className="space-y-3">
                 <h4 className="font-bold text-white text-sm border-b border-slate-800 pb-1.5 flex items-center gap-1.5">
                   <FileCode className="w-4 h-4 text-emerald-400" />
-                  2. Engine Container Specification
+                  {WORKFLOW_MODAL_STRINGS.sec2Title}
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="md:col-span-2">
-                    <label className="block text-slate-400 mb-1 font-semibold">Docker Image</label>
+                    <label className="block text-slate-400 mb-1 font-semibold">{WORKFLOW_MODAL_STRINGS.dockerImageLabel}</label>
                     <input
                       type="text"
                       value={engineImage}
                       onChange={(e) => setEngineImage(e.target.value)}
-                      placeholder="e.g. mongo:7-alpine"
+                      placeholder={WORKFLOW_MODAL_STRINGS.dockerImagePlaceholder}
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
                     />
                   </div>
                   <div>
-                    <label className="block text-slate-400 mb-1 font-semibold">Default Port</label>
+                    <label className="block text-slate-400 mb-1 font-semibold">{WORKFLOW_MODAL_STRINGS.defaultPortLabel}</label>
                     <input
                       type="number"
                       value={enginePort}
                       onChange={(e) => setEnginePort(e.target.value)}
-                      placeholder="e.g. 27017"
+                      placeholder={WORKFLOW_MODAL_STRINGS.defaultPortPlaceholder}
                       className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Persistent Volume Mount Path</label>
+                  <label className="block text-slate-400 mb-1 font-semibold">{WORKFLOW_MODAL_STRINGS.volumeMountLabel}</label>
                   <input
                     type="text"
                     value={engineVolumeMount}
                     onChange={(e) => setEngineVolumeMount(e.target.value)}
-                    placeholder="e.g. /data/db (leave blank if ephemeral)"
+                    placeholder={WORKFLOW_MODAL_STRINGS.volumeMountPlaceholder}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
                   />
                 </div>
@@ -494,13 +497,13 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                 {/* Env Keys */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-slate-400 font-semibold">Environment Variables</label>
+                    <label className="text-slate-400 font-semibold">{WORKFLOW_MODAL_STRINGS.envVarsLabel}</label>
                     <button
                       type="button"
                       onClick={() => setEngineEnvKeys([...engineEnvKeys, { key: '', value: '' }])}
                       className="text-sky-400 hover:text-sky-300 flex items-center gap-1 text-[11px]"
                     >
-                      <Plus className="w-3.5 h-3.5" /> Add Variable
+                      <Plus className="w-3.5 h-3.5" /> {WORKFLOW_MODAL_STRINGS.addVariableButton}
                     </button>
                   </div>
                   <div className="space-y-2">
@@ -514,7 +517,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                             copy[idx].key = e.target.value;
                             setEngineEnvKeys(copy);
                           }}
-                          placeholder="KEY"
+                          placeholder={WORKFLOW_MODAL_STRINGS.keyPlaceholder}
                           className="w-1/3 bg-slate-950 border border-slate-800 rounded-xl p-2 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
                         />
                         <input
@@ -525,7 +528,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                             copy[idx].value = e.target.value;
                             setEngineEnvKeys(copy);
                           }}
-                          placeholder="VALUE (or {{GENERATED_PASSWORD}})"
+                          placeholder={WORKFLOW_MODAL_STRINGS.valuePlaceholder}
                           className="flex-1 bg-slate-950 border border-slate-800 rounded-xl p-2 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
                         />
                         <button
@@ -546,7 +549,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                 <div className="flex items-center justify-between border-b border-slate-800 pb-1.5">
                   <h4 className="font-bold text-white text-sm flex items-center gap-1.5">
                     <Sparkles className="w-4 h-4 text-purple-400" />
-                    3. Companion Web UI Console
+                    {WORKFLOW_MODAL_STRINGS.sec3Title}
                   </h4>
                   <label className="flex items-center space-x-2 cursor-pointer">
                     <input
@@ -555,39 +558,39 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                       onChange={(e) => setHasUi(e.target.checked)}
                       className="rounded bg-slate-950 border-slate-800 text-sky-500"
                     />
-                    <span className="text-slate-300 font-semibold">Enable Web UI</span>
+                    <span className="text-slate-300 font-semibold">{WORKFLOW_MODAL_STRINGS.enableWebUiLabel}</span>
                   </label>
                 </div>
 
                 {hasUi && (
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
                     <div>
-                      <label className="block text-slate-400 mb-1 font-semibold">UI Console Name</label>
+                      <label className="block text-slate-400 mb-1 font-semibold">{WORKFLOW_MODAL_STRINGS.uiConsoleNameLabel}</label>
                       <input
                         type="text"
                         value={uiName}
                         onChange={(e) => setUiName(e.target.value)}
-                        placeholder="e.g. Mongo Express"
+                        placeholder={WORKFLOW_MODAL_STRINGS.uiConsoleNamePlaceholder}
                         className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white placeholder-slate-600 focus:outline-none focus:border-sky-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-400 mb-1 font-semibold">UI Docker Image</label>
+                      <label className="block text-slate-400 mb-1 font-semibold">{WORKFLOW_MODAL_STRINGS.uiDockerImageLabel}</label>
                       <input
                         type="text"
                         value={uiImage}
                         onChange={(e) => setUiImage(e.target.value)}
-                        placeholder="e.g. mongo-express:latest (blank if native)"
+                        placeholder={WORKFLOW_MODAL_STRINGS.uiDockerImagePlaceholder}
                         className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-400 mb-1 font-semibold">UI Port</label>
+                      <label className="block text-slate-400 mb-1 font-semibold">{WORKFLOW_MODAL_STRINGS.uiPortLabel}</label>
                       <input
                         type="number"
                         value={uiPort}
                         onChange={(e) => setUiPort(e.target.value)}
-                        placeholder="e.g. 8081"
+                        placeholder={WORKFLOW_MODAL_STRINGS.uiPortPlaceholder}
                         className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
                       />
                     </div>
@@ -599,10 +602,10 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
               <div className="space-y-3">
                 <h4 className="font-bold text-white text-sm border-b border-slate-800 pb-1.5 flex items-center gap-1.5">
                   <Code2 className="w-4 h-4 text-amber-400" />
-                  4. Connection Templates & .env Formatters
+                  {WORKFLOW_MODAL_STRINGS.sec4Title}
                 </h4>
                 <div className="flex flex-wrap items-center gap-2 text-[11px] text-slate-400">
-                  <span>Interpolation tags:</span>
+                  <span>{WORKFLOW_MODAL_STRINGS.interpolationTagsLabel}</span>
                   <code className="bg-slate-950 px-2 py-0.5 rounded border border-slate-800 text-sky-400">
                     {'{{GENERATED_PASSWORD}}'}
                   </code>
@@ -615,23 +618,23 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Connection URI Template</label>
+                  <label className="block text-slate-400 mb-1 font-semibold">{WORKFLOW_MODAL_STRINGS.connUriLabel}</label>
                   <input
                     type="text"
                     value={uriFormatter}
                     onChange={(e) => setUriFormatter(e.target.value)}
-                    placeholder="e.g. mongodb://admin:{{GENERATED_PASSWORD}}@localhost:{{ENGINE_PORT}}"
+                    placeholder={WORKFLOW_MODAL_STRINGS.connUriPlaceholder}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-slate-400 mb-1 font-semibold">Project .env Snippet</label>
+                  <label className="block text-slate-400 mb-1 font-semibold">{WORKFLOW_MODAL_STRINGS.envSnippetLabel}</label>
                   <textarea
                     rows={3}
                     value={envSnippetFormatter}
                     onChange={(e) => setEnvSnippetFormatter(e.target.value)}
-                    placeholder="e.g. DB_HOST=localhost\nDB_PORT={{ENGINE_PORT}}\nDB_PASS={{GENERATED_PASSWORD}}"
+                    placeholder={WORKFLOW_MODAL_STRINGS.envSnippetPlaceholder}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl p-2.5 text-white font-mono placeholder-slate-600 focus:outline-none focus:border-sky-500"
                   />
                 </div>
@@ -641,7 +644,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
             /* JSON View & Direct Schema Editor */
             <div className="space-y-2">
               <div className="flex items-center justify-between text-slate-400">
-                <span>Direct JSON Blueprint Definition:</span>
+                <span>{WORKFLOW_MODAL_STRINGS.directJsonLabel}</span>
                 <button
                   type="button"
                   onClick={() => {
@@ -651,7 +654,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
                   }}
                   className="text-sky-400 hover:text-sky-300 text-[11px]"
                 >
-                  Format JSON
+                  {WORKFLOW_MODAL_STRINGS.formatJsonButton}
                 </button>
               </div>
               <textarea
@@ -671,7 +674,7 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
             onClick={onClose}
             className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-semibold transition-colors"
           >
-            Cancel
+            {COMMON_STRINGS.cancel}
           </button>
 
           <button
@@ -681,7 +684,13 @@ export const WorkflowEditorModal: React.FC<WorkflowEditorModalProps> = ({
             className="px-5 py-2 bg-sky-500 hover:bg-sky-400 text-white rounded-xl text-xs font-semibold flex items-center space-x-2 transition-all shadow-lg shadow-sky-500/20 active:scale-95 disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
-            <span>{isSaving ? 'Saving...' : editingBlueprint ? 'Save Changes' : 'Onboard Service'}</span>
+            <span>
+              {isSaving
+                ? WORKFLOW_MODAL_STRINGS.savingButton
+                : editingBlueprint
+                ? WORKFLOW_MODAL_STRINGS.saveChangesButton
+                : WORKFLOW_MODAL_STRINGS.onboardServiceButton}
+            </span>
           </button>
         </div>
       </div>

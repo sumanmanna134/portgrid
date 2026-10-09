@@ -1,5 +1,6 @@
 import React from 'react';
 import { Layers, Box, Cpu, Activity, Sparkles, Terminal, ShieldCheck } from 'lucide-react';
+import { NAVBAR_STRINGS } from '../constants/strings';
 
 interface NavbarProps {
   activeTab: 'services' | 'catalog';
@@ -29,13 +30,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div>
             <div className="flex items-center space-x-2">
               <span className="font-semibold text-[15px] tracking-tight text-white">
-                PortGrid
+                {NAVBAR_STRINGS.brandName}
               </span>
               <span className="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full bg-white/[0.06] text-slate-300 border border-white/[0.08]">
-                Console
+                {NAVBAR_STRINGS.brandBadge}
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 font-normal">Local Cloud Infrastructure</p>
+            <p className="text-[11px] text-slate-400 font-normal">{NAVBAR_STRINGS.brandSubtitle}</p>
           </div>
         </div>
 
@@ -50,7 +51,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             <Box className="w-3.5 h-3.5" />
-            <span>Active Services</span>
+            <span>{NAVBAR_STRINGS.activeServicesTab}</span>
             <span
               className={`text-[10px] px-1.5 py-0.2 rounded-full font-semibold ${
                 activeTab === 'services'
@@ -71,7 +72,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
-            <span>Catalog</span>
+            <span>{NAVBAR_STRINGS.catalogTab}</span>
           </button>
         </div>
 
@@ -85,17 +86,20 @@ export const Navbar: React.FC<NavbarProps> = ({
                   ? 'bg-amber-500/15 hover:bg-amber-500/25 border-amber-500/35 text-amber-300'
                   : 'bg-emerald-500/10 hover:bg-emerald-500/20 border-emerald-500/25 text-emerald-300'
               }`}
-              title="View Cryptographic Audit Trail & Dual-Control Approvals"
+              title={NAVBAR_STRINGS.securityShieldTooltip}
             >
               <ShieldCheck
                 className={`w-3.5 h-3.5 ${
                   pendingTicketsCount > 0 ? 'text-amber-400' : 'text-emerald-400'
                 }`}
               />
-              <span>Security Shield</span>
+              <span>{NAVBAR_STRINGS.securityShield}</span>
               {pendingTicketsCount > 0 && (
                 <span className="ml-1 text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-amber-500/30 text-amber-200 border border-amber-400/40 animate-pulse">
-                  {pendingTicketsCount} Approval{pendingTicketsCount > 1 ? 's' : ''}
+                  {pendingTicketsCount}
+                  {pendingTicketsCount > 1
+                    ? NAVBAR_STRINGS.approvalSuffixPlural
+                    : NAVBAR_STRINGS.approvalSuffixSingle}
                 </span>
               )}
             </button>
@@ -107,13 +111,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
             <span className="text-slate-300 text-[11px] font-medium">
-              {runningCount} Running
+              {runningCount}
+              {NAVBAR_STRINGS.runningSuffix}
             </span>
           </div>
 
           <div className="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-slate-400 text-[11px]">
             <Cpu className="w-3.5 h-3.5 text-sky-400" />
-            <span>Docker Engine</span>
+            <span>{NAVBAR_STRINGS.dockerEngine}</span>
           </div>
         </div>
       </div>

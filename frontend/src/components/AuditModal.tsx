@@ -32,6 +32,7 @@ import {
   Layers,
 } from 'lucide-react';
 import { ApprovalTicket, GovernanceSettings } from '../types';
+import { AUDIT_MODAL_STRINGS, COMMON_STRINGS } from '../constants/strings';
 
 interface AuditLogEntry {
   id: string;
@@ -206,7 +207,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
   const handleApproveTicket = async (ticketId: string) => {
     setApprovingTicketId(ticketId);
     try {
-      const comment = checkerComment[ticketId] || 'Dual authorization verified and signed by Security Checker.';
+      const comment = checkerComment[ticketId] || AUDIT_MODAL_STRINGS.defaultCheckerApprovalComment;
       const res = await fetch(`/api/governance/tickets/${ticketId}/approve`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -225,10 +226,10 @@ export const AuditModal: React.FC<AuditModalProps> = ({
         }
       } else {
         const err = await res.json().catch(() => ({}));
-        alert(`Failed to approve ticket: ${err.message || res.statusText}`);
+        alert(`${AUDIT_MODAL_STRINGS.failedApprovePrefix} ${err.message || res.statusText}`);
       }
     } catch (err: any) {
-      alert(`Approval error: ${err.message}`);
+      alert(`${AUDIT_MODAL_STRINGS.approvalErrorPrefix} ${err.message}`);
     } finally {
       setApprovingTicketId(null);
     }
@@ -237,7 +238,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
   const handleRejectTicket = async (ticketId: string) => {
     setRejectingTicketId(ticketId);
     try {
-      const comment = checkerComment[ticketId] || 'Operation rejected per compliance review.';
+      const comment = checkerComment[ticketId] || AUDIT_MODAL_STRINGS.defaultCheckerRejectComment;
       const res = await fetch(`/api/governance/tickets/${ticketId}/reject`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -252,10 +253,10 @@ export const AuditModal: React.FC<AuditModalProps> = ({
         await fetchLogs();
       } else {
         const err = await res.json().catch(() => ({}));
-        alert(`Failed to reject ticket: ${err.message || res.statusText}`);
+        alert(`${AUDIT_MODAL_STRINGS.failedRejectPrefix} ${err.message || res.statusText}`);
       }
     } catch (err: any) {
-      alert(`Reject error: ${err.message}`);
+      alert(`${AUDIT_MODAL_STRINGS.rejectErrorPrefix} ${err.message}`);
     } finally {
       setRejectingTicketId(null);
     }
@@ -307,7 +308,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
             <div className="min-w-0 space-y-1">
               <div className="flex flex-wrap items-center gap-2.5">
                 <h3 className="text-base sm:text-lg font-semibold text-white tracking-tight">
-                  Security & Governance Center
+                  {AUDIT_MODAL_STRINGS.title}
                 </h3>
                 <span
                   className={`text-[10px] font-mono font-bold tracking-wider px-2.5 py-0.5 rounded-full border shrink-0 ${settings.securityProfile === 'BANK_GRADE_STRICT'
@@ -316,12 +317,12 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                     }`}
                 >
                   {settings.securityProfile === 'BANK_GRADE_STRICT'
-                    ? 'Bank-Grade Strict (Four-Eyes Active)'
-                    : 'Standard Developer Mode'}
+                    ? AUDIT_MODAL_STRINGS.profileStrict
+                    : AUDIT_MODAL_STRINGS.profileStandard}
                 </span>
               </div>
               <p className="text-xs text-slate-400 font-normal leading-relaxed truncate sm:overflow-visible">
-                Maker-Checker dual authorization, NIST SP 800-88 cryptographic shredding, and Merkle audit ledger
+                {AUDIT_MODAL_STRINGS.subtitle}
               </p>
             </div>
           </div>
@@ -345,7 +346,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                 }`}
             >
               <FileCheck className="w-3.5 h-3.5" />
-              <span>Cryptographic Audit Trail</span>
+              <span>{AUDIT_MODAL_STRINGS.tabAudit}</span>
             </button>
 
             <button
@@ -356,7 +357,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                 }`}
             >
               <UserCheck className="w-3.5 h-3.5" />
-              <span>Dual-Control Approvals</span>
+              <span>{AUDIT_MODAL_STRINGS.tabGovernance}</span>
               {pendingTickets.length > 0 && (
                 <span className="text-[10px] px-1.5 py-0.2 rounded-full font-bold bg-amber-500/25 text-amber-200 border border-amber-500/35 animate-pulse">
                   {pendingTickets.length}
@@ -372,7 +373,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                 }`}
             >
               <Shield className="w-3.5 h-3.5" />
-              <span>Fintech Compliance Spec</span>
+              <span>{AUDIT_MODAL_STRINGS.tabCompliance}</span>
             </button>
           </div>
 
@@ -381,7 +382,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span>127.0.0.1 Loopback Enclave • FIPS 140-2 AES-256</span>
+            <span>{AUDIT_MODAL_STRINGS.loopbackEnclaveBadge}</span>
           </div>
         </div>
 
@@ -404,14 +405,14 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                     <div>
                       <div className="flex items-center space-x-2.5">
                         <h4 className="text-sm font-semibold text-white tracking-tight">
-                          SHA-256 Merkle Ledger Integrity
+                          {AUDIT_MODAL_STRINGS.merkleLedgerTitle}
                         </h4>
                         <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
-                          {verification?.verified ? '100% INTACT & VALID' : 'TAMPER DETECTED'}
+                          {verification?.verified ? AUDIT_MODAL_STRINGS.intactBadge : AUDIT_MODAL_STRINGS.tamperBadge}
                         </span>
                       </div>
                       <p className="text-[11px] text-slate-300 font-mono mt-0.5">
-                        {verification?.message || 'Validating cryptographic hash chain from Genesis to tip...'}
+                        {verification?.message || AUDIT_MODAL_STRINGS.validatingChain}
                       </p>
                     </div>
                   </div>
@@ -422,7 +423,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                     className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-md active:scale-95 shrink-0 disabled:opacity-50"
                   >
                     <RefreshCw className={`w-3.5 h-3.5 ${isVerifying ? 'animate-spin' : ''}`} />
-                    <span>Verify Chain</span>
+                    <span>{AUDIT_MODAL_STRINGS.verifyChainButton}</span>
                   </button>
                 </div>
 
@@ -431,22 +432,22 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                   <div className="flex items-center space-x-2.5 px-3 py-2 rounded-xl bg-black/40 border border-white/[0.05]">
                     <Network className="w-4 h-4 text-sky-400 shrink-0" />
                     <div className="truncate">
-                      <span className="text-[10px] text-slate-400 block font-mono">NETWORK BOUNDARY</span>
-                      <span className="text-xs font-medium text-white truncate">127.0.0.1 Strict Loopback</span>
+                      <span className="text-[10px] text-slate-400 block font-mono">{AUDIT_MODAL_STRINGS.networkBoundaryLabel}</span>
+                      <span className="text-xs font-medium text-white truncate">{AUDIT_MODAL_STRINGS.networkBoundaryValue}</span>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2.5 px-3 py-2 rounded-xl bg-black/40 border border-white/[0.05]">
                     <Lock className="w-4 h-4 text-purple-400 shrink-0" />
                     <div className="truncate">
-                      <span className="text-[10px] text-slate-400 block font-mono">STORAGE ENCRYPTION</span>
-                      <span className="text-xs font-medium text-white truncate">FIPS 140-2 AES-256-GCM</span>
+                      <span className="text-[10px] text-slate-400 block font-mono">{AUDIT_MODAL_STRINGS.storageEncryptionLabel}</span>
+                      <span className="text-xs font-medium text-white truncate">{AUDIT_MODAL_STRINGS.storageEncryptionValue}</span>
                     </div>
                   </div>
                   <div className="flex items-center space-x-2.5 px-3 py-2 rounded-xl bg-black/40 border border-white/[0.05]">
                     <Cpu className="w-4 h-4 text-emerald-400 shrink-0" />
                     <div className="truncate">
-                      <span className="text-[10px] text-slate-400 block font-mono">RUNTIME ISOLATION</span>
-                      <span className="text-xs font-medium text-white truncate">Linux NNP Hardened</span>
+                      <span className="text-[10px] text-slate-400 block font-mono">{AUDIT_MODAL_STRINGS.runtimeIsolationLabel}</span>
+                      <span className="text-xs font-medium text-white truncate">{AUDIT_MODAL_STRINGS.runtimeIsolationValue}</span>
                     </div>
                   </div>
                 </div>
@@ -458,11 +459,11 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                   {/* Category Pills */}
                   <div className="flex flex-wrap items-center gap-1.5">
                     {[
-                      { id: 'ALL', label: 'All Events' },
-                      { id: 'INSTALLS', label: 'Installs' },
-                      { id: 'UNINSTALLS', label: 'Uninstalls' },
-                      { id: 'STATE', label: 'Lifecycle' },
-                      { id: 'GOVERNANCE', label: 'Governance' },
+                      { id: 'ALL', label: AUDIT_MODAL_STRINGS.logFilterAll },
+                      { id: 'INSTALLS', label: AUDIT_MODAL_STRINGS.logFilterInstalls },
+                      { id: 'UNINSTALLS', label: AUDIT_MODAL_STRINGS.logFilterUninstalls },
+                      { id: 'STATE', label: AUDIT_MODAL_STRINGS.logFilterLifecycle },
+                      { id: 'GOVERNANCE', label: AUDIT_MODAL_STRINGS.logFilterGovernance },
                     ].map((tab) => (
                       <button
                         key={tab.id}
@@ -483,14 +484,14 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                       <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
                       <input
                         type="text"
-                        placeholder="Search resource, action, hash..."
+                        placeholder={AUDIT_MODAL_STRINGS.searchPlaceholder}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full bg-black/40 border border-white/[0.08] rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500/50"
                       />
                     </div>
                     <span className="text-[11px] text-slate-400 font-mono shrink-0">
-                      {filteredLogs.length} Blocks
+                      {filteredLogs.length}{AUDIT_MODAL_STRINGS.blocksSuffix}
                     </span>
                   </div>
                 </div>
@@ -499,9 +500,9 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                 {filteredLogs.length === 0 ? (
                   <div className="p-10 text-center bg-black/30 border border-white/[0.06] rounded-2xl space-y-2 text-slate-400">
                     <FileCheck className="w-8 h-8 mx-auto text-slate-500" />
-                    <div className="text-xs font-medium text-white">No matching audit records</div>
+                    <div className="text-xs font-medium text-white">{AUDIT_MODAL_STRINGS.emptyRecordsTitle}</div>
                     <p className="text-[11px] text-slate-500">
-                      Try clearing search filters or deploying new infrastructure to record events.
+                      {AUDIT_MODAL_STRINGS.emptyRecordsDesc}
                     </p>
                   </div>
                 ) : (
@@ -510,11 +511,11 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                       <table className="w-full text-left border-collapse text-xs min-w-[780px]">
                         <thead className="bg-[#0f1422] border-b border-white/[0.08] text-slate-400 sticky top-0 z-10 backdrop-blur-md">
                           <tr>
-                            <th className="py-3 px-4 font-semibold w-24">Timestamp</th>
-                            <th className="py-3 px-4 font-semibold w-44">Event Action</th>
-                            <th className="py-3 px-4 font-semibold w-52">Target Resource</th>
-                            <th className="py-3 px-4 font-semibold w-40">Actor (Identity)</th>
-                            <th className="py-3 px-4 font-semibold w-44">SHA-256 Block</th>
+                            <th className="py-3 px-4 font-semibold w-24">{AUDIT_MODAL_STRINGS.thTimestamp}</th>
+                            <th className="py-3 px-4 font-semibold w-44">{AUDIT_MODAL_STRINGS.thEventAction}</th>
+                            <th className="py-3 px-4 font-semibold w-52">{AUDIT_MODAL_STRINGS.thTargetResource}</th>
+                            <th className="py-3 px-4 font-semibold w-40">{AUDIT_MODAL_STRINGS.thActorIdentity}</th>
+                            <th className="py-3 px-4 font-semibold w-44">{AUDIT_MODAL_STRINGS.thShaBlock}</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-white/[0.04] text-slate-300 font-mono">
@@ -581,7 +582,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                                         copyHashToClipboard(log.hash);
                                       }}
                                       className="inline-flex items-center space-x-1.5 px-2 py-1 rounded bg-black/40 hover:bg-black/80 border border-white/[0.06] transition-colors cursor-copy"
-                                      title="Click to copy full 64-char SHA-256 hash"
+                                      title={AUDIT_MODAL_STRINGS.copyHashTooltip}
                                     >
                                       <span>{log.hash.substring(0, 10)}...</span>
                                       {copiedHash === log.hash ? (
@@ -599,17 +600,17 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                                     <td colSpan={5} className="p-4 space-y-2 font-mono text-[11px]">
                                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2 border-b border-white/[0.06]">
                                         <div>
-                                          <span className="text-slate-500 block text-[10px]">EVENT ID (UUIDv4)</span>
+                                          <span className="text-slate-500 block text-[10px]">{AUDIT_MODAL_STRINGS.eventIdLabel}</span>
                                           <span className="text-slate-300 select-all">{log.id}</span>
                                         </div>
                                         <div>
-                                          <span className="text-slate-500 block text-[10px]">PREVIOUS BLOCK HASH (prevHash)</span>
+                                          <span className="text-slate-500 block text-[10px]">{AUDIT_MODAL_STRINGS.prevHashLabel}</span>
                                           <span className="text-slate-400 select-all truncate block">{log.prevHash}</span>
                                         </div>
                                       </div>
 
                                       <div>
-                                        <span className="text-slate-500 block text-[10px]">CRYPTOGRAPHIC PAYLOAD SIGNATURE (JSON)</span>
+                                        <span className="text-slate-500 block text-[10px]">{AUDIT_MODAL_STRINGS.payloadSignatureLabel}</span>
                                         <pre className="p-2.5 bg-black/60 rounded-xl border border-white/[0.04] text-[10px] text-sky-300 overflow-x-auto">
                                           {JSON.stringify(log.details, null, 2)}
                                         </pre>
@@ -639,15 +640,15 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                     <Settings2 className="w-4 h-4 text-sky-400" />
                     <div>
                       <h4 className="text-xs font-semibold text-white tracking-tight">
-                        Four-Eyes Principle Governance Policy
+                        {AUDIT_MODAL_STRINGS.fourEyesPolicyTitle}
                       </h4>
                       <p className="text-[11px] text-slate-400 mt-0.5">
-                        Separation of duties enforcement for destructive operations in tier-1 financial environments.
+                        {AUDIT_MODAL_STRINGS.fourEyesPolicyDesc}
                       </p>
                     </div>
                   </div>
                   <span className="text-[10px] font-mono text-slate-400 px-2 py-0.5 rounded-md bg-white/[0.04] border border-white/[0.06]">
-                    POLICY #GOV-FINTECH-01
+                    {AUDIT_MODAL_STRINGS.policyTag}
                   </span>
                 </div>
 
@@ -661,11 +662,11 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                       <div className="flex items-center space-x-2">
                         <UserCheck className="w-3.5 h-3.5 text-sky-400" />
                         <span className="text-xs font-semibold text-white">
-                          Maker-Checker Dual Control
+                          {AUDIT_MODAL_STRINGS.makerCheckerTitle}
                         </span>
                       </div>
                       <p className="text-[11px] text-slate-400 leading-relaxed">
-                        De-provisioning requests generate signed tickets requiring a designated Checker's approval.
+                        {AUDIT_MODAL_STRINGS.makerCheckerDesc}
                       </p>
                     </div>
                     {/* iOS style toggle switch */}
@@ -689,11 +690,11 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                       <div className="flex items-center space-x-2">
                         <Key className="w-3.5 h-3.5 text-purple-400" />
                         <span className="text-xs font-semibold text-white">
-                          NIST SP 800-88 Crypto-Shredding
+                          {AUDIT_MODAL_STRINGS.cryptoShreddingTitle}
                         </span>
                       </div>
                       <p className="text-[11px] text-slate-400 leading-relaxed">
-                        Overwrites memory buffers with zeros and purges stored data keys upon uninstallation.
+                        {AUDIT_MODAL_STRINGS.cryptoShreddingDesc}
                       </p>
                     </div>
                     {/* iOS style toggle switch */}
@@ -715,10 +716,10 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                 <div className="flex items-center justify-between">
                   <h4 className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
                     <BadgeAlert className="w-4 h-4 text-amber-400" />
-                    <span>Pending Dual-Authorization Queue</span>
+                    <span>{AUDIT_MODAL_STRINGS.pendingQueueTitle}</span>
                   </h4>
                   <span className="text-[11px] font-mono text-slate-400">
-                    {pendingTickets.length} awaiting Checker decision
+                    {AUDIT_MODAL_STRINGS.pendingQueueDesc(pendingTickets.length)}
                   </span>
                 </div>
 
@@ -727,9 +728,9 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                     <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto text-emerald-400">
                       <CheckCircle2 className="w-5 h-5" />
                     </div>
-                    <div className="text-xs font-semibold text-white">Queue Clear: All Actions Authorized</div>
+                    <div className="text-xs font-semibold text-white">{AUDIT_MODAL_STRINGS.queueClearTitle}</div>
                     <p className="text-[11px] text-slate-400 max-w-sm mx-auto leading-relaxed">
-                      High-impact destructive tasks (uninstallation or storage purges) requested by engineers will appear here for verification.
+                      {AUDIT_MODAL_STRINGS.queueClearDesc}
                     </p>
                   </div>
                 ) : (
@@ -747,37 +748,37 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                             </span>
                             <div>
                               <div className="text-xs font-semibold text-white flex items-center gap-2">
-                                <span>Action: {ticket.action}</span>
+                                <span>{AUDIT_MODAL_STRINGS.actionPrefix} {ticket.action}</span>
                                 <span className="text-[10px] font-mono font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20">
-                                  HIGH SEVERITY
+                                  {AUDIT_MODAL_STRINGS.highSeverityBadge}
                                 </span>
                               </div>
                               <p className="text-[11px] text-slate-400 mt-0.5">
-                                Target: <strong className="text-white font-medium">{ticket.resource.name}</strong> ({ticket.resource.id})
+                                {AUDIT_MODAL_STRINGS.targetPrefix} <strong className="text-white font-medium">{ticket.resource.name}</strong> ({ticket.resource.id})
                               </p>
                             </div>
                           </div>
 
                           <div className="text-right text-[11px] text-slate-400 font-mono">
-                            <div>Maker: <strong className="text-slate-200">{ticket.maker.userId}</strong></div>
-                            <div>Origin: {ticket.maker.ipAddress} • {new Date(ticket.createdAt).toLocaleTimeString()}</div>
+                            <div>{AUDIT_MODAL_STRINGS.makerLabel} <strong className="text-slate-200">{ticket.maker.userId}</strong></div>
+                            <div>{AUDIT_MODAL_STRINGS.originLabel} {ticket.maker.ipAddress} • {new Date(ticket.createdAt).toLocaleTimeString()}</div>
                           </div>
                         </div>
 
                         {/* Blast Radius & Payload Details */}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 bg-white/[0.02] rounded-2xl border border-white/[0.04] text-[11px] font-mono">
                           <div>
-                            <span className="text-slate-500 block">Blast Radius</span>
-                            <span className="text-rose-400 font-semibold mt-0.5 block">Container Eviction</span>
+                            <span className="text-slate-500 block">{AUDIT_MODAL_STRINGS.blastRadiusLabel}</span>
+                            <span className="text-rose-400 font-semibold mt-0.5 block">{AUDIT_MODAL_STRINGS.containerEviction}</span>
                           </div>
                           <div>
-                            <span className="text-slate-500 block">Storage Purge</span>
+                            <span className="text-slate-500 block">{AUDIT_MODAL_STRINGS.storagePurgeLabel}</span>
                             <span className={ticket.payload.removeVolumes ? 'text-amber-400 font-semibold mt-0.5 block' : 'text-slate-300 font-semibold mt-0.5 block'}>
-                              {ticket.payload.removeVolumes ? 'YES (NIST SP 800-88)' : 'NO (Preserve)'}
+                              {ticket.payload.removeVolumes ? AUDIT_MODAL_STRINGS.storagePurgeYes : AUDIT_MODAL_STRINGS.storagePurgeNo}
                             </span>
                           </div>
                           <div>
-                            <span className="text-slate-500 block">Sign-off Window</span>
+                            <span className="text-slate-500 block">{AUDIT_MODAL_STRINGS.signOffWindowLabel}</span>
                             <span className="text-slate-300 mt-0.5 block">{new Date(ticket.expiresAt).toLocaleTimeString()}</span>
                           </div>
                         </div>
@@ -786,7 +787,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                         <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
                           <input
                             type="text"
-                            placeholder="Add Checker review verification note..."
+                            placeholder={AUDIT_MODAL_STRINGS.checkerNotePlaceholder}
                             value={checkerComment[ticket.id] || ''}
                             onChange={(e) =>
                               setCheckerComment({ ...checkerComment, [ticket.id]: e.target.value })
@@ -803,7 +804,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                               {rejectingTicketId === ticket.id ? (
                                 <Loader2 className="w-3.5 h-3.5 animate-spin inline" />
                               ) : (
-                                'Reject Ticket'
+                                AUDIT_MODAL_STRINGS.rejectTicketButton
                               )}
                             </button>
 
@@ -815,12 +816,12 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                               {approvingTicketId === ticket.id ? (
                                 <>
                                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                  <span>Authorizing & Executing...</span>
+                                  <span>{AUDIT_MODAL_STRINGS.authorizingExecutingButton}</span>
                                 </>
                               ) : (
                                 <>
                                   <Check className="w-3.5 h-3.5" />
-                                  <span>Approve & Execute (Checker)</span>
+                                  <span>{AUDIT_MODAL_STRINGS.approveTicketButton}</span>
                                 </>
                               )}
                             </button>
@@ -837,7 +838,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                 <div className="space-y-3">
                   <h4 className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
                     <Clock className="w-4 h-4 text-slate-400" />
-                    <span>Historical Dual-Authorization Log ({pastTickets.length})</span>
+                    <span>{AUDIT_MODAL_STRINGS.historicalQueueTitle(pastTickets.length)}</span>
                   </h4>
 
                   <div className="bg-black/50 rounded-2xl border border-white/[0.07] overflow-hidden">
@@ -845,11 +846,11 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                       <table className="w-full text-left border-collapse text-xs min-w-[600px]">
                         <thead className="bg-[#0f1422] border-b border-white/[0.06] text-slate-400 sticky top-0">
                           <tr>
-                            <th className="py-2.5 px-4 font-medium">Ticket ID</th>
-                            <th className="py-2.5 px-4 font-medium">Action</th>
-                            <th className="py-2.5 px-4 font-medium">Resource</th>
-                            <th className="py-2.5 px-4 font-medium">Maker / Checker</th>
-                            <th className="py-2.5 px-4 font-medium">Status</th>
+                            <th className="py-2.5 px-4 font-medium">{AUDIT_MODAL_STRINGS.thTicketId}</th>
+                            <th className="py-2.5 px-4 font-medium">{AUDIT_MODAL_STRINGS.thAction}</th>
+                            <th className="py-2.5 px-4 font-medium">{AUDIT_MODAL_STRINGS.thResource}</th>
+                            <th className="py-2.5 px-4 font-medium">{AUDIT_MODAL_STRINGS.thMakerChecker}</th>
+                            <th className="py-2.5 px-4 font-medium">{AUDIT_MODAL_STRINGS.thStatus}</th>
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-white/[0.04] text-slate-300 font-mono">
@@ -859,7 +860,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                               <td className="py-2.5 px-4 text-slate-300">{t.action}</td>
                               <td className="py-2.5 px-4 text-slate-200">{t.resource.name}</td>
                               <td className="py-2.5 px-4 text-slate-400 text-[11px]">
-                                {t.maker.userId} / {t.checker?.userId || 'N/A'}
+                                {t.maker.userId} / {t.checker?.userId || COMMON_STRINGS.notApplicable}
                               </td>
                               <td className="py-2.5 px-4">
                                 <span
@@ -890,9 +891,9 @@ export const AuditModal: React.FC<AuditModalProps> = ({
               <div className="p-4 bg-sky-500/[0.05] border border-sky-500/20 rounded-2xl flex items-center space-x-3">
                 <ShieldCheck className="w-5 h-5 text-sky-400 shrink-0" />
                 <div className="text-xs">
-                  <div className="font-semibold text-white">Tier-1 Regulatory & Fintech Security Baseline</div>
+                  <div className="font-semibold text-white">{AUDIT_MODAL_STRINGS.baselineTitle}</div>
                   <div className="text-slate-400 mt-0.5">
-                    PortGrid implements controls cross-referenced with international banking cybersecurity directives.
+                    {AUDIT_MODAL_STRINGS.baselineDesc}
                   </div>
                 </div>
               </div>
@@ -900,49 +901,49 @@ export const AuditModal: React.FC<AuditModalProps> = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="bg-white/[0.02] p-5 rounded-3xl border border-white/[0.07] space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-white">PCI-DSS v4.0 (Req 3.4 & 10.2)</span>
+                    <span className="text-xs font-bold text-white">{AUDIT_MODAL_STRINGS.pciTitle}</span>
                     <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                      COMPLIANT
+                      {AUDIT_MODAL_STRINGS.compliantBadge}
                     </span>
                   </div>
                   <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                    Cardholder Data Environment protection: All persistent keys encrypted using AES-256-GCM. SHA-256 Merkle chain ensures logs are tamper-evident.
+                    {AUDIT_MODAL_STRINGS.pciDesc}
                   </p>
                 </div>
 
                 <div className="bg-white/[0.02] p-5 rounded-3xl border border-white/[0.07] space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-white">NIST SP 800-88 Rev 1</span>
+                    <span className="text-xs font-bold text-white">{AUDIT_MODAL_STRINGS.nistTitle}</span>
                     <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                      COMPLIANT
+                      {AUDIT_MODAL_STRINGS.compliantBadge}
                     </span>
                   </div>
                   <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                    Media Sanitization: Cryptographic Erase (CE) with key zeroing, memory buffer overwriting (`Buffer.fill(0)`), and verification logged upon de-provisioning.
+                    {AUDIT_MODAL_STRINGS.nistDesc}
                   </p>
                 </div>
 
                 <div className="bg-white/[0.02] p-5 rounded-3xl border border-white/[0.07] space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-white">FFIEC / MAS TRM (Four-Eyes)</span>
+                    <span className="text-xs font-bold text-white">{AUDIT_MODAL_STRINGS.ffiecTitle}</span>
                     <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                      COMPLIANT
+                      {AUDIT_MODAL_STRINGS.compliantBadge}
                     </span>
                   </div>
                   <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                    Dual Authorization: High-impact actions (deleting databases, changing master keys) require separate Maker and Checker identities to prevent rogue operator sabotage.
+                    {AUDIT_MODAL_STRINGS.ffiecDesc}
                   </p>
                 </div>
 
                 <div className="bg-white/[0.02] p-5 rounded-3xl border border-white/[0.07] space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-white">SOC 2 Type II (CC6.1 & CC6.6)</span>
+                    <span className="text-xs font-bold text-white">{AUDIT_MODAL_STRINGS.soc2Title}</span>
                     <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-                      COMPLIANT
+                      {AUDIT_MODAL_STRINGS.compliantBadge}
                     </span>
                   </div>
                   <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                    Logical boundary isolation: Strict loopback `127.0.0.1` binding and internal bridge subnet isolation prevents cross-container network contamination.
+                    {AUDIT_MODAL_STRINGS.soc2Desc}
                   </p>
                 </div>
               </div>
@@ -954,13 +955,13 @@ export const AuditModal: React.FC<AuditModalProps> = ({
         <div className="px-6 sm:px-8 py-4 bg-white/[0.015] border-t border-white/[0.08] flex items-center justify-between text-xs text-slate-500 shrink-0">
           <div className="flex items-center space-x-2">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-            <span>PCI-DSS v4.0 • NIST SP 800-88 • SOC 2 Type II Ready</span>
+            <span>{AUDIT_MODAL_STRINGS.footerStandards}</span>
           </div>
           <button
             onClick={onClose}
             className="px-5 py-2 bg-white/[0.08] hover:bg-white/[0.12] text-white rounded-xl text-xs font-medium transition-colors active:scale-95 shadow-sm"
           >
-            Close
+            {COMMON_STRINGS.close}
           </button>
         </div>
       </div>

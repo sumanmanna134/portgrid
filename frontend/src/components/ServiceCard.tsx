@@ -17,6 +17,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { InstalledServiceInstance, ContainerMetrics } from '../types';
+import { SERVICE_CARD_STRINGS, COMMON_STRINGS } from '../constants/strings';
 
 interface ServiceCardProps {
   service: InstalledServiceInstance;
@@ -42,7 +43,7 @@ const getCategoryIcon = (blueprintId: string) => {
 };
 
 const formatBytes = (bytes: number) => {
-  if (bytes === 0) return '0 B';
+  if (bytes === 0) return COMMON_STRINGS.zeroBytes;
   const k = 1024;
   const sizes = ['B', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -99,11 +100,15 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
                 {service.name}
               </h4>
               <div className="flex items-center space-x-1.5 mt-0.5 text-[11px] font-mono text-slate-400">
-                <span>Port <strong className="text-sky-400 font-semibold">{service.enginePort}</strong></span>
+                <span>
+                  {COMMON_STRINGS.port} <strong className="text-sky-400 font-semibold">{service.enginePort}</strong>
+                </span>
                 {service.uiPort && service.uiPort !== service.enginePort && (
                   <>
                     <span className="text-slate-600">•</span>
-                    <span>UI <strong className="text-emerald-400 font-semibold">{service.uiPort}</strong></span>
+                    <span>
+                      {COMMON_STRINGS.ui} <strong className="text-emerald-400 font-semibold">{service.uiPort}</strong>
+                    </span>
                   </>
                 )}
               </div>
@@ -116,33 +121,35 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
               <button
                 onClick={() => onStop(service.id)}
                 className="px-2 py-0.5 rounded-lg bg-white/[0.04] hover:bg-rose-500/15 text-slate-400 hover:text-rose-300 text-[10px] font-medium flex items-center gap-1 border border-white/[0.08] hover:border-rose-500/20 transition-all"
-                title="Stop service"
+                title={SERVICE_CARD_STRINGS.stopTooltip}
               >
                 <Square className="w-2.5 h-2.5 fill-current" />
-                <span>Stop</span>
+                <span>{COMMON_STRINGS.stop}</span>
               </button>
             ) : onStart ? (
               <button
                 onClick={() => onStart(service.id)}
                 className="px-2 py-0.5 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 text-[10px] font-medium flex items-center gap-1 border border-emerald-500/30 transition-all shadow-sm"
-                title="Start service"
+                title={SERVICE_CARD_STRINGS.startTooltip}
               >
                 <Play className="w-2.5 h-2.5 fill-emerald-300" />
-                <span>Start</span>
+                <span>{COMMON_STRINGS.start}</span>
               </button>
             ) : null}
 
             <span
-              className={`inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium tracking-tight ${isRunning
-                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
-                }`}
+              className={`inline-flex items-center space-x-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium tracking-tight ${
+                isRunning
+                  ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                  : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+              }`}
             >
               <span
-                className={`w-1.5 h-1.5 rounded-full ${isRunning ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'bg-rose-400'
-                  }`}
+                className={`w-1.5 h-1.5 rounded-full ${
+                  isRunning ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]' : 'bg-rose-400'
+                }`}
               ></span>
-              <span>{isRunning ? 'Live' : 'Offline'}</span>
+              <span>{isRunning ? COMMON_STRINGS.live : COMMON_STRINGS.offline}</span>
             </span>
           </div>
         </div>
@@ -159,7 +166,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
               >
                 <span className="flex items-center gap-1.5">
                   <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Open Companion Web Console</span>
+                  <span>{SERVICE_CARD_STRINGS.openWebConsole}</span>
                 </span>
                 <span className="font-mono text-[11px] text-emerald-400/90 group-hover:translate-x-0.5 transition-transform">
                   {service.uiUrl.replace('http://', '')} ↗
@@ -168,14 +175,14 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
             ) : (
               <div
                 className="w-full py-2 px-3.5 bg-white/[0.02] border border-white/[0.05] rounded-xl flex items-center justify-between text-xs font-normal text-slate-500 cursor-not-allowed opacity-60"
-                title="Service is offline. Start the container to access web console."
+                title={SERVICE_CARD_STRINGS.offlineTooltip}
               >
                 <span className="flex items-center gap-1.5">
                   <ExternalLink className="w-3.5 h-3.5 text-slate-600" />
-                  <span>Companion Console (Service Offline)</span>
+                  <span>{SERVICE_CARD_STRINGS.companionConsoleOffline}</span>
                 </span>
                 <span className="font-mono text-[10px] text-slate-500">
-                  Offline
+                  {SERVICE_CARD_STRINGS.offlineStatus}
                 </span>
               </div>
             )}
@@ -188,10 +195,10 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           <div>
             <div className="flex items-center justify-between text-[11px] mb-1">
               <span className="text-slate-400 flex items-center gap-1.5">
-                <Cpu className="w-3.5 h-3.5 text-sky-400" /> CPU Usage
+                <Cpu className="w-3.5 h-3.5 text-sky-400" /> {COMMON_STRINGS.cpuUsage}
               </span>
               <span className="font-mono font-medium text-slate-200">
-                {metrics ? `${metrics.cpuPercent}%` : isRunning ? 'Measuring...' : '0%'}
+                {metrics ? `${metrics.cpuPercent}%` : isRunning ? COMMON_STRINGS.measuring : COMMON_STRINGS.zeroPercent}
               </span>
             </div>
             <div className="w-full bg-white/[0.06] rounded-full h-1 overflow-hidden">
@@ -206,14 +213,14 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           <div>
             <div className="flex items-center justify-between text-[11px] mb-1">
               <span className="text-slate-400 flex items-center gap-1.5">
-                <Activity className="w-3.5 h-3.5 text-purple-400" /> Memory
+                <Activity className="w-3.5 h-3.5 text-purple-400" /> {COMMON_STRINGS.memory}
               </span>
               <span className="font-mono font-medium text-slate-200">
                 {metrics
                   ? `${formatBytes(metrics.memoryUsageBytes)} (${metrics.memoryPercent}%)`
                   : isRunning
-                    ? 'Measuring...'
-                    : '0 MB'}
+                  ? COMMON_STRINGS.measuring
+                  : COMMON_STRINGS.zeroMb}
               </span>
             </div>
             <div className="w-full bg-white/[0.06] rounded-full h-1 overflow-hidden">
@@ -227,12 +234,12 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           {/* Network Throughput */}
           <div className="flex items-center justify-between pt-1 border-t border-white/[0.04] text-[11px]">
             <span className="text-slate-400 flex items-center gap-1.5">
-              <Network className="w-3.5 h-3.5 text-cyan-400" /> Network
+              <Network className="w-3.5 h-3.5 text-cyan-400" /> {COMMON_STRINGS.network}
             </span>
             <span className="font-mono text-slate-300">
               {metrics
                 ? `↓ ${formatBytes(metrics.networkRxBytes)}  ↑ ${formatBytes(metrics.networkTxBytes)}`
-                : '0 B'}
+                : COMMON_STRINGS.zeroBytes}
             </span>
           </div>
 
@@ -240,7 +247,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           {service.volumes && service.volumes.length > 0 && (
             <div className="flex items-center justify-between text-[11px] text-slate-500">
               <span className="flex items-center gap-1.5">
-                <HardDrive className="w-3.5 h-3.5 text-slate-500" /> Storage
+                <HardDrive className="w-3.5 h-3.5 text-slate-500" /> {COMMON_STRINGS.storage}
               </span>
               <span className="font-mono text-slate-400 truncate max-w-[170px]">
                 {service.volumes[0]}
@@ -257,27 +264,28 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           className="col-span-2 py-2 px-3 bg-white/[0.04] hover:bg-white/[0.08] text-sky-300 hover:text-white rounded-xl text-xs font-medium flex items-center justify-center space-x-1.5 transition-all border border-white/[0.06] active:scale-[0.98]"
         >
           <Key className="w-3.5 h-3.5" />
-          <span>Config & Keys</span>
+          <span>{SERVICE_CARD_STRINGS.configAndKeys}</span>
         </button>
 
         <button
           onClick={() => onOpenLogs(service)}
           className="py-2 px-2 bg-white/[0.03] hover:bg-white/[0.06] text-slate-300 hover:text-white rounded-xl text-xs font-medium flex items-center justify-center space-x-1 transition-all border border-white/[0.05]"
-          title="Container console logs"
+          title={SERVICE_CARD_STRINGS.logsTooltip}
         >
           <Terminal className="w-3.5 h-3.5" />
-          <span>Logs</span>
+          <span>{SERVICE_CARD_STRINGS.logs}</span>
         </button>
 
         <button
           onClick={() => onUninstall(service)}
           className="py-2 px-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 rounded-xl text-xs font-medium flex items-center justify-center space-x-1 transition-all border border-rose-500/20"
-          title="Teardown and delete"
+          title={SERVICE_CARD_STRINGS.deleteTooltip}
         >
           <Trash2 className="w-3.5 h-3.5" />
-          <span>Delete</span>
+          <span>{SERVICE_CARD_STRINGS.delete}</span>
         </button>
       </div>
     </div>
   );
 };
+

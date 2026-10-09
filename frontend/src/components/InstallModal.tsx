@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, Sparkles, Server, Network, Tag, ArrowRight, Loader2, Database, Layers, Zap, Key, GitBranch } from 'lucide-react';
 import { ServiceBlueprint } from '../types';
+import { INSTALL_MODAL_STRINGS, COMMON_STRINGS } from '../constants/strings';
 
 interface InstallModalProps {
   blueprint: ServiceBlueprint | null;
@@ -79,8 +80,10 @@ export const InstallModal: React.FC<InstallModalProps> = ({
               {getIcon(blueprint.icon)}
             </div>
             <div>
-              <h3 className="text-base font-semibold text-white tracking-tight">Deploy {blueprint.name}</h3>
-              <p className="text-xs text-slate-400 font-normal">Configure custom instance parameters or deploy with defaults</p>
+              <h3 className="text-base font-semibold text-white tracking-tight">
+                {INSTALL_MODAL_STRINGS.titlePrefix} {blueprint.name}
+              </h3>
+              <p className="text-xs text-slate-400 font-normal">{INSTALL_MODAL_STRINGS.subtitle}</p>
             </div>
           </div>
           <button
@@ -99,17 +102,18 @@ export const InstallModal: React.FC<InstallModalProps> = ({
             <div>
               <label className="text-slate-300 font-medium mb-1 flex items-center gap-1.5">
                 <Tag className="w-3.5 h-3.5 text-sky-400" />
-                Custom Instance Name <span className="text-slate-500 font-normal">(Optional)</span>
+                {INSTALL_MODAL_STRINGS.customNameLabel}{' '}
+                <span className="text-slate-500 font-normal">{INSTALL_MODAL_STRINGS.optionalLabel}</span>
               </label>
               <input
                 type="text"
                 value={customName}
                 onChange={(e) => setCustomName(e.target.value)}
-                placeholder={`Default: ${blueprint.name}`}
+                placeholder={INSTALL_MODAL_STRINGS.customNamePlaceholder(blueprint.name)}
                 className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500/50 focus:ring-2 focus:ring-sky-500/20 font-medium text-xs transition-all"
               />
               <span className="text-[11px] text-slate-500 mt-1 block">
-                Leave empty to auto-generate a unique instance identifier.
+                {INSTALL_MODAL_STRINGS.customNameHelp}
               </span>
             </div>
 
@@ -117,7 +121,8 @@ export const InstallModal: React.FC<InstallModalProps> = ({
             <div>
               <label className="text-slate-300 font-medium mb-1 flex items-center gap-1.5">
                 <Network className="w-3.5 h-3.5 text-emerald-400" />
-                Service Port <span className="text-slate-500 font-normal">(Optional)</span>
+                {INSTALL_MODAL_STRINGS.servicePortLabel}{' '}
+                <span className="text-slate-500 font-normal">{INSTALL_MODAL_STRINGS.optionalLabel}</span>
               </label>
               <input
                 type="number"
@@ -125,11 +130,11 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                 max="65535"
                 value={customEnginePort}
                 onChange={(e) => setCustomEnginePort(e.target.value)}
-                placeholder={`Default: ${blueprint.engine.defaultPort}`}
+                placeholder={INSTALL_MODAL_STRINGS.servicePortPlaceholder(blueprint.engine.defaultPort)}
                 className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500/50 focus:ring-2 focus:ring-sky-500/20 font-mono text-xs transition-all"
               />
               <span className="text-[11px] text-slate-500 mt-1 block">
-                Default is <strong className="text-slate-400 font-mono">{blueprint.engine.defaultPort}</strong>. If occupied, next free port will be safely allocated.
+                {INSTALL_MODAL_STRINGS.servicePortHelp(blueprint.engine.defaultPort)}
               </span>
             </div>
 
@@ -138,7 +143,8 @@ export const InstallModal: React.FC<InstallModalProps> = ({
               <div>
                 <label className="text-slate-300 font-medium mb-1 flex items-center gap-1.5">
                   <Server className="w-3.5 h-3.5 text-purple-400" />
-                  Web UI Port ({blueprint.companionUi.name}) <span className="text-slate-500 font-normal">(Optional)</span>
+                  {INSTALL_MODAL_STRINGS.companionUiPortLabel(blueprint.companionUi.name)}{' '}
+                  <span className="text-slate-500 font-normal">{INSTALL_MODAL_STRINGS.optionalLabel}</span>
                 </label>
                 <input
                   type="number"
@@ -146,11 +152,11 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                   max="65535"
                   value={customUiPort}
                   onChange={(e) => setCustomUiPort(e.target.value)}
-                  placeholder={`Default: ${blueprint.companionUi.defaultPort}`}
+                  placeholder={INSTALL_MODAL_STRINGS.companionUiPortPlaceholder(blueprint.companionUi.defaultPort)}
                   className="w-full bg-black/50 border border-white/[0.08] rounded-xl px-3.5 py-2.5 text-slate-100 placeholder-slate-600 focus:outline-none focus:border-sky-500/50 focus:ring-2 focus:ring-sky-500/20 font-mono text-xs transition-all"
                 />
                 <span className="text-[11px] text-slate-500 mt-1 block">
-                  Default is <strong className="text-slate-400 font-mono">{blueprint.companionUi.defaultPort}</strong>.
+                  {INSTALL_MODAL_STRINGS.companionUiPortHelp(blueprint.companionUi.defaultPort)}
                 </span>
               </div>
             )}
@@ -165,7 +171,7 @@ export const InstallModal: React.FC<InstallModalProps> = ({
               className="px-3.5 py-2 bg-white/[0.05] hover:bg-white/[0.08] text-slate-300 hover:text-white rounded-xl text-xs font-medium flex items-center space-x-1.5 transition-colors border border-white/[0.06]"
             >
               <Sparkles className="w-3.5 h-3.5 text-sky-400" />
-              <span>Use Defaults</span>
+              <span>{INSTALL_MODAL_STRINGS.useDefaultsButton}</span>
             </button>
 
             <div className="flex items-center space-x-2">
@@ -175,7 +181,7 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                 disabled={isInstalling}
                 className="px-4 py-2 bg-transparent hover:bg-white/[0.05] text-slate-400 hover:text-white rounded-xl text-xs font-medium transition-colors"
               >
-                Cancel
+                {COMMON_STRINGS.cancel}
               </button>
               <button
                 type="submit"
@@ -185,11 +191,11 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                 {isInstalling ? (
                   <>
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>Deploying...</span>
+                    <span>{INSTALL_MODAL_STRINGS.deployingButton}</span>
                   </>
                 ) : (
                   <>
-                    <span>Deploy Container</span>
+                    <span>{INSTALL_MODAL_STRINGS.deployContainerButton}</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </>
                 )}

@@ -14,6 +14,7 @@ import {
   Lock,
 } from 'lucide-react';
 import { InstalledServiceInstance, ApprovalTicket } from '../types';
+import { UNINSTALL_MODAL_STRINGS, COMMON_STRINGS } from '../constants/strings';
 
 interface UninstallModalProps {
   service: InstalledServiceInstance | null;
@@ -75,12 +76,12 @@ export const UninstallModal: React.FC<UninstallModalProps> = ({
             <div>
               <h3 className="text-base font-semibold text-white tracking-tight">
                 {isUninstalling
-                  ? 'De-provisioning Service...'
+                  ? UNINSTALL_MODAL_STRINGS.titleDeProvisioning
                   : createdTicket
-                  ? 'Dual-Authorization Ticket Created'
+                  ? UNINSTALL_MODAL_STRINGS.titleTicketCreated
                   : makerCheckerEnabled
-                  ? 'De-provisioning Authorization'
-                  : 'Uninstall Service'}
+                  ? UNINSTALL_MODAL_STRINGS.titleAuthorization
+                  : UNINSTALL_MODAL_STRINGS.titleUninstall}
               </h3>
               <p className="text-xs text-slate-400 font-normal">{service.name}</p>
             </div>
@@ -102,24 +103,31 @@ export const UninstallModal: React.FC<UninstallModalProps> = ({
               <div className="p-4 bg-emerald-500/[0.08] border border-emerald-500/25 rounded-2xl space-y-2.5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-semibold text-emerald-300">
-                    Ticket #{createdTicket.id} Active
+                    {UNINSTALL_MODAL_STRINGS.ticketActivePrefix(createdTicket.id)}
                   </span>
                   <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                    PENDING CHECKER
+                    {UNINSTALL_MODAL_STRINGS.pendingCheckerBadge}
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-300 leading-relaxed">
-                  Your request to de-provision <strong className="text-white">{service.name}</strong> has been logged in the tamper-evident queue.
+                  {UNINSTALL_MODAL_STRINGS.ticketNotice(service.name)}
                 </p>
                 <div className="text-[10px] font-mono text-slate-400 pt-1 border-t border-white/[0.06]">
-                  <div>Maker: {createdTicket.maker.userId} ({createdTicket.maker.ipAddress})</div>
-                  <div>Purge Volumes: {createdTicket.payload.removeVolumes ? 'YES (Crypto-Shred)' : 'NO'}</div>
+                  <div>
+                    {UNINSTALL_MODAL_STRINGS.makerPrefix} {createdTicket.maker.userId} ({createdTicket.maker.ipAddress})
+                  </div>
+                  <div>
+                    {UNINSTALL_MODAL_STRINGS.purgeVolumesPrefix}{' '}
+                    {createdTicket.payload.removeVolumes
+                      ? UNINSTALL_MODAL_STRINGS.purgeVolumesYes
+                      : UNINSTALL_MODAL_STRINGS.purgeVolumesNo}
+                  </div>
                 </div>
               </div>
 
               <div className="flex items-center space-x-2 text-[11px] text-slate-400">
                 <Lock className="w-3.5 h-3.5 text-sky-400" />
-                <span>Four-Eyes Principle: A separate authorized engineer must sign off.</span>
+                <span>{UNINSTALL_MODAL_STRINGS.fourEyesPrincipleNotice}</span>
               </div>
             </div>
           ) : isUninstalling ? (
@@ -132,17 +140,17 @@ export const UninstallModal: React.FC<UninstallModalProps> = ({
                   </div>
                   <div>
                     <div className="text-xs font-semibold text-white">
-                      {stage === 1 && 'Step 1/3: Halting active containers...'}
-                      {stage === 2 && 'Step 2/3: NIST SP 800-88 Crypto-Shred & Volume Purge...'}
-                      {stage === 3 && 'Step 3/3: Releasing ports & updating Merkle ledger...'}
+                      {stage === 1 && UNINSTALL_MODAL_STRINGS.step1Title}
+                      {stage === 2 && UNINSTALL_MODAL_STRINGS.step2Title}
+                      {stage === 3 && UNINSTALL_MODAL_STRINGS.step3Title}
                     </div>
                     <div className="text-[11px] text-slate-400">
-                      {stage === 1 && 'Stopping Docker processes and releasing port mappings...'}
+                      {stage === 1 && UNINSTALL_MODAL_STRINGS.step1Desc}
                       {stage === 2 &&
                         (removeVolumes
-                          ? 'Zeroing memory buffers and purging volume data...'
-                          : 'Preserving storage volumes as requested...')}
-                      {stage === 3 && 'Unlinking bridge network and signing SHA-256 audit entry...'}
+                          ? UNINSTALL_MODAL_STRINGS.step2DescPurge
+                          : UNINSTALL_MODAL_STRINGS.step2DescPreserve)}
+                      {stage === 3 && UNINSTALL_MODAL_STRINGS.step3Desc}
                     </div>
                   </div>
                 </div>
@@ -170,13 +178,14 @@ export const UninstallModal: React.FC<UninstallModalProps> = ({
               <div className="space-y-2 text-[11px] text-slate-400">
                 <div className="flex items-center space-x-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-ping"></span>
-                  <span>Executing 3-second safety window & NIST sanitization...</span>
+                  <span>{UNINSTALL_MODAL_STRINGS.executingSafetyWindow}</span>
                 </div>
                 {removeVolumes && service.volumes && service.volumes.length > 0 && (
                   <div className="flex items-center space-x-2 text-slate-400">
                     <HardDrive className="w-3.5 h-3.5 text-amber-400 shrink-0" />
                     <span className="truncate">
-                      Target volume: <strong className="text-slate-300 font-mono">{service.volumes[0]}</strong>
+                      {UNINSTALL_MODAL_STRINGS.targetVolumePrefix}{' '}
+                      <strong className="text-slate-300 font-mono">{service.volumes[0]}</strong>
                     </span>
                   </div>
                 )}
@@ -189,17 +198,16 @@ export const UninstallModal: React.FC<UninstallModalProps> = ({
                 <div className="p-3.5 bg-amber-500/[0.08] border border-amber-500/25 rounded-2xl space-y-1 text-[11px] text-amber-200">
                   <div className="font-semibold flex items-center gap-1.5 text-amber-300">
                     <ShieldAlert className="w-4 h-4" />
-                    <span>Four-Eyes Dual Control Enforced</span>
+                    <span>{UNINSTALL_MODAL_STRINGS.fourEyesEnforcedTitle}</span>
                   </div>
                   <p className="text-slate-300 leading-normal">
-                    This destructive action will generate a formal approval ticket (#TKT) requiring a second engineer or security lead's verification before teardown.
+                    {UNINSTALL_MODAL_STRINGS.fourEyesEnforcedDesc}
                   </p>
                 </div>
               )}
 
               <p className="text-slate-300 leading-relaxed">
-                This action will permanently terminate and de-provision container instances for{' '}
-                <strong className="text-white font-medium">{service.name}</strong>.
+                {UNINSTALL_MODAL_STRINGS.terminateWarning(service.name)}
               </p>
 
               {/* Volume removal toggle card */}
@@ -216,10 +224,12 @@ export const UninstallModal: React.FC<UninstallModalProps> = ({
                 </div>
                 <div>
                   <span className="font-semibold text-xs text-white block">
-                    Purge persistent storage (NIST SP 800-88 Crypto-Shred)
+                    {UNINSTALL_MODAL_STRINGS.purgeStorageTitle}
                   </span>
                   <span className="text-[11px] text-slate-400 leading-normal block mt-0.5">
-                    Cryptographically shreds stored data keys and removes Docker volumes ({service.volumes?.join(', ') || 'none'}).
+                    {UNINSTALL_MODAL_STRINGS.purgeStorageDesc(
+                      service.volumes?.join(', ') || UNINSTALL_MODAL_STRINGS.noneVolumes
+                    )}
                   </span>
                 </div>
               </div>
@@ -235,7 +245,7 @@ export const UninstallModal: React.FC<UninstallModalProps> = ({
                 onClick={onClose}
                 className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-white rounded-xl text-xs font-medium transition-colors"
               >
-                Dismiss
+                {COMMON_STRINGS.dismiss}
               </button>
               {onOpenGovernance && (
                 <button
@@ -245,7 +255,7 @@ export const UninstallModal: React.FC<UninstallModalProps> = ({
                   }}
                   className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-md active:scale-95"
                 >
-                  <span>Open Governance Center</span>
+                  <span>{UNINSTALL_MODAL_STRINGS.openGovernanceCenter}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
               )}
@@ -257,7 +267,7 @@ export const UninstallModal: React.FC<UninstallModalProps> = ({
                 disabled={isUninstalling}
                 className="px-4 py-2 bg-white/[0.06] hover:bg-white/[0.1] text-white rounded-xl text-xs font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
               >
-                Cancel
+                {COMMON_STRINGS.cancel}
               </button>
               <button
                 onClick={() => onConfirm(service.id, removeVolumes)}
@@ -273,17 +283,17 @@ export const UninstallModal: React.FC<UninstallModalProps> = ({
                 {isUninstalling ? (
                   <>
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>De-provisioning...</span>
+                    <span>{UNINSTALL_MODAL_STRINGS.deProvisioningButton}</span>
                   </>
                 ) : makerCheckerEnabled ? (
                   <>
                     <UserCheck className="w-3.5 h-3.5" />
-                    <span>Submit for Dual Authorization</span>
+                    <span>{UNINSTALL_MODAL_STRINGS.submitDualAuth}</span>
                   </>
                 ) : (
                   <>
                     <Trash2 className="w-3.5 h-3.5" />
-                    <span>Confirm Uninstall</span>
+                    <span>{UNINSTALL_MODAL_STRINGS.confirmUninstall}</span>
                   </>
                 )}
               </button>
