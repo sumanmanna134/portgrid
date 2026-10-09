@@ -8,6 +8,7 @@ PortGrid is a self-hosted developer platform that eliminates the complexity of c
 ## 🎯 Key Capabilities
 
 - **Bank-Grade & Critical Fintech Security:**
+  - *Full Specification*: See [Security Architecture Documentation](docs/SECURITY_ARCHITECTURE.md).
   - **FIPS 140-2 AES-256-GCM Envelope Encryption**: Sensitive credentials encrypted at rest with authenticated 128-bit tags and 256-bit master key isolation.
   - **Maker-Checker Dual Control (Four-Eyes Principle)**: Destructive de-provisioning requires explicit dual-authorization tickets (`#TKT-XXXX`) approved by a designated Security Checker.
   - **NIST SP 800-88 Rev 1 Cryptographic Shredding**: In-memory credential zeroing (`Buffer.fill(0)`), key purging, and volume destruction with verifiable cryptographic receipts.

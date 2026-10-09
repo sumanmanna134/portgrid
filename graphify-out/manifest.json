@@ -12,14 +12,14 @@
     "semantic_hash": "d33ccc8f158401204ae3d2f3f6d2444a"
   },
   "backend/data/instances.json": {
-    "mtime": 1791581845.2842648,
-    "seen": 1791582498.2547772,
+    "mtime": 1791582880.6467898,
+    "seen": 1791583101.75171,
     "ast_hash": "d751713988987e9331980363e24189ce",
     "semantic_hash": "d751713988987e9331980363e24189ce"
   },
   "backend/data/tickets.json": {
-    "mtime": 1791582483.826414,
-    "seen": 1791582498.2547772,
+    "mtime": 1791582933.8940043,
+    "seen": 1791583101.751711,
     "ast_hash": "d751713988987e9331980363e24189ce",
     "semantic_hash": ""
   },
@@ -330,15 +330,21 @@
     "semantic_hash": "263218e64def434f83641fc2c2b7c2c4"
   },
   "README.md": {
-    "mtime": 1791573163.6365523,
-    "seen": 1791581682.887444,
-    "ast_hash": "9d94eb4fe2c73df358a4dcc521ad257b",
-    "semantic_hash": "9d94eb4fe2c73df358a4dcc521ad257b"
+    "mtime": 1791583094.938703,
+    "seen": 1791583101.751735,
+    "ast_hash": "dd18673712720bdc708e08e395eca84b",
+    "semantic_hash": ""
   },
   "frontend/index.html": {
     "mtime": 1791579523.6922185,
     "seen": 1791581682.887444,
     "ast_hash": "f2ef9331073a43a10c7b18cf520e3214",
     "semantic_hash": "f2ef9331073a43a10c7b18cf520e3214"
+  },
+  "docs/SECURITY_ARCHITECTURE.md": {
+    "mtime": 1791583073.928271,
+    "seen": 1791583101.7517362,
+    "ast_hash": "a2d901d63737271046acb8b26c9d3bca",
+    "semantic_hash": ""
   }
 }
