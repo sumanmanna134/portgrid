@@ -298,7 +298,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-8 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="glass-modal w-full max-w-5xl h-[88vh] max-h-[880px] rounded-3xl shadow-[0_30px_90px_-20px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col border border-white/[0.1] bg-[#090d16]/95 backdrop-blur-2xl">
+      <div className="glass-modal w-full max-w-5xl h-[88vh] max-h-[880px] rounded-2xl shadow-[0_30px_90px_-20px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col border border-white/[0.1] bg-[#090d16]/95 backdrop-blur-2xl">
         {/* Top Header */}
         <div className="px-6 sm:px-8 pt-6 pb-5 border-b border-white/[0.08] flex items-center justify-between gap-4 bg-white/[0.015] shrink-0">
           <div className="flex items-center space-x-4 min-w-0">
@@ -311,7 +311,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                   {AUDIT_MODAL_STRINGS.title}
                 </h3>
                 <span
-                  className={`text-[10px] font-mono font-bold tracking-wider px-2.5 py-0.5 rounded-full border shrink-0 ${settings.securityProfile === 'BANK_GRADE_STRICT'
+                  className={`text-[10px] font-mono font-bold tracking-wider px-2.5 py-0.5 rounded-md border shrink-0 ${settings.securityProfile === 'BANK_GRADE_STRICT'
                     ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
                     : 'bg-sky-500/15 text-sky-300 border-sky-500/30'
                     }`}
@@ -359,7 +359,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
               <UserCheck className="w-3.5 h-3.5" />
               <span>{AUDIT_MODAL_STRINGS.tabGovernance}</span>
               {pendingTickets.length > 0 && (
-                <span className="text-[10px] px-1.5 py-0.2 rounded-full font-bold bg-amber-500/25 text-amber-200 border border-amber-500/35 animate-pulse">
+                <span className="text-[10px] px-1.5 py-0.2 rounded-md font-bold bg-amber-500/25 text-amber-200 border border-amber-500/35 animate-pulse">
                   {pendingTickets.length}
                 </span>
               )}
@@ -392,10 +392,10 @@ export const AuditModal: React.FC<AuditModalProps> = ({
           {activeTab === 'audit' && (
             <div className="space-y-5">
               {/* Refined Unified Header: Cryptographic Status & Safeguards */}
-              <div className="p-4 sm:p-5 bg-gradient-to-r from-emerald-500/[0.08] via-emerald-500/[0.03] to-transparent border border-emerald-500/20 rounded-3xl space-y-3.5">
+              <div className="p-4 sm:p-5 bg-gradient-to-r from-emerald-500/[0.08] via-emerald-500/[0.03] to-transparent border border-emerald-500/20 rounded-xl space-y-3.5">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
                   <div className="flex items-center space-x-3.5">
-                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-inner">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-inner">
                       {verification?.verified ? (
                         <CheckCircle2 className="w-5 h-5 text-emerald-400" />
                       ) : (
@@ -407,7 +407,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                         <h4 className="text-sm font-semibold text-white tracking-tight">
                           {AUDIT_MODAL_STRINGS.merkleLedgerTitle}
                         </h4>
-                        <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                           {verification?.verified ? AUDIT_MODAL_STRINGS.intactBadge : AUDIT_MODAL_STRINGS.tamperBadge}
                         </span>
                       </div>
@@ -634,7 +634,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
           {activeTab === 'governance' && (
             <div className="space-y-6">
               {/* Policy Controls Section */}
-              <div className="bg-white/[0.02] border border-white/[0.07] rounded-3xl p-5 sm:p-6 space-y-4">
+              <div className="bg-white/[0.02] border border-white/[0.07] rounded-xl p-5 sm:p-6 space-y-4">
                 <div className="flex items-center justify-between border-b border-white/[0.06] pb-3.5">
                   <div className="flex items-center space-x-2.5">
                     <Settings2 className="w-4 h-4 text-sky-400" />
@@ -724,8 +724,8 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                 </div>
 
                 {pendingTickets.length === 0 ? (
-                  <div className="p-8 text-center bg-white/[0.015] border border-white/[0.06] rounded-3xl space-y-2">
-                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto text-emerald-400">
+                  <div className="p-8 text-center bg-white/[0.015] border border-white/[0.06] rounded-xl space-y-2">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto text-emerald-400">
                       <CheckCircle2 className="w-5 h-5" />
                     </div>
                     <div className="text-xs font-semibold text-white">{AUDIT_MODAL_STRINGS.queueClearTitle}</div>
@@ -734,57 +734,57 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-3.5">
                     {pendingTickets.map((ticket) => (
                       <div
                         key={ticket.id}
-                        className="bg-black/50 p-5 rounded-3xl border border-amber-500/25 space-y-4 shadow-xl"
+                        className="bg-black/50 p-4 sm:p-5 rounded-xl border border-amber-500/25 space-y-3.5 shadow-lg"
                       >
                         {/* Top row */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-white/[0.06] pb-3.5">
-                          <div className="flex items-center space-x-3">
-                            <span className="font-mono text-xs font-bold text-amber-300 bg-amber-500/15 border border-amber-500/30 px-2.5 py-1 rounded-xl">
+                        <div className="flex items-center justify-between gap-3 border-b border-white/[0.06] pb-3">
+                          <div className="flex items-center space-x-3 min-w-0">
+                            <span className="font-mono text-xs font-bold text-amber-300 bg-amber-500/15 border border-amber-500/30 px-2.5 py-0.5 rounded-md shrink-0">
                               #{ticket.id}
                             </span>
-                            <div>
+                            <div className="min-w-0">
                               <div className="text-xs font-semibold text-white flex items-center gap-2">
-                                <span>{AUDIT_MODAL_STRINGS.actionPrefix} {ticket.action}</span>
-                                <span className="text-[10px] font-mono font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-full border border-rose-500/20">
+                                <span className="truncate">{AUDIT_MODAL_STRINGS.actionPrefix} {ticket.action}</span>
+                                <span className="text-[10px] font-mono font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-500/20 shrink-0">
                                   {AUDIT_MODAL_STRINGS.highSeverityBadge}
                                 </span>
                               </div>
-                              <p className="text-[11px] text-slate-400 mt-0.5">
-                                {AUDIT_MODAL_STRINGS.targetPrefix} <strong className="text-white font-medium">{ticket.resource.name}</strong> ({ticket.resource.id})
+                              <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                                {AUDIT_MODAL_STRINGS.targetPrefix} <strong className="text-white font-medium">{ticket.resource.name}</strong> <span className="font-mono text-[10px] text-slate-500">({ticket.resource.id})</span>
                               </p>
                             </div>
                           </div>
 
-                          <div className="text-right text-[11px] text-slate-400 font-mono">
+                          <div className="text-right text-[11px] text-slate-400 font-mono shrink-0">
                             <div>{AUDIT_MODAL_STRINGS.makerLabel} <strong className="text-slate-200">{ticket.maker.userId}</strong></div>
-                            <div>{AUDIT_MODAL_STRINGS.originLabel} {ticket.maker.ipAddress} • {new Date(ticket.createdAt).toLocaleTimeString()}</div>
+                            <div className="text-[10px] text-slate-500">{ticket.maker.ipAddress} • {new Date(ticket.createdAt).toLocaleTimeString()}</div>
                           </div>
                         </div>
 
                         {/* Blast Radius & Payload Details */}
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3.5 bg-white/[0.02] rounded-2xl border border-white/[0.04] text-[11px] font-mono">
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-white/[0.02] rounded-lg border border-white/[0.04] text-[11px] font-mono">
                           <div>
                             <span className="text-slate-500 block">{AUDIT_MODAL_STRINGS.blastRadiusLabel}</span>
-                            <span className="text-rose-400 font-semibold mt-0.5 block">{AUDIT_MODAL_STRINGS.containerEviction}</span>
+                            <span className="text-rose-400 font-semibold mt-0.5 block truncate">{AUDIT_MODAL_STRINGS.containerEviction}</span>
                           </div>
                           <div>
                             <span className="text-slate-500 block">{AUDIT_MODAL_STRINGS.storagePurgeLabel}</span>
-                            <span className={ticket.payload.removeVolumes ? 'text-amber-400 font-semibold mt-0.5 block' : 'text-slate-300 font-semibold mt-0.5 block'}>
+                            <span className={ticket.payload.removeVolumes ? 'text-amber-400 font-semibold mt-0.5 block truncate' : 'text-slate-300 font-semibold mt-0.5 block truncate'}>
                               {ticket.payload.removeVolumes ? AUDIT_MODAL_STRINGS.storagePurgeYes : AUDIT_MODAL_STRINGS.storagePurgeNo}
                             </span>
                           </div>
                           <div>
                             <span className="text-slate-500 block">{AUDIT_MODAL_STRINGS.signOffWindowLabel}</span>
-                            <span className="text-slate-300 mt-0.5 block">{new Date(ticket.expiresAt).toLocaleTimeString()}</span>
+                            <span className="text-slate-300 mt-0.5 block truncate">{new Date(ticket.expiresAt).toLocaleTimeString()}</span>
                           </div>
                         </div>
 
-                        {/* Checker Decision Controls */}
-                        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-1">
+                        {/* Checker Decision Controls: Strictly in one row without overflow */}
+                        <div className="flex items-center gap-2.5 pt-1 w-full">
                           <input
                             type="text"
                             placeholder={AUDIT_MODAL_STRINGS.checkerNotePlaceholder}
@@ -792,14 +792,15 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                             onChange={(e) =>
                               setCheckerComment({ ...checkerComment, [ticket.id]: e.target.value })
                             }
-                            className="w-full sm:flex-1 bg-black/60 border border-white/[0.08] rounded-xl px-3.5 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500/50"
+                            className="flex-1 min-w-0 bg-black/60 border border-white/[0.08] rounded-lg px-3.5 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500/50 transition-colors"
                           />
 
-                          <div className="flex items-center space-x-2.5 w-full sm:w-auto justify-end">
+                          <div className="flex items-center gap-2 shrink-0">
                             <button
+                              type="button"
                               onClick={() => handleRejectTicket(ticket.id)}
                               disabled={rejectingTicketId === ticket.id || approvingTicketId === ticket.id}
-                              className="px-4 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 rounded-xl text-xs font-medium transition-all disabled:opacity-40"
+                              className="px-3.5 py-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 rounded-lg text-xs font-medium transition-all whitespace-nowrap shrink-0 disabled:opacity-40"
                             >
                               {rejectingTicketId === ticket.id ? (
                                 <Loader2 className="w-3.5 h-3.5 animate-spin inline" />
@@ -809,9 +810,10 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                             </button>
 
                             <button
+                              type="button"
                               onClick={() => handleApproveTicket(ticket.id)}
                               disabled={approvingTicketId === ticket.id || rejectingTicketId === ticket.id}
-                              className="px-4.5 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-md active:scale-95 disabled:opacity-40"
+                              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-sm active:scale-95 whitespace-nowrap shrink-0 disabled:opacity-40"
                             >
                               {approvingTicketId === ticket.id ? (
                                 <>
@@ -899,7 +901,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="bg-white/[0.02] p-5 rounded-3xl border border-white/[0.07] space-y-2.5">
+                <div className="bg-white/[0.02] p-5 rounded-xl border border-white/[0.07] space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-white">{AUDIT_MODAL_STRINGS.pciTitle}</span>
                     <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
@@ -911,7 +913,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                   </p>
                 </div>
 
-                <div className="bg-white/[0.02] p-5 rounded-3xl border border-white/[0.07] space-y-2.5">
+                <div className="bg-white/[0.02] p-5 rounded-xl border border-white/[0.07] space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-white">{AUDIT_MODAL_STRINGS.nistTitle}</span>
                     <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
@@ -923,7 +925,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                   </p>
                 </div>
 
-                <div className="bg-white/[0.02] p-5 rounded-3xl border border-white/[0.07] space-y-2.5">
+                <div className="bg-white/[0.02] p-5 rounded-xl border border-white/[0.07] space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-white">{AUDIT_MODAL_STRINGS.ffiecTitle}</span>
                     <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
@@ -935,7 +937,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                   </p>
                 </div>
 
-                <div className="bg-white/[0.02] p-5 rounded-3xl border border-white/[0.07] space-y-2.5">
+                <div className="bg-white/[0.02] p-5 rounded-xl border border-white/[0.07] space-y-2.5">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-white">{AUDIT_MODAL_STRINGS.soc2Title}</span>
                     <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">

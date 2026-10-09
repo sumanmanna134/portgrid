@@ -124,7 +124,7 @@
       "file_type": "code",
       "norm_label": "installmodalprops",
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L26"
+      "source_location": "L27"
     },
     {
       "id": "frontend_src_components_logsmodal_logsmodalprops",
@@ -779,7 +779,7 @@
       "file_type": "code",
       "norm_label": "getblueprinttheme()",
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L41"
+      "source_location": "L42"
     },
     {
       "id": "frontend_src_components_installmodal_installmodal",
@@ -791,7 +791,7 @@
       "file_type": "code",
       "norm_label": "installmodal()",
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L60"
+      "source_location": "L61"
     },
     {
       "id": "frontend_src_components_logsmodal_logsmodal",
@@ -2237,7 +2237,7 @@
       "file_type": "code",
       "norm_label": "audit_modal_strings",
       "source_file": "frontend/src/constants/strings.ts",
-      "source_location": "L269"
+      "source_location": "L270"
     },
     {
       "id": "frontend_src_constants_strings_catalog_strings",
@@ -2270,7 +2270,7 @@
       "file_type": "code",
       "norm_label": "credentials_modal_strings",
       "source_file": "frontend/src/constants/strings.ts",
-      "source_location": "L233"
+      "source_location": "L234"
     },
     {
       "id": "frontend_src_constants_strings_dashboard_strings",
@@ -2292,7 +2292,7 @@
       "file_type": "code",
       "norm_label": "homepage_strings",
       "source_file": "frontend/src/constants/strings.ts",
-      "source_location": "L412"
+      "source_location": "L413"
     },
     {
       "id": "frontend_src_constants_strings_install_modal_strings",
@@ -2314,7 +2314,7 @@
       "file_type": "code",
       "norm_label": "logs_modal_strings",
       "source_file": "frontend/src/constants/strings.ts",
-      "source_location": "L259"
+      "source_location": "L260"
     },
     {
       "id": "frontend_src_constants_strings_navbar_strings",
@@ -2347,7 +2347,7 @@
       "file_type": "code",
       "norm_label": "ui_strings",
       "source_file": "frontend/src/constants/strings.ts",
-      "source_location": "L506"
+      "source_location": "L507"
     },
     {
       "id": "frontend_src_constants_strings_uninstall_modal_strings",
@@ -2358,7 +2358,7 @@
       "file_type": "code",
       "norm_label": "uninstall_modal_strings",
       "source_file": "frontend/src/constants/strings.ts",
-      "source_location": "L199"
+      "source_location": "L200"
     },
     {
       "id": "frontend_src_constants_strings_workflow_modal_strings",
@@ -2369,7 +2369,7 @@
       "file_type": "code",
       "norm_label": "workflow_modal_strings",
       "source_file": "frontend/src/constants/strings.ts",
-      "source_location": "L359"
+      "source_location": "L360"
     },
     {
       "id": "frontend_src_main",
@@ -4531,6 +4531,7 @@
     {
       "id": "readme_blueprint_catalog",
       "label": "Built-In Infrastructure Blueprints",
+      "_origin": "semantic",
       "author": null,
       "captured_at": null,
       "community": 12,
@@ -4545,6 +4546,7 @@
     {
       "id": "readme_crypto_shredding",
       "label": "NIST SP 800-88 Cryptographic Shredding",
+      "_origin": "semantic",
       "author": null,
       "captured_at": null,
       "community": 12,
@@ -4559,6 +4561,7 @@
     {
       "id": "readme_fips140_encryption",
       "label": "FIPS 140-2 AES-256 Envelope Encryption",
+      "_origin": "semantic",
       "author": null,
       "captured_at": null,
       "community": 12,
@@ -4573,6 +4576,7 @@
     {
       "id": "readme_loopback_isolation",
       "label": "Loopback Network Isolation",
+      "_origin": "semantic",
       "author": null,
       "captured_at": null,
       "community": 12,
@@ -4587,6 +4591,7 @@
     {
       "id": "readme_maker_checker",
       "label": "Maker-Checker Dual Control Governance",
+      "_origin": "semantic",
       "author": null,
       "captured_at": null,
       "community": 12,
@@ -4601,6 +4606,7 @@
     {
       "id": "readme_merkle_audit_ledger",
       "label": "SHA-256 Merkle Audit Ledger",
+      "_origin": "semantic",
       "author": null,
       "captured_at": null,
       "community": 12,
@@ -4615,6 +4621,7 @@
     {
       "id": "readme_portgrid",
       "label": "PortGrid Platform",
+      "_origin": "semantic",
       "author": null,
       "captured_at": null,
       "community": 12,
@@ -4629,6 +4636,7 @@
     {
       "id": "readme_workflow_editor",
       "label": "Custom Service Onboarding Workflow Editor",
+      "_origin": "semantic",
       "author": null,
       "captured_at": null,
       "community": 12,
@@ -4643,6 +4651,7 @@
     {
       "id": "frontend_index_portgrid_web",
       "label": "PortGrid Web Application Shell",
+      "_origin": "semantic",
       "author": null,
       "captured_at": null,
       "community": 12,
@@ -5379,7 +5388,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L291",
+      "source_location": "L292",
       "weight": 1.0
     },
     {
@@ -5391,7 +5400,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L97",
+      "source_location": "L98",
       "weight": 1.0
     },
     {
@@ -6219,7 +6228,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L27",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
@@ -6231,7 +6240,7 @@
       "confidence_score": 1.0,
       "context": "field",
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L37",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
@@ -7863,7 +7872,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -7875,7 +7884,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -7887,7 +7896,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -7899,7 +7908,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -7911,7 +7920,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -7923,7 +7932,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -9687,7 +9696,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -9699,7 +9708,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -9711,7 +9720,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -9723,7 +9732,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L24",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -11791,7 +11800,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -11802,7 +11811,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L41",
+      "source_location": "L42",
       "weight": 1.0
     },
     {
@@ -11813,7 +11822,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "frontend/src/components/InstallModal.tsx",
-      "source_location": "L60",
+      "source_location": "L61",
       "weight": 1.0
     },
     {
@@ -12022,7 +12031,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "frontend/src/constants/strings.ts",
-      "source_location": "L199",
+      "source_location": "L200",
       "weight": 1.0
     },
     {
@@ -12033,7 +12042,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "frontend/src/constants/strings.ts",
-      "source_location": "L233",
+      "source_location": "L234",
       "weight": 1.0
     },
     {
@@ -12044,7 +12053,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "frontend/src/constants/strings.ts",
-      "source_location": "L259",
+      "source_location": "L260",
       "weight": 1.0
     },
     {
@@ -12055,7 +12064,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "frontend/src/constants/strings.ts",
-      "source_location": "L269",
+      "source_location": "L270",
       "weight": 1.0
     },
     {
@@ -12077,7 +12086,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "frontend/src/constants/strings.ts",
-      "source_location": "L359",
+      "source_location": "L360",
       "weight": 1.0
     },
     {
@@ -12088,7 +12097,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "frontend/src/constants/strings.ts",
-      "source_location": "L412",
+      "source_location": "L413",
       "weight": 1.0
     },
     {
@@ -12110,7 +12119,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "frontend/src/constants/strings.ts",
-      "source_location": "L506",
+      "source_location": "L507",
       "weight": 1.0
     },
     {
@@ -14098,6 +14107,7 @@
       "source": "frontend_index_portgrid_web",
       "target": "readme_portgrid",
       "relation": "references",
+      "_origin": "semantic",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "frontend/index.html",
@@ -14108,6 +14118,7 @@
       "source": "readme_portgrid",
       "target": "readme_blueprint_catalog",
       "relation": "references",
+      "_origin": "semantic",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
@@ -14118,6 +14129,7 @@
       "source": "readme_portgrid",
       "target": "readme_crypto_shredding",
       "relation": "references",
+      "_origin": "semantic",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
@@ -14128,6 +14140,7 @@
       "source": "readme_portgrid",
       "target": "readme_fips140_encryption",
       "relation": "references",
+      "_origin": "semantic",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
@@ -14138,6 +14151,7 @@
       "source": "readme_portgrid",
       "target": "readme_loopback_isolation",
       "relation": "references",
+      "_origin": "semantic",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
@@ -14148,6 +14162,7 @@
       "source": "readme_portgrid",
       "target": "readme_maker_checker",
       "relation": "references",
+      "_origin": "semantic",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
@@ -14158,6 +14173,7 @@
       "source": "readme_portgrid",
       "target": "readme_merkle_audit_ledger",
       "relation": "references",
+      "_origin": "semantic",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
@@ -14168,6 +14184,7 @@
       "source": "readme_portgrid",
       "target": "readme_workflow_editor",
       "relation": "references",
+      "_origin": "semantic",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
@@ -14178,6 +14195,7 @@
       "source": "readme_fips140_encryption",
       "target": "readme_crypto_shredding",
       "relation": "conceptually_related_to",
+      "_origin": "semantic",
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "README.md",
@@ -14188,6 +14206,7 @@
       "source": "readme_maker_checker",
       "target": "readme_merkle_audit_ledger",
       "relation": "conceptually_related_to",
+      "_origin": "semantic",
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "README.md",
@@ -14211,5 +14230,5 @@
       "source_file": "README.md"
     }
   ],
-  "built_at_commit": "d40152e5df8ff15d7598a9b3defc626225f9d710"
+  "built_at_commit": "49554ea0458ed0be2e77c2fbb8ed7ef3046374bf"
 }

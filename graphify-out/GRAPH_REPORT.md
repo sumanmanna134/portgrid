@@ -1,12 +1,19 @@
 # Graph Report - infradock  (2026-10-10)
 
 ## Corpus Check
-- Corpus is ~27,122 words - fits in a single context window. You may not need a graph.
+- 56 files · ~27,236 words
+- Verdict: corpus is large enough that graph structure adds value.
+- Unclassified: 2 file(s) not represented in the graph (top: (none) 1, .css 1)
 
 ## Summary
 - 404 nodes · 814 edges · 17 communities (12 shown, 5 thin omitted)
 - Extraction: 93% EXTRACTED · 7% INFERRED · 0% AMBIGUOUS · INFERRED: 60 edges (avg confidence: 0.85)
-- Token cost: 1,200 input · 450 output
+- Token cost: 0 input · 0 output
+
+## Graph Freshness
+- Built from commit: `49554ea0`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
 - Frontend React Dashboard & Modals

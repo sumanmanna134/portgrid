@@ -17,6 +17,7 @@ import {
   Activity,
   ShieldCheck,
   Check,
+  Loader2,
 } from 'lucide-react';
 import { ServiceBlueprint, InstalledServiceInstance } from '../types';
 import { INSTALL_MODAL_STRINGS, COMMON_STRINGS } from '../constants/strings';
@@ -281,7 +282,7 @@ export const InstallModal: React.FC<InstallModalProps> = ({
         </div>
 
         {/* MODAL SCROLLABLE BODY */}
-        <div className="flex-1 overflow-y-auto px-6 sm:px-7 py-6 space-y-5">
+        <div className="flex-1 overflow-y-auto px-6 sm:px-7 pt-6 pb-8 sm:pb-10 space-y-5">
           {isDeploying ? (
             /* VIEW 1: ENCLAVE PROVISIONING */
             <div className="space-y-4">
@@ -300,18 +301,26 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                   />
                 </div>
               ) : (
-                /* Crisp Enterprise 2D Enclave Status Card */
+                /* Crisp Enterprise 2D Enclave Status Card with Live Provisioning State */
                 <div className="rounded-xl bg-[#050811] border border-white/[0.08] p-5 shadow-inner">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3.5">
                       <div
-                        className="w-10 h-10 rounded-lg flex items-center justify-center border shadow-sm"
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center border shadow-sm transition-all ${
+                          !isCompleted ? 'relative ring-1 ring-sky-500/30' : ''
+                        }`}
                         style={{
                           backgroundColor: `${theme.color}15`,
                           borderColor: `${theme.color}35`,
                           color: theme.color,
                         }}
                       >
+                        {!isCompleted && (
+                          <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-sky-500"></span>
+                          </span>
+                        )}
                         {theme.icon}
                       </div>
                       <div>
@@ -320,15 +329,20 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                             {customName || blueprint.name}
                           </h3>
                           <span
-                            className={`text-[10px] font-mono px-2 py-0.5 rounded font-semibold border ${
+                            className={`text-[10px] font-mono px-2 py-0.5 rounded font-semibold border flex items-center gap-1.5 ${
                               isCompleted
                                 ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
                                 : 'bg-sky-500/15 text-sky-300 border-sky-500/30'
                             }`}
                           >
-                            {isCompleted
-                              ? INSTALL_MODAL_STRINGS.statusOnline
-                              : INSTALL_MODAL_STRINGS.statusInitializing}
+                            {!isCompleted && (
+                              <Loader2 className="w-2.5 h-2.5 animate-spin text-sky-400 shrink-0" />
+                            )}
+                            <span>
+                              {isCompleted
+                                ? INSTALL_MODAL_STRINGS.statusOnline
+                                : INSTALL_MODAL_STRINGS.statusInitializing}
+                            </span>
                           </span>
                         </div>
                         <div className="flex items-center space-x-3 text-[11px] text-slate-400 font-mono mt-0.5">
@@ -341,9 +355,14 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                     </div>
 
                     <div className="text-right">
-                      <span className="text-base font-bold font-mono text-white">
-                        {Math.round(progress)}%
-                      </span>
+                      <div className="flex items-center justify-end gap-1.5">
+                        {!isCompleted && (
+                          <span className="inline-block w-1.5 h-1.5 rounded-full bg-sky-400 animate-pulse" />
+                        )}
+                        <span className="text-base font-bold font-mono text-white">
+                          {Math.round(progress)}%
+                        </span>
+                      </div>
                       <span className="block text-[10px] text-slate-400 font-mono">
                         {isCompleted
                           ? INSTALL_MODAL_STRINGS.enclaveReadyBadge
@@ -377,24 +396,33 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                 </div>
               )}
 
-              {/* Unified Progress Track */}
+              {/* Unified Progress Track with Animated Pulse */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-400 font-mono text-[11px]">
-                    {INSTALL_MODAL_STRINGS.blocksAssembledCount(Math.min(5, step), 5)}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {!isCompleted && (
+                      <Loader2 className="w-3 h-3 text-sky-400 animate-spin shrink-0" />
+                    )}
+                    <span className="text-slate-400 font-mono text-[11px]">
+                      {INSTALL_MODAL_STRINGS.blocksAssembledCount(Math.min(5, step), 5)}
+                    </span>
+                  </div>
                   <span className="text-slate-300 font-mono font-semibold">
                     {Math.round(progress)}%
                   </span>
                 </div>
-                <div className="h-1.5 w-full bg-white/[0.06] rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-white/[0.06] rounded-md overflow-hidden relative">
                   <div
-                    className="h-full rounded-full transition-all duration-500 ease-out"
+                    className="h-full rounded-md transition-all duration-500 ease-out relative overflow-hidden"
                     style={{
                       width: `${progress}%`,
                       backgroundColor: isCompleted ? '#10b981' : theme.color,
                     }}
-                  />
+                  >
+                    {!isCompleted && (
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse" />
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -403,6 +431,7 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                 {enclaveBlocks.map((blk, idx) => {
                   const isAssembled = step >= blk.id;
                   const isSelected = selectedBlockIndex === idx;
+                  const isCurrentAssembling = step === blk.id && !isCompleted;
 
                   return (
                     <button
@@ -421,9 +450,11 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                         <span className="text-[10px] font-mono font-semibold">
                           #{blk.id}
                         </span>
-                        {isAssembled && (
+                        {isCompleted || step > blk.id ? (
                           <Check className="w-3 h-3 text-emerald-400" />
-                        )}
+                        ) : isCurrentAssembling ? (
+                          <Loader2 className="w-3 h-3 text-sky-400 animate-spin" />
+                        ) : null}
                       </div>
                       <span className="text-[10px] font-medium truncate block">
                         {blk.title}
@@ -442,8 +473,11 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                       {activeBlockData.title}
                     </span>
                   </div>
-                  <span className="text-[11px] font-mono text-sky-400 font-medium">
-                    {activeBlockData.spec}
+                  <span className="text-[11px] font-mono text-sky-400 font-medium flex items-center gap-1.5">
+                    {!isCompleted && step === activeBlockData.id && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-sky-400 animate-ping inline-block" />
+                    )}
+                    <span>{activeBlockData.spec}</span>
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-400 leading-relaxed font-normal">
@@ -576,7 +610,7 @@ export const InstallModal: React.FC<InstallModalProps> = ({
         </div>
 
         {/* MODAL FIXED FOOTER */}
-        <div className="flex-shrink-0 px-6 sm:px-7 py-4.5 border-t border-white/[0.06] bg-white/[0.015] flex items-center justify-between">
+        <div className="flex-shrink-0 px-6 sm:px-7 py-5 sm:py-6 border-t border-white/[0.06] bg-white/[0.015] flex items-center justify-between">
           {isDeploying ? (
             isCompleted ? (
               <div className="flex items-center justify-between w-full gap-3">
@@ -586,7 +620,7 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                       onClose();
                       onViewCredentials(deployedInstance);
                     }}
-                    className="px-4 py-2.5 bg-white/[0.06] hover:bg-white/[0.1] text-slate-200 hover:text-white rounded-lg text-xs font-medium transition-colors border border-white/[0.08]"
+                    className="px-4.5 py-2.5 bg-white/[0.06] hover:bg-white/[0.1] text-slate-200 hover:text-white rounded-lg text-xs font-medium transition-colors border border-white/[0.08]"
                   >
                     {INSTALL_MODAL_STRINGS.viewCredentialsButton}
                   </button>
@@ -598,7 +632,7 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                       href={deployedInstance.uiUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold rounded-lg text-xs flex items-center space-x-1.5 transition-all shadow-md active:scale-95"
+                      className="px-4.5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold rounded-lg text-xs flex items-center space-x-1.5 transition-all shadow-md active:scale-95"
                     >
                       <span>{INSTALL_MODAL_STRINGS.openConsoleButton}</span>
                     </a>
@@ -617,13 +651,27 @@ export const InstallModal: React.FC<InstallModalProps> = ({
               </div>
             ) : (
               <div className="flex items-center justify-between w-full">
-                <span className="text-xs text-slate-400 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-sky-400 animate-pulse" />
-                  <span>{INSTALL_MODAL_STRINGS.deployingButton}</span>
-                </span>
-                <span className="text-xs font-mono text-slate-400">
-                  {Math.round(progress)}%
-                </span>
+                <div className="flex items-center gap-2.5">
+                  <div className="flex items-center justify-center w-5 h-5 rounded-md bg-sky-500/10 border border-sky-500/25 shrink-0">
+                    <Loader2 className="w-3.5 h-3.5 text-sky-400 animate-spin" />
+                  </div>
+                  <div className="flex items-center gap-1 text-xs font-medium text-slate-200">
+                    <span>{INSTALL_MODAL_STRINGS.deployingAnimatedText}</span>
+                    <span className="inline-flex items-center space-x-0.5 text-sky-400 font-mono">
+                      <span className="inline-block animate-bounce [animation-delay:0ms]">.</span>
+                      <span className="inline-block animate-bounce [animation-delay:150ms]">.</span>
+                      <span className="inline-block animate-bounce [animation-delay:300ms]">.</span>
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] text-slate-400 font-mono">
+                    {INSTALL_MODAL_STRINGS.stepCount(Math.min(5, step), 5)}
+                  </span>
+                  <span className="text-xs font-mono font-bold text-sky-400 bg-sky-500/10 px-2.5 py-1 rounded-md border border-sky-500/25">
+                    {Math.round(progress)}%
+                  </span>
+                </div>
               </div>
             )
           ) : (
@@ -631,7 +679,7 @@ export const InstallModal: React.FC<InstallModalProps> = ({
               <button
                 type="button"
                 onClick={handleQuickDeploy}
-                className="px-4 py-2.5 bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white rounded-lg text-xs font-medium flex items-center space-x-2 transition-colors border border-white/[0.06]"
+                className="px-4.5 py-2.5 bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white rounded-lg text-xs font-medium flex items-center space-x-2 transition-colors border border-white/[0.06]"
               >
                 <Server className="w-3.5 h-3.5 text-sky-400" />
                 <span>{INSTALL_MODAL_STRINGS.useDefaultsButton}</span>

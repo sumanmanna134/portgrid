@@ -117,6 +117,7 @@ export const INSTALL_MODAL_STRINGS = {
   useDefaultsButton: 'Use Defaults',
   deployContainerButton: 'Deploy Container',
   deployingButton: 'Deploying...',
+  deployingAnimatedText: 'Deploying',
 
   // 3D Deployment Chamber Strings
   deployChamberTitle: 'Interactive 3D Deployment Enclave',
@@ -327,8 +328,8 @@ export const AUDIT_MODAL_STRINGS = {
   storagePurgeNo: 'NO (Preserve)',
   signOffWindowLabel: 'Sign-off Window',
   checkerNotePlaceholder: 'Add Checker review verification note...',
-  rejectTicketButton: 'Reject Ticket',
-  approveTicketButton: 'Approve & Execute (Checker)',
+  rejectTicketButton: 'Reject',
+  approveTicketButton: 'Approve & Authorize',
   authorizingExecutingButton: 'Authorizing & Executing...',
   historicalQueueTitle: (count: number) => `Historical Dual-Authorization Log (${count})`,
   thTicketId: 'Ticket ID',
