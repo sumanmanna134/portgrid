@@ -8,12 +8,13 @@ import { LogsModal } from './components/LogsModal';
 import { InstallModal } from './components/InstallModal';
 import { WorkflowEditorModal } from './components/WorkflowEditorModal';
 import { AuditModal } from './components/AuditModal';
+import { HomePage } from './components/HomePage';
 import { ServiceBlueprint, InstalledServiceInstance, ApprovalTicket, GovernanceSettings } from './types';
 import { DASHBOARD_STRINGS, CATALOG_STRINGS } from './constants/strings';
 import { Plus, Box, Sparkles, CheckCircle2, Search, Filter } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'services' | 'catalog'>('services');
+  const [activeTab, setActiveTab] = useState<'home' | 'services' | 'catalog'>('home');
   const [blueprints, setBlueprints] = useState<ServiceBlueprint[]>([]);
   const [services, setServices] = useState<InstalledServiceInstance[]>([]);
   const [installingId, setInstallingId] = useState<string | null>(null);
@@ -273,6 +274,25 @@ export const App: React.FC = () => {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Homepage Overview Tab */}
+        {activeTab === 'home' && (
+          <HomePage
+            blueprints={blueprints}
+            services={services}
+            onNavigateServices={() => setActiveTab('services')}
+            onNavigateCatalog={() => setActiveTab('catalog')}
+            onOpenAudit={() => setIsAuditModalOpen(true)}
+            onDeployBlueprint={(blueprintId) => {
+              const bp = blueprints.find((b) => b.id === blueprintId) || null;
+              if (bp) {
+                setSelectedBlueprintForInstall(bp);
+              } else {
+                setActiveTab('catalog');
+              }
+            }}
+          />
+        )}
+
         {/* Active Services Tab */}
         {activeTab === 'services' && (
           <div className="space-y-6">

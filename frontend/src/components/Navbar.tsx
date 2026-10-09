@@ -3,8 +3,8 @@ import { Layers, Box, Cpu, Activity, Sparkles, Terminal, ShieldCheck } from 'luc
 import { NAVBAR_STRINGS } from '../constants/strings';
 
 interface NavbarProps {
-  activeTab: 'services' | 'catalog';
-  setActiveTab: (tab: 'services' | 'catalog') => void;
+  activeTab: 'home' | 'services' | 'catalog';
+  setActiveTab: (tab: 'home' | 'services' | 'catalog') => void;
   installedCount: number;
   runningCount: number;
   onOpenAudit?: () => void;
@@ -23,13 +23,16 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="sticky top-0 z-40 border-b border-white/[0.07] bg-[#080c14]/80 backdrop-blur-2xl transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand Identity */}
-        <div className="flex items-center space-x-3.5">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-sky-400 to-sky-600 flex items-center justify-center shadow-[0_2px_12px_rgba(14,165,233,0.25)] border border-white/20">
+        <div
+          onClick={() => setActiveTab('home')}
+          className="flex items-center space-x-3.5 cursor-pointer group"
+        >
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-b from-sky-400 to-sky-600 flex items-center justify-center shadow-[0_2px_12px_rgba(14,165,233,0.25)] border border-white/20 group-hover:scale-105 transition-transform">
             <Layers className="w-4 h-4 text-white" />
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <span className="font-semibold text-[15px] tracking-tight text-white">
+              <span className="font-semibold text-[15px] tracking-tight text-white group-hover:text-sky-300 transition-colors">
                 {NAVBAR_STRINGS.brandName}
               </span>
               <span className="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full bg-white/[0.06] text-slate-300 border border-white/[0.08]">
@@ -42,6 +45,18 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {/* Apple macOS Style Segmented Control Tabs */}
         <div className="flex items-center bg-white/[0.04] p-1 rounded-xl border border-white/[0.06] shadow-inner">
+          <button
+            onClick={() => setActiveTab('home')}
+            className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${
+              activeTab === 'home'
+                ? 'bg-white/[0.12] text-white shadow-[0_1px_8px_rgba(0,0,0,0.3)] border border-white/[0.1]'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.02]'
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+            <span>{NAVBAR_STRINGS.homeTab}</span>
+          </button>
+
           <button
             onClick={() => setActiveTab('services')}
             className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${
