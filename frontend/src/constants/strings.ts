@@ -92,7 +92,7 @@ export const SERVICE_CARD_STRINGS = {
   companionConsoleOffline: 'Admin Console Unavailable',
   offlineTooltip: 'Service is offline. Start the container to access web console.',
   offlineStatus: 'Offline',
-  configAndKeys: 'Configuration & Secrets',
+  configAndKeys: 'Config & Keys',
   logs: 'Logs',
   logsTooltip: 'View Container Logs',
   delete: 'Delete',
