@@ -24,3 +24,10 @@ Thumbs.db
 # IDE configurations
 .idea/
 .vscode/
+
+# Python Virtual Environment
+.venv/
+
+# Graphify machine-specific sidecars and local cache
+graphify-out/.*
+graphify-out/cache/
