@@ -25,6 +25,11 @@ import {
   Loader2,
   Filter,
   Copy,
+  Search,
+  ChevronDown,
+  ChevronRight,
+  Database,
+  Layers,
 } from 'lucide-react';
 import { ApprovalTicket, GovernanceSettings } from '../types';
 
@@ -67,7 +72,7 @@ export const AuditModal: React.FC<AuditModalProps> = ({
   isOpen,
   onClose,
   onTicketExecuted,
-  initialTab = 'governance',
+  initialTab = 'audit',
 }) => {
   const [activeTab, setActiveTab] = useState<'governance' | 'audit' | 'compliance'>(initialTab);
   const [logs, setLogs] = useState<AuditLogEntry[]>([]);
@@ -89,6 +94,8 @@ export const AuditModal: React.FC<AuditModalProps> = ({
   const [checkerComment, setCheckerComment] = useState<{ [id: string]: string }>({});
   const [copiedHash, setCopiedHash] = useState<string | null>(null);
   const [logFilter, setLogFilter] = useState<string>('ALL');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+  const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -265,20 +272,35 @@ export const AuditModal: React.FC<AuditModalProps> = ({
   const pendingTickets = tickets.filter((t) => t.status === 'PENDING_APPROVAL');
   const pastTickets = tickets.filter((t) => t.status !== 'PENDING_APPROVAL');
 
+  // Filter and search logic
   const filteredLogs = logs.filter((log) => {
-    if (logFilter === 'ALL') return true;
-    if (logFilter === 'INSTALLS') return log.action.includes('INSTALL') && !log.action.includes('UNINSTALL');
-    if (logFilter === 'UNINSTALLS') return log.action.includes('UNINSTALL');
-    if (logFilter === 'STATE') return log.action.includes('START') || log.action.includes('STOP');
-    if (logFilter === 'GOVERNANCE') return log.action.includes('CONFIG') || log.action.includes('AUDIT');
-    return true;
+    // 1. Category Filter
+    let matchesCategory = true;
+    if (logFilter === 'INSTALLS') matchesCategory = log.action.includes('INSTALL') && !log.action.includes('UNINSTALL');
+    else if (logFilter === 'UNINSTALLS') matchesCategory = log.action.includes('UNINSTALL');
+    else if (logFilter === 'STATE') matchesCategory = log.action.includes('START') || log.action.includes('STOP');
+    else if (logFilter === 'GOVERNANCE') matchesCategory = log.action.includes('CONFIG') || log.action.includes('AUDIT');
+
+    // 2. Search Query
+    let matchesSearch = true;
+    if (searchQuery.trim().length > 0) {
+      const q = searchQuery.toLowerCase();
+      matchesSearch =
+        log.action.toLowerCase().includes(q) ||
+        (log.resource.name || '').toLowerCase().includes(q) ||
+        log.resource.id.toLowerCase().includes(q) ||
+        log.actor.userId.toLowerCase().includes(q) ||
+        log.hash.toLowerCase().includes(q);
+    }
+
+    return matchesCategory && matchesSearch;
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="glass-modal w-full max-w-5xl h-[88vh] max-h-[880px] rounded-3xl shadow-[0_30px_90px_-20px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col border border-white/[0.1] bg-[#090d16]/95 backdrop-blur-2xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="glass-modal w-full max-w-5xl h-[90vh] max-h-[900px] rounded-3xl shadow-[0_30px_90px_-20px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col border border-white/[0.1] bg-[#090d16]/95 backdrop-blur-2xl">
         {/* Top Header */}
-        <div className="px-6 sm:px-8 py-5 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.015] shrink-0">
+        <div className="px-6 sm:px-8 py-4.5 border-b border-white/[0.08] flex items-center justify-between bg-white/[0.015] shrink-0">
           <div className="flex items-center space-x-3.5">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center text-slate-950 shadow-[0_2px_16px_rgba(16,185,129,0.3)] border border-emerald-300/30">
               <ShieldCheck className="w-5 h-5 text-slate-950" />
@@ -296,12 +318,12 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                   }`}
                 >
                   {settings.securityProfile === 'BANK_GRADE_STRICT'
-                    ? 'Bank-Grade Strict Active'
-                    : 'Standard Mode'}
+                    ? 'Bank-Grade Strict (Four-Eyes Active)'
+                    : 'Standard Developer Mode'}
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-0.5 font-normal">
-                Maker-Checker dual authorization, NIST SP 800-88 cryptographic shredding, and Merkle ledger
+                Maker-Checker dual authorization, NIST SP 800-88 cryptographic shredding, and Merkle audit ledger
               </p>
             </div>
           </div>
@@ -318,6 +340,18 @@ export const AuditModal: React.FC<AuditModalProps> = ({
         <div className="px-6 sm:px-8 py-3 bg-white/[0.01] border-b border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shrink-0">
           <div className="flex items-center bg-black/50 p-1 rounded-2xl border border-white/[0.06] shadow-inner">
             <button
+              onClick={() => setActiveTab('audit')}
+              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
+                activeTab === 'audit'
+                  ? 'bg-white/[0.12] text-white shadow-sm border border-white/[0.08]'
+                  : 'text-slate-400 hover:text-white hover:bg-white/[0.02]'
+              }`}
+            >
+              <FileCheck className="w-3.5 h-3.5" />
+              <span>Cryptographic Audit Trail</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab('governance')}
               className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
                 activeTab === 'governance'
@@ -332,18 +366,6 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                   {pendingTickets.length}
                 </span>
               )}
-            </button>
-
-            <button
-              onClick={() => setActiveTab('audit')}
-              className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-xl text-xs font-medium transition-all ${
-                activeTab === 'audit'
-                  ? 'bg-white/[0.12] text-white shadow-sm border border-white/[0.08]'
-                  : 'text-slate-400 hover:text-white hover:bg-white/[0.02]'
-              }`}
-            >
-              <FileCheck className="w-3.5 h-3.5" />
-              <span>Cryptographic Audit Trail</span>
             </button>
 
             <button
@@ -370,7 +392,252 @@ export const AuditModal: React.FC<AuditModalProps> = ({
 
         {/* Scrollable Modal Body */}
         <div className="p-6 sm:p-8 overflow-y-auto space-y-6 flex-1 text-xs">
-          {/* TAB 1: DUAL-CONTROL GOVERNANCE & MAKER-CHECKER */}
+          {/* TAB 1: CRYPTOGRAPHIC AUDIT TRAIL */}
+          {activeTab === 'audit' && (
+            <div className="space-y-5">
+              {/* Refined Unified Header: Cryptographic Status & Safeguards */}
+              <div className="p-4 sm:p-5 bg-gradient-to-r from-emerald-500/[0.08] via-emerald-500/[0.03] to-transparent border border-emerald-500/20 rounded-3xl space-y-3.5">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
+                  <div className="flex items-center space-x-3.5">
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 shadow-inner">
+                      {verification?.verified ? (
+                        <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                      ) : (
+                        <ShieldAlert className="w-5 h-5 text-rose-400" />
+                      )}
+                    </div>
+                    <div>
+                      <div className="flex items-center space-x-2.5">
+                        <h4 className="text-sm font-semibold text-white tracking-tight">
+                          SHA-256 Merkle Ledger Integrity
+                        </h4>
+                        <span className="text-[10px] font-mono font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                          {verification?.verified ? '100% INTACT & VALID' : 'TAMPER DETECTED'}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-300 font-mono mt-0.5">
+                        {verification?.message || 'Validating cryptographic hash chain from Genesis to tip...'}
+                      </p>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={verifyChain}
+                    disabled={isVerifying}
+                    className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs font-semibold flex items-center space-x-1.5 transition-all shadow-md active:scale-95 shrink-0 disabled:opacity-50"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${isVerifying ? 'animate-spin' : ''}`} />
+                    <span>Verify Chain</span>
+                  </button>
+                </div>
+
+                {/* Micro Safeguard Badges */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 border-t border-white/[0.06]">
+                  <div className="flex items-center space-x-2.5 px-3 py-2 rounded-xl bg-black/40 border border-white/[0.05]">
+                    <Network className="w-4 h-4 text-sky-400 shrink-0" />
+                    <div className="truncate">
+                      <span className="text-[10px] text-slate-400 block font-mono">NETWORK BOUNDARY</span>
+                      <span className="text-xs font-medium text-white truncate">127.0.0.1 Strict Loopback</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2.5 px-3 py-2 rounded-xl bg-black/40 border border-white/[0.05]">
+                    <Lock className="w-4 h-4 text-purple-400 shrink-0" />
+                    <div className="truncate">
+                      <span className="text-[10px] text-slate-400 block font-mono">STORAGE ENCRYPTION</span>
+                      <span className="text-xs font-medium text-white truncate">FIPS 140-2 AES-256-GCM</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center space-x-2.5 px-3 py-2 rounded-xl bg-black/40 border border-white/[0.05]">
+                    <Cpu className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <div className="truncate">
+                      <span className="text-[10px] text-slate-400 block font-mono">RUNTIME ISOLATION</span>
+                      <span className="text-xs font-medium text-white truncate">Linux NNP Hardened</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Ledger Controls: Filters & Search */}
+              <div className="space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  {/* Category Pills */}
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {[
+                      { id: 'ALL', label: 'All Events' },
+                      { id: 'INSTALLS', label: 'Installs' },
+                      { id: 'UNINSTALLS', label: 'Uninstalls' },
+                      { id: 'STATE', label: 'Lifecycle' },
+                      { id: 'GOVERNANCE', label: 'Governance' },
+                    ].map((tab) => (
+                      <button
+                        key={tab.id}
+                        onClick={() => setLogFilter(tab.id)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-medium transition-all ${
+                          logFilter === tab.id
+                            ? 'bg-white/[0.12] text-white border border-white/[0.1] shadow-sm'
+                            : 'text-slate-400 hover:text-white hover:bg-white/[0.03]'
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Search box & Count badge */}
+                  <div className="flex items-center space-x-3">
+                    <div className="relative w-full sm:w-60">
+                      <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        type="text"
+                        placeholder="Search resource, action, hash..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full bg-black/40 border border-white/[0.08] rounded-xl pl-8 pr-3 py-1.5 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-sky-500/50"
+                      />
+                    </div>
+                    <span className="text-[11px] text-slate-400 font-mono shrink-0">
+                      {filteredLogs.length} Blocks
+                    </span>
+                  </div>
+                </div>
+
+                {/* Dedicated Scroll Container with Sticky Header */}
+                {filteredLogs.length === 0 ? (
+                  <div className="p-10 text-center bg-black/30 border border-white/[0.06] rounded-2xl space-y-2 text-slate-400">
+                    <FileCheck className="w-8 h-8 mx-auto text-slate-500" />
+                    <div className="text-xs font-medium text-white">No matching audit records</div>
+                    <p className="text-[11px] text-slate-500">
+                      Try clearing search filters or deploying new infrastructure to record events.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="bg-black/50 rounded-2xl border border-white/[0.08] overflow-hidden shadow-inner flex flex-col">
+                    <div className="overflow-x-auto overflow-y-auto max-h-[380px]">
+                      <table className="w-full text-left border-collapse text-xs min-w-[780px]">
+                        <thead className="bg-[#0f1422] border-b border-white/[0.08] text-slate-400 sticky top-0 z-10 backdrop-blur-md">
+                          <tr>
+                            <th className="py-3 px-4 font-semibold w-24">Timestamp</th>
+                            <th className="py-3 px-4 font-semibold w-44">Event Action</th>
+                            <th className="py-3 px-4 font-semibold w-52">Target Resource</th>
+                            <th className="py-3 px-4 font-semibold w-40">Actor (Identity)</th>
+                            <th className="py-3 px-4 font-semibold w-44">SHA-256 Block</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-white/[0.04] text-slate-300 font-mono">
+                          {filteredLogs.map((log) => {
+                            const isExpanded = expandedLogId === log.id;
+                            return (
+                              <React.Fragment key={log.id}>
+                                <tr
+                                  onClick={() => setExpandedLogId(isExpanded ? null : log.id)}
+                                  className={`hover:bg-white/[0.025] transition-colors cursor-pointer select-none ${
+                                    isExpanded ? 'bg-white/[0.03]' : ''
+                                  }`}
+                                >
+                                  {/* Timestamp */}
+                                  <td className="py-2.5 px-4 text-slate-400 whitespace-nowrap text-[11px]">
+                                    <div className="flex items-center space-x-1.5">
+                                      {isExpanded ? (
+                                        <ChevronDown className="w-3 h-3 text-sky-400 shrink-0" />
+                                      ) : (
+                                        <ChevronRight className="w-3 h-3 text-slate-600 shrink-0" />
+                                      )}
+                                      <span>{new Date(log.timestamp).toLocaleTimeString()}</span>
+                                    </div>
+                                  </td>
+
+                                  {/* Action Badge */}
+                                  <td className="py-2.5 px-4 whitespace-nowrap">
+                                    <span
+                                      className={`px-2.5 py-0.5 rounded-md text-[10px] font-semibold tracking-wide border ${
+                                        log.action.includes('INSTALL') && !log.action.includes('UNINSTALL')
+                                          ? 'bg-sky-500/15 text-sky-300 border-sky-500/25'
+                                          : log.action.includes('UNINSTALL')
+                                          ? 'bg-rose-500/15 text-rose-300 border-rose-500/25'
+                                          : log.action.includes('START')
+                                          ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/25'
+                                          : log.action.includes('STOP')
+                                          ? 'bg-amber-500/15 text-amber-300 border-amber-500/25'
+                                          : 'bg-purple-500/15 text-purple-300 border-purple-500/25'
+                                      }`}
+                                    >
+                                      {log.action}
+                                    </span>
+                                  </td>
+
+                                  {/* Target Resource */}
+                                  <td className="py-2.5 px-4 truncate max-w-[200px]">
+                                    <span className="text-white font-medium block truncate">
+                                      {log.resource.name || log.resource.id}
+                                    </span>
+                                    <span className="text-[10px] text-slate-500 block truncate">
+                                      {log.resource.id}
+                                    </span>
+                                  </td>
+
+                                  {/* Operator / Actor */}
+                                  <td className="py-2.5 px-4 text-slate-300 text-[11px] whitespace-nowrap">
+                                    <div>{log.actor.userId}</div>
+                                    <div className="text-[10px] text-slate-500 font-mono">{log.actor.ipAddress}</div>
+                                  </td>
+
+                                  {/* SHA-256 Hash */}
+                                  <td className="py-2.5 px-4 text-emerald-400 text-[11px]">
+                                    <div
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        copyHashToClipboard(log.hash);
+                                      }}
+                                      className="inline-flex items-center space-x-1.5 px-2 py-1 rounded bg-black/40 hover:bg-black/80 border border-white/[0.06] transition-colors cursor-copy"
+                                      title="Click to copy full 64-char SHA-256 hash"
+                                    >
+                                      <span>{log.hash.substring(0, 10)}...</span>
+                                      {copiedHash === log.hash ? (
+                                        <Check className="w-3 h-3 text-emerald-400" />
+                                      ) : (
+                                        <Copy className="w-3 h-3 text-slate-500 hover:text-white" />
+                                      )}
+                                    </div>
+                                  </td>
+                                </tr>
+
+                                {/* Expanded Detail Drawer */}
+                                {isExpanded && (
+                                  <tr className="bg-black/70 border-b border-white/[0.04]">
+                                    <td colSpan={5} className="p-4 space-y-2 font-mono text-[11px]">
+                                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2 border-b border-white/[0.06]">
+                                        <div>
+                                          <span className="text-slate-500 block text-[10px]">EVENT ID (UUIDv4)</span>
+                                          <span className="text-slate-300 select-all">{log.id}</span>
+                                        </div>
+                                        <div>
+                                          <span className="text-slate-500 block text-[10px]">PREVIOUS BLOCK HASH (prevHash)</span>
+                                          <span className="text-slate-400 select-all truncate block">{log.prevHash}</span>
+                                        </div>
+                                      </div>
+
+                                      <div>
+                                        <span className="text-slate-500 block text-[10px]">CRYPTOGRAPHIC PAYLOAD SIGNATURE (JSON)</span>
+                                        <pre className="p-2.5 bg-black/60 rounded-xl border border-white/[0.04] text-[10px] text-sky-300 overflow-x-auto">
+                                          {JSON.stringify(log.details, null, 2)}
+                                        </pre>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                )}
+                              </React.Fragment>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* TAB 2: DUAL-CONTROL GOVERNANCE & MAKER-CHECKER */}
           {activeTab === 'governance' && (
             <div className="space-y-6">
               {/* Policy Controls Section */}
@@ -586,226 +853,47 @@ export const AuditModal: React.FC<AuditModalProps> = ({
                   </h4>
 
                   <div className="bg-black/50 rounded-2xl border border-white/[0.07] overflow-hidden">
-                    <table className="w-full text-left border-collapse text-xs">
-                      <thead className="bg-white/[0.03] border-b border-white/[0.06] text-slate-400">
-                        <tr>
-                          <th className="py-2.5 px-4 font-medium">Ticket ID</th>
-                          <th className="py-2.5 px-4 font-medium">Action</th>
-                          <th className="py-2.5 px-4 font-medium">Resource</th>
-                          <th className="py-2.5 px-4 font-medium">Maker / Checker</th>
-                          <th className="py-2.5 px-4 font-medium">Status</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-white/[0.04] text-slate-300 font-mono">
-                        {pastTickets.map((t) => (
-                          <tr key={t.id} className="hover:bg-white/[0.02]">
-                            <td className="py-2.5 px-4 text-sky-400 font-semibold font-mono">#{t.id}</td>
-                            <td className="py-2.5 px-4 text-slate-300">{t.action}</td>
-                            <td className="py-2.5 px-4 text-slate-200">{t.resource.name}</td>
-                            <td className="py-2.5 px-4 text-slate-400 text-[11px]">
-                              {t.maker.userId} / {t.checker?.userId || 'N/A'}
-                            </td>
-                            <td className="py-2.5 px-4">
-                              <span
-                                className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
-                                  t.status === 'EXECUTED'
-                                    ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25'
-                                    : t.status === 'APPROVED'
-                                    ? 'bg-sky-500/15 text-sky-300 border border-sky-500/25'
-                                    : 'bg-rose-500/15 text-rose-300 border border-rose-500/25'
-                                }`}
-                              >
-                                {t.status}
-                              </span>
-                            </td>
+                    <div className="overflow-x-auto max-h-56">
+                      <table className="w-full text-left border-collapse text-xs min-w-[600px]">
+                        <thead className="bg-[#0f1422] border-b border-white/[0.06] text-slate-400 sticky top-0">
+                          <tr>
+                            <th className="py-2.5 px-4 font-medium">Ticket ID</th>
+                            <th className="py-2.5 px-4 font-medium">Action</th>
+                            <th className="py-2.5 px-4 font-medium">Resource</th>
+                            <th className="py-2.5 px-4 font-medium">Maker / Checker</th>
+                            <th className="py-2.5 px-4 font-medium">Status</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody className="divide-y divide-white/[0.04] text-slate-300 font-mono">
+                          {pastTickets.map((t) => (
+                            <tr key={t.id} className="hover:bg-white/[0.02]">
+                              <td className="py-2.5 px-4 text-sky-400 font-semibold font-mono">#{t.id}</td>
+                              <td className="py-2.5 px-4 text-slate-300">{t.action}</td>
+                              <td className="py-2.5 px-4 text-slate-200">{t.resource.name}</td>
+                              <td className="py-2.5 px-4 text-slate-400 text-[11px]">
+                                {t.maker.userId} / {t.checker?.userId || 'N/A'}
+                              </td>
+                              <td className="py-2.5 px-4">
+                                <span
+                                  className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
+                                    t.status === 'EXECUTED'
+                                      ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/25'
+                                      : t.status === 'APPROVED'
+                                      ? 'bg-sky-500/15 text-sky-300 border border-sky-500/25'
+                                      : 'bg-rose-500/15 text-rose-300 border border-rose-500/25'
+                                  }`}
+                                >
+                                  {t.status}
+                                </span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
                   </div>
                 </div>
               )}
-            </div>
-          )}
-
-          {/* TAB 2: CRYPTOGRAPHIC AUDIT TRAIL */}
-          {activeTab === 'audit' && (
-            <div className="space-y-6">
-              {/* Active Security Controls Overview */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {/* Control 1 */}
-                <div className="bg-white/[0.02] p-4.5 rounded-2xl border border-white/[0.07] space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-                      <Network className="w-4 h-4 text-sky-400" />
-                      Network Isolation
-                    </span>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-300 border border-sky-500/30">
-                      127.0.0.1 Only
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                    Strict loopback binding. Eliminates LAN and Wi-Fi interface exposure across container daemons.
-                  </p>
-                </div>
-
-                {/* Control 2 */}
-                <div className="bg-white/[0.02] p-4.5 rounded-2xl border border-white/[0.07] space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-                      <Lock className="w-4 h-4 text-purple-400" />
-                      Data at Rest
-                    </span>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-300 border border-purple-500/30">
-                      AES-256-GCM
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                    FIPS 140-2 envelope encryption with authenticated tags and protected 256-bit master key.
-                  </p>
-                </div>
-
-                {/* Control 3 */}
-                <div className="bg-white/[0.02] p-4.5 rounded-2xl border border-white/[0.07] space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-                      <Cpu className="w-4 h-4 text-emerald-400" />
-                      Container Hardening
-                    </span>
-                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                      NNP Active
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                    Linux SecurityOpt `no-new-privileges` prevents kernel privilege escalation inside pods.
-                  </p>
-                </div>
-              </div>
-
-              {/* Cryptographic Ledger Verification Banner */}
-              <div className="p-4.5 bg-emerald-500/[0.07] border border-emerald-500/25 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3.5">
-                <div className="flex items-center space-x-3.5">
-                  <div className="p-2.5 bg-emerald-500/20 text-emerald-400 rounded-xl">
-                    {verification?.verified ? (
-                      <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                    ) : (
-                      <ShieldAlert className="w-5 h-5 text-rose-400" />
-                    )}
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h4 className="text-xs font-semibold text-white">
-                        Cryptographic SHA-256 Merkle Chain Integrity
-                      </h4>
-                      <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300">
-                        {verification?.verified ? '100% INTACT & VALID' : 'TAMPER DETECTED'}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-300 font-mono mt-0.5">
-                      {verification?.message || 'Validating cryptographic audit hashes...'}
-                    </p>
-                  </div>
-                </div>
-
-                <button
-                  onClick={verifyChain}
-                  disabled={isVerifying}
-                  className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm shrink-0 disabled:opacity-50"
-                >
-                  <RefreshCw className={`w-3.5 h-3.5 ${isVerifying ? 'animate-spin' : ''}`} />
-                  <span>Verify Integrity</span>
-                </button>
-              </div>
-
-              {/* Audit Logs Filter Bar & Table */}
-              <div className="space-y-3">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                  <div className="flex items-center space-x-1.5">
-                    {['ALL', 'INSTALLS', 'UNINSTALLS', 'STATE', 'GOVERNANCE'].map((f) => (
-                      <button
-                        key={f}
-                        onClick={() => setLogFilter(f)}
-                        className={`px-3 py-1 rounded-lg text-[11px] font-medium transition-all ${
-                          logFilter === f
-                            ? 'bg-white/[0.12] text-white border border-white/[0.1]'
-                            : 'text-slate-400 hover:text-white hover:bg-white/[0.04]'
-                        }`}
-                      >
-                        {f}
-                      </button>
-                    ))}
-                  </div>
-                  <span className="text-[11px] text-slate-500 font-mono">
-                    {filteredLogs.length} Events Displayed
-                  </span>
-                </div>
-
-                {filteredLogs.length === 0 ? (
-                  <div className="p-8 text-center bg-black/40 border border-white/[0.06] rounded-2xl text-xs text-slate-400">
-                    No matching audit records found.
-                  </div>
-                ) : (
-                  <div className="bg-black/60 rounded-2xl border border-white/[0.07] overflow-hidden">
-                    <table className="w-full text-left border-collapse text-xs">
-                      <thead className="bg-white/[0.03] border-b border-white/[0.06] text-slate-400">
-                        <tr>
-                          <th className="py-2.5 px-4 font-medium">Timestamp</th>
-                          <th className="py-2.5 px-4 font-medium">Action</th>
-                          <th className="py-2.5 px-4 font-medium">Target Resource</th>
-                          <th className="py-2.5 px-4 font-medium">Actor</th>
-                          <th className="py-2.5 px-4 font-medium font-mono">SHA-256 Block</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-white/[0.04] text-slate-300 font-mono">
-                        {filteredLogs.map((log) => (
-                          <tr key={log.id} className="hover:bg-white/[0.02] transition-colors">
-                            <td className="py-2.5 px-4 text-slate-400 whitespace-nowrap text-[11px]">
-                              {new Date(log.timestamp).toLocaleTimeString()}
-                            </td>
-                            <td className="py-2.5 px-4 whitespace-nowrap">
-                              <span
-                                className={`px-2 py-0.5 rounded text-[10px] font-semibold tracking-wide ${
-                                  log.action.includes('INSTALL') && !log.action.includes('UNINSTALL')
-                                    ? 'bg-sky-500/15 text-sky-300 border border-sky-500/20'
-                                    : log.action.includes('UNINSTALL')
-                                    ? 'bg-rose-500/15 text-rose-300 border border-rose-500/20'
-                                    : log.action.includes('START')
-                                    ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/20'
-                                    : log.action.includes('STOP')
-                                    ? 'bg-amber-500/15 text-amber-300 border border-amber-500/20'
-                                    : 'bg-purple-500/15 text-purple-300 border border-purple-500/20'
-                                }`}
-                              >
-                                {log.action}
-                              </span>
-                            </td>
-                            <td className="py-2.5 px-4 text-slate-200 font-medium truncate max-w-[180px]">
-                              {log.resource.name || log.resource.id}
-                            </td>
-                            <td className="py-2.5 px-4 text-slate-400 text-[11px]">
-                              {log.actor.userId} ({log.actor.ipAddress})
-                            </td>
-                            <td className="py-2.5 px-4 text-emerald-400/90 text-[11px]">
-                              <button
-                                onClick={() => copyHashToClipboard(log.hash)}
-                                className="flex items-center space-x-1.5 hover:text-white transition-colors"
-                                title="Click to copy full SHA-256 hash"
-                              >
-                                <span>{log.hash.substring(0, 10)}...</span>
-                                {copiedHash === log.hash ? (
-                                  <Check className="w-3 h-3 text-emerald-400" />
-                                ) : (
-                                  <Copy className="w-3 h-3 opacity-60 hover:opacity-100" />
-                                )}
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
-              </div>
             </div>
           )}
 
