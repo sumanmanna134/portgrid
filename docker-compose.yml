@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  portgrid:
+    image: portgrid/portgrid:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: portgrid
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATA_DIR=/app/data
+      # Optional: specify custom 256-bit hex master key (auto-generated in DATA_DIR/.master.key if omitted)
+      # - PORTGRID_MASTER_KEY=your-32-byte-hex-encoded-secret
+    volumes:
+      # Docker socket mount for Docker-outside-of-Docker container orchestration
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Persistent volume for cryptographic master key, audit logs, and catalog state
+      - portgrid_data:/app/data
+
+volumes:
+  portgrid_data:
+    driver: local

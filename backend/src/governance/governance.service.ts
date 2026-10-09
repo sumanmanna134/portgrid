@@ -8,8 +8,14 @@ import { AuditService } from '../audit/audit.service';
 @Injectable()
 export class GovernanceService {
   private readonly logger = new Logger(GovernanceService.name);
-  private readonly ticketsFilePath = path.join(process.cwd(), 'data', 'tickets.json');
-  private readonly settingsFilePath = path.join(process.cwd(), 'data', 'governance-settings.json');
+  private readonly ticketsFilePath = path.join(
+    process.env.DATA_DIR || path.join(process.cwd(), 'data'),
+    'tickets.json',
+  );
+  private readonly settingsFilePath = path.join(
+    process.env.DATA_DIR || path.join(process.cwd(), 'data'),
+    'governance-settings.json',
+  );
   private tickets: Map<string, ApprovalTicket> = new Map();
   private settings: GovernanceSettings = {
     makerCheckerEnabled: true,

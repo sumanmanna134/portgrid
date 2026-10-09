@@ -257,3 +257,4 @@ classDiagram
     ServicesService --> AuditService : Tamper-Evident Logging
     GovernanceService --> AuditService : Dual-Control Audit Logs
 ```
+

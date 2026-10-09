@@ -1,6 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { Logger } from '@nestjs/common';
 import { AppModule } from './app.module';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as express from 'express';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -32,12 +35,33 @@ async function bootstrap() {
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   });
 
+  // Serve static frontend UI if present (for single-container Docker or production release)
+  const candidateFrontendDirs = [
+    process.env.FRONTEND_DIR,
+    path.join(__dirname, '..', '..', 'frontend', 'dist'),
+    path.join(process.cwd(), '..', 'frontend', 'dist'),
+    path.join(process.cwd(), 'public'),
+    path.join(__dirname, 'public'),
+  ].filter(Boolean) as string[];
+
+  const staticDir = candidateFrontendDirs.find((dir) => fs.existsSync(path.join(dir, 'index.html')));
+  if (staticDir) {
+    logger.log(`Serving unified frontend UI from: ${staticDir}`);
+    expressApp.use(express.static(staticDir));
+    expressApp.get('*', (req: any, res: any, next: any) => {
+      if (req.path.startsWith('/api')) {
+        return next();
+      }
+      res.sendFile(path.join(staticDir, 'index.html'));
+    });
+  }
+
   const port = process.env.PORT || 4000;
   await app.listen(port);
   logger.log(`=======================================================`);
-  logger.log(`🚀 PortGrid Control Plane is running on http://localhost:${port}`);
-  logger.log(`📦 Catalog API: http://localhost:${port}/api/catalog`);
-  logger.log(`⚙️  Services API: http://localhost:${port}/api/services`);
+  logger.log(`PortGrid Control Plane is running on http://localhost:${port}`);
+  logger.log(`Catalog API: http://localhost:${port}/api/catalog`);
+  logger.log(`Services API: http://localhost:${port}/api/services`);
   logger.log(`=======================================================`);
 }
 

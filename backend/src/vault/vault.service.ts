@@ -22,7 +22,7 @@ export class VaultService {
       return crypto.createHash('sha256').update(envKey.trim()).digest();
     }
 
-    const dataDir = path.join(process.cwd(), 'data');
+    const dataDir = process.env.DATA_DIR || path.join(process.cwd(), 'data');
     if (!fs.existsSync(dataDir)) {
       fs.mkdirSync(dataDir, { recursive: true });
     }
@@ -41,7 +41,7 @@ export class VaultService {
     const newKey = crypto.randomBytes(32);
     try {
       fs.writeFileSync(keyPath, newKey.toString('hex'), { mode: 0o600 });
-      this.logger.log('🔐 Initialized new FIPS-grade 256-bit Master Encryption Key in data/.master.key');
+      this.logger.log('Initialized new FIPS-grade 256-bit Master Encryption Key in data/.master.key');
     } catch (err: any) {
       this.logger.error(`Failed to persist master key: ${err.message}`);
     }

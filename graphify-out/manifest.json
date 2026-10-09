@@ -1,9 +1,9 @@
 {
   "backend/data/custom-blueprints.json": {
     "mtime": 1791581697.7240207,
-    "seen": 1791582498.254772,
+    "seen": 1791583713.910372,
     "ast_hash": "d751713988987e9331980363e24189ce",
-    "semantic_hash": ""
+    "semantic_hash": "d751713988987e9331980363e24189ce"
   },
   "backend/data/governance-settings.json": {
     "mtime": 1791573853.88019,
@@ -19,9 +19,9 @@
   },
   "backend/data/tickets.json": {
     "mtime": 1791582933.8940043,
-    "seen": 1791583101.751711,
+    "seen": 1791583713.910437,
     "ast_hash": "d751713988987e9331980363e24189ce",
-    "semantic_hash": ""
+    "semantic_hash": "d751713988987e9331980363e24189ce"
   },
   "backend/nest-cli.json": {
     "mtime": 1791566153.0308855,
@@ -54,10 +54,10 @@
     "semantic_hash": "db8eddce07bab35a4e816f97c946cc6d"
   },
   "backend/src/audit/audit.service.ts": {
-    "mtime": 1791571554.3591297,
-    "seen": 1791581682.887427,
-    "ast_hash": "1e658dd2da7024088058b2444b4ff562",
-    "semantic_hash": "1e658dd2da7024088058b2444b4ff562"
+    "mtime": 1791583545.6536634,
+    "seen": 1791583713.910532,
+    "ast_hash": "0dc3bc92880b1f325081212fd5571d90",
+    "semantic_hash": "0dc3bc92880b1f325081212fd5571d90"
   },
   "backend/src/catalog/blueprint.interface.ts": {
     "mtime": 1791569022.0538368,
@@ -108,10 +108,10 @@
     "semantic_hash": "93637551588839c915f64c4048eb114e"
   },
   "backend/src/catalog/catalog.service.ts": {
-    "mtime": 1791569050.1529546,
-    "seen": 1791581682.88743,
-    "ast_hash": "061469a97c51b90f4c13ee6a513aae4e",
-    "semantic_hash": "061469a97c51b90f4c13ee6a513aae4e"
+    "mtime": 1791583555.662818,
+    "seen": 1791583713.910697,
+    "ast_hash": "02417f7a34c94fdb11f48f059b06e16d",
+    "semantic_hash": "02417f7a34c94fdb11f48f059b06e16d"
   },
   "backend/src/docker/docker.module.ts": {
     "mtime": 1791566336.0674858,
@@ -120,10 +120,10 @@
     "semantic_hash": "28660961229616950d5c51876b39c977"
   },
   "backend/src/docker/docker.service.ts": {
-    "mtime": 1791571638.1443217,
-    "seen": 1791581682.887431,
-    "ast_hash": "0d0eb8c73702dfde3a3f79fcd47fbe89",
-    "semantic_hash": "0d0eb8c73702dfde3a3f79fcd47fbe89"
+    "mtime": 1791583520.72559,
+    "seen": 1791583713.9107158,
+    "ast_hash": "e9ba7ce881b4afc5766bcc05a6bd63ad",
+    "semantic_hash": "e9ba7ce881b4afc5766bcc05a6bd63ad"
   },
   "backend/src/governance/governance.controller.ts": {
     "mtime": 1791572570.952097,
@@ -144,16 +144,16 @@
     "semantic_hash": "b3a62a6e8973ba96eda223e39e3eba8a"
   },
   "backend/src/governance/governance.service.ts": {
-    "mtime": 1791572431.8074555,
-    "seen": 1791581682.8874319,
-    "ast_hash": "84605f8d6686ea46442038f7dd7cf6be",
-    "semantic_hash": "84605f8d6686ea46442038f7dd7cf6be"
+    "mtime": 1791583564.8248343,
+    "seen": 1791583713.910773,
+    "ast_hash": "5650361df6abcb5f0bcb3fb7749aa7d9",
+    "semantic_hash": "5650361df6abcb5f0bcb3fb7749aa7d9"
   },
   "backend/src/main.ts": {
-    "mtime": 1791572665.9944346,
-    "seen": 1791581682.887433,
-    "ast_hash": "dc5558d2871efda6b3daab7f6a2e0b73",
-    "semantic_hash": "dc5558d2871efda6b3daab7f6a2e0b73"
+    "mtime": 1791583486.756109,
+    "seen": 1791583713.910774,
+    "ast_hash": "e1dbfbf334861eb8b78cc596b62a3cf5",
+    "semantic_hash": "e1dbfbf334861eb8b78cc596b62a3cf5"
   },
   "backend/src/services/services.controller.ts": {
     "mtime": 1791572655.1829703,
@@ -168,10 +168,10 @@
     "semantic_hash": "25f398e50af790d3485d781396f7c1b9"
   },
   "backend/src/services/services.service.ts": {
-    "mtime": 1791572645.4992402,
-    "seen": 1791581682.887434,
-    "ast_hash": "99480dfabf6728596ef878415d17896f",
-    "semantic_hash": "99480dfabf6728596ef878415d17896f"
+    "mtime": 1791583572.3800633,
+    "seen": 1791583713.9108071,
+    "ast_hash": "37eb7cebcc0f2d2332251fa4db7e2dec",
+    "semantic_hash": "37eb7cebcc0f2d2332251fa4db7e2dec"
   },
   "backend/src/vault/vault.module.ts": {
     "mtime": 1791566309.2182777,
@@ -180,10 +180,10 @@
     "semantic_hash": "98197a2d5daba058582bf41c345c81fc"
   },
   "backend/src/vault/vault.service.ts": {
-    "mtime": 1791571532.8738909,
-    "seen": 1791581682.887434,
-    "ast_hash": "5f04857029f90258aaf6c8dce2fca2e2",
-    "semantic_hash": "5f04857029f90258aaf6c8dce2fca2e2"
+    "mtime": 1791583579.1241703,
+    "seen": 1791583713.9108238,
+    "ast_hash": "1d7b20b967647a5781dd8375460297a5",
+    "semantic_hash": "1d7b20b967647a5781dd8375460297a5"
   },
   "backend/tsconfig.json": {
     "mtime": 1791566148.669697,
@@ -211,9 +211,9 @@
   },
   "frontend/src/components/AuditModal.tsx": {
     "mtime": 1791582715.2043633,
-    "seen": 1791582736.473997,
+    "seen": 1791583713.910878,
     "ast_hash": "fa8da4caa4b12e2ffc354e95addd67f2",
-    "semantic_hash": ""
+    "semantic_hash": "fa8da4caa4b12e2ffc354e95addd67f2"
   },
   "frontend/src/components/CatalogCard.tsx": {
     "mtime": 1791579811.771446,
@@ -241,9 +241,9 @@
   },
   "frontend/src/components/InstallModal.tsx": {
     "mtime": 1791582313.2578223,
-    "seen": 1791582498.254796,
+    "seen": 1791583713.910945,
     "ast_hash": "a7c1af396fad0bc76b7c129d47a5d95b",
-    "semantic_hash": ""
+    "semantic_hash": "a7c1af396fad0bc76b7c129d47a5d95b"
   },
   "frontend/src/components/LogsModal.tsx": {
     "mtime": 1791580037.69664,
@@ -289,9 +289,9 @@
   },
   "frontend/src/constants/strings.ts": {
     "mtime": 1791582222.7270257,
-    "seen": 1791582498.2547998,
+    "seen": 1791583713.911059,
     "ast_hash": "fef0fa77953760e7ca4b589837a4cad0",
-    "semantic_hash": ""
+    "semantic_hash": "fef0fa77953760e7ca4b589837a4cad0"
   },
   "frontend/src/main.tsx": {
     "mtime": 1791566613.1916482,
@@ -324,10 +324,10 @@
     "semantic_hash": "43070884abcfe0ceeb6da541decca7b3"
   },
   "start.sh": {
-    "mtime": 1791582483.8267002,
-    "seen": 1791582498.254803,
-    "ast_hash": "263218e64def434f83641fc2c2b7c2c4",
-    "semantic_hash": "263218e64def434f83641fc2c2b7c2c4"
+    "mtime": 1791583469.924894,
+    "seen": 1791583713.911126,
+    "ast_hash": "146db4fcef873ff02159bf1db68efc3d",
+    "semantic_hash": "146db4fcef873ff02159bf1db68efc3d"
   },
   "README.md": {
     "mtime": 1791583094.938703,

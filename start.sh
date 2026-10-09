@@ -7,7 +7,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cd "$DIR"
 
 echo "=========================================================="
-echo "🚀 Starting PortGrid Control Plane & Dashboard..."
+echo "Starting PortGrid Control Plane and Dashboard..."
 echo "=========================================================="
 
 # Start backend in background
@@ -29,9 +29,9 @@ cleanup() {
 trap cleanup INT TERM
 
 echo ""
-echo "✨ PortGrid is running!"
-echo "👉 Dashboard: http://localhost:3000"
-echo "👉 Control Plane API: http://localhost:4000/api"
+echo "PortGrid is active."
+echo "Dashboard: http://localhost:3000"
+echo "Control Plane API: http://localhost:4000/api"
 echo "Press Ctrl+C to stop both services."
 echo ""
 

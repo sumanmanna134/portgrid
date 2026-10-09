@@ -20,7 +20,10 @@ export class CatalogService {
   private readonly logger = new Logger(CatalogService.name);
   private readonly officialBlueprints: Map<string, ServiceBlueprint> = new Map();
   private readonly customBlueprints: Map<string, ServiceBlueprint> = new Map();
-  private readonly storageFilePath = path.join(process.cwd(), 'data', 'custom-blueprints.json');
+  private readonly storageFilePath = path.join(
+    process.env.DATA_DIR || path.join(process.cwd(), 'data'),
+    'custom-blueprints.json',
+  );
 
   constructor() {
     this.registerOfficialBlueprint(PostgresBlueprint);
