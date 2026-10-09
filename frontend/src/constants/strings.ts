@@ -189,8 +189,11 @@ export const INSTALL_MODAL_STRINGS = {
   block5Title: 'Merkle Audit Ledger',
   block5Spec: 'SHA-256 state transition proof chained',
   blockClickHint: 'Click any block in the 3D stack to inspect enclave specs',
+  blockMilestoneInspectionHint: 'Click any milestone block to inspect hardware security parameters',
   blockInspectingTitle: 'Enclave Block Specification',
   blocksAssembledCount: (active: number, total: number) => `${active} of ${total} Blocks Assembled`,
+  enclaveReadyBadge: 'VERIFIED & READY',
+  stepCount: (active: number, total: number) => `Step ${active} of ${total}`,
 } as const;
 
 export const UNINSTALL_MODAL_STRINGS = {

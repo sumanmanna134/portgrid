@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { ServiceBlueprint, InstalledServiceInstance } from '../types';
 import { INSTALL_MODAL_STRINGS, COMMON_STRINGS } from '../constants/strings';
+import { FEATURE_FLAGS } from '../constants/featureFlags';
 import { DeployingCube3D } from './DeployingCube3D';
 
 interface InstallModalProps {
@@ -282,21 +283,76 @@ export const InstallModal: React.FC<InstallModalProps> = ({
         {/* MODAL SCROLLABLE BODY */}
         <div className="flex-1 overflow-y-auto px-6 sm:px-7 py-6 space-y-5">
           {isDeploying ? (
-            /* VIEW 1: INTERACTIVE BLOCK-BY-BLOCK 3D ENCLAVE */
+            /* VIEW 1: ENCLAVE PROVISIONING */
             <div className="space-y-4">
-              {/* 3D Model Stage */}
-              <div className="rounded-xl bg-[#050811] border border-white/[0.06] overflow-hidden p-2 relative shadow-inner">
-                <DeployingCube3D
-                  step={step}
-                  progress={progress}
-                  accentColor={theme.color}
-                  icon={theme.icon}
-                  serviceName={customName || blueprint.name}
-                  port={targetPort}
-                  selectedBlockIndex={selectedBlockIndex}
-                  onSelectBlock={setSelectedBlockIndex}
-                />
-              </div>
+              {FEATURE_FLAGS.ENABLE_3D_INTERACTIVE ? (
+                /* 3D Model Stage (Deferred to Next Release) */
+                <div className="rounded-xl bg-[#050811] border border-white/[0.06] overflow-hidden p-2 relative shadow-inner">
+                  <DeployingCube3D
+                    step={step}
+                    progress={progress}
+                    accentColor={theme.color}
+                    icon={theme.icon}
+                    serviceName={customName || blueprint.name}
+                    port={targetPort}
+                    selectedBlockIndex={selectedBlockIndex}
+                    onSelectBlock={setSelectedBlockIndex}
+                  />
+                </div>
+              ) : (
+                /* Crisp Enterprise 2D Enclave Status Card */
+                <div className="rounded-xl bg-[#050811] border border-white/[0.08] p-5 shadow-inner">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3.5">
+                      <div
+                        className="w-10 h-10 rounded-lg flex items-center justify-center border shadow-sm"
+                        style={{
+                          backgroundColor: `${theme.color}15`,
+                          borderColor: `${theme.color}35`,
+                          color: theme.color,
+                        }}
+                      >
+                        {theme.icon}
+                      </div>
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <h3 className="font-semibold text-sm text-white">
+                            {customName || blueprint.name}
+                          </h3>
+                          <span
+                            className={`text-[10px] font-mono px-2 py-0.5 rounded font-semibold border ${
+                              isCompleted
+                                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                                : 'bg-sky-500/15 text-sky-300 border-sky-500/30'
+                            }`}
+                          >
+                            {isCompleted
+                              ? INSTALL_MODAL_STRINGS.statusOnline
+                              : INSTALL_MODAL_STRINGS.statusInitializing}
+                          </span>
+                        </div>
+                        <div className="flex items-center space-x-3 text-[11px] text-slate-400 font-mono mt-0.5">
+                          <span>{INSTALL_MODAL_STRINGS.portAssignedLabel} 127.0.0.1:{targetPort}</span>
+                          {targetUiPort && (
+                            <span>• {INSTALL_MODAL_STRINGS.uiPortAssignedLabel} :{targetUiPort}</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="text-right">
+                      <span className="text-base font-bold font-mono text-white">
+                        {Math.round(progress)}%
+                      </span>
+                      <span className="block text-[10px] text-slate-400 font-mono">
+                        {isCompleted
+                          ? INSTALL_MODAL_STRINGS.enclaveReadyBadge
+                          : INSTALL_MODAL_STRINGS.stepCount(Math.min(5, step), 5)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Error Banner */}
               {deployError && (

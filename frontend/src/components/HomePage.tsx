@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { ServiceBlueprint, InstalledServiceInstance } from '../types';
 import { HOMEPAGE_STRINGS } from '../constants/strings';
+import { FEATURE_FLAGS } from '../constants/featureFlags';
 import { ThreeDClusterStage } from './ThreeDClusterStage';
 
 interface HomePageProps {
@@ -223,123 +224,125 @@ export const HomePage: React.FC<HomePageProps> = ({
         </div>
       </section>
 
-      {/* 2. INTERACTIVE 3D BLOCKS STAGE & INSPECTOR */}
-      <section className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-          <div>
-            <div className="flex items-center space-x-2 text-xs font-semibold text-sky-400 mb-1">
-              <Layers className="w-4 h-4" />
-              <span>{HOMEPAGE_STRINGS.stageSectionBadge}</span>
+      {/* 2. INTERACTIVE 3D BLOCKS STAGE & INSPECTOR (Deferred to Next Release) */}
+      {FEATURE_FLAGS.ENABLE_3D_INTERACTIVE && (
+        <section className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+            <div>
+              <div className="flex items-center space-x-2 text-xs font-semibold text-sky-400 mb-1">
+                <Layers className="w-4 h-4" />
+                <span>{HOMEPAGE_STRINGS.stageSectionBadge}</span>
+              </div>
+              <h2 className="text-2xl font-bold text-white tracking-tight">
+                {HOMEPAGE_STRINGS.stageSectionTitle}
+              </h2>
+              <p className="text-xs text-slate-400 mt-0.5 max-w-xl">
+                {HOMEPAGE_STRINGS.stageSectionSubtitle}
+              </p>
             </div>
-            <h2 className="text-2xl font-bold text-white tracking-tight">
-              {HOMEPAGE_STRINGS.stageSectionTitle}
-            </h2>
-            <p className="text-xs text-slate-400 mt-0.5 max-w-xl">
-              {HOMEPAGE_STRINGS.stageSectionSubtitle}
-            </p>
-          </div>
-        </div>
-
-        {/* 3D Stage + Block Inspector Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* 3D Viewport (8 Cols) */}
-          <div className="lg:col-span-8 w-full">
-            <ThreeDClusterStage
-              onSelectBlock={setSelectedBlockId}
-              selectedBlockId={selectedBlockId}
-              runningServiceIds={runningServiceIds}
-            />
           </div>
 
-          {/* Interactive Block Inspector Drawer (4 Cols) */}
-          <div className="lg:col-span-4 glass-surface rounded-xl p-5 border border-white/[0.08] shadow-lg space-y-4">
-            <div className="flex items-start justify-between border-b border-white/[0.08] pb-3.5">
-              <div className="flex items-center space-x-3">
-                <div
-                  className="p-2.5 rounded-lg border shadow-inner"
-                  style={{
-                    backgroundColor: `${activeBlock.color}15`,
-                    borderColor: `${activeBlock.color}35`,
-                  }}
+          {/* 3D Stage + Block Inspector Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            {/* 3D Viewport (8 Cols) */}
+            <div className="lg:col-span-8 w-full">
+              <ThreeDClusterStage
+                onSelectBlock={setSelectedBlockId}
+                selectedBlockId={selectedBlockId}
+                runningServiceIds={runningServiceIds}
+              />
+            </div>
+
+            {/* Interactive Block Inspector Drawer (4 Cols) */}
+            <div className="lg:col-span-4 glass-surface rounded-xl p-5 border border-white/[0.08] shadow-lg space-y-4">
+              <div className="flex items-start justify-between border-b border-white/[0.08] pb-3.5">
+                <div className="flex items-center space-x-3">
+                  <div
+                    className="p-2.5 rounded-lg border shadow-inner"
+                    style={{
+                      backgroundColor: `${activeBlock.color}15`,
+                      borderColor: `${activeBlock.color}35`,
+                    }}
+                  >
+                    {activeBlock.icon}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-base text-white tracking-tight leading-snug">
+                      {activeBlock.name}
+                    </h3>
+                    <span className="text-xs font-mono text-slate-400">{activeBlock.category}</span>
+                  </div>
+                </div>
+
+                <span
+                  className={`text-[10px] font-mono px-2 py-0.5 rounded font-semibold border ${
+                    isSelectedBlockRunning
+                      ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
+                      : 'bg-white/[0.05] text-slate-400 border-white/[0.08]'
+                  }`}
                 >
-                  {activeBlock.icon}
-                </div>
-                <div>
-                  <h3 className="font-semibold text-base text-white tracking-tight leading-snug">
-                    {activeBlock.name}
-                  </h3>
-                  <span className="text-xs font-mono text-slate-400">{activeBlock.category}</span>
-                </div>
+                  {isSelectedBlockRunning
+                    ? HOMEPAGE_STRINGS.statusRunning
+                    : HOMEPAGE_STRINGS.statusAvailable}
+                </span>
               </div>
 
-              <span
-                className={`text-[10px] font-mono px-2 py-0.5 rounded font-semibold border ${
-                  isSelectedBlockRunning
-                    ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
-                    : 'bg-white/[0.05] text-slate-400 border-white/[0.08]'
-                }`}
-              >
-                {isSelectedBlockRunning
-                  ? HOMEPAGE_STRINGS.statusRunning
-                  : HOMEPAGE_STRINGS.statusAvailable}
-              </span>
-            </div>
+              <p className="text-xs text-slate-300 leading-relaxed font-normal">
+                {activeBlock.desc}
+              </p>
 
-            <p className="text-xs text-slate-300 leading-relaxed font-normal">
-              {activeBlock.desc}
-            </p>
-
-            {/* Hardware & Network Specs Matrix */}
-            <div className="space-y-2 bg-black/40 p-3.5 rounded-lg border border-white/[0.05] text-xs font-mono">
-              <div className="flex items-center justify-between text-slate-400">
-                <span>{HOMEPAGE_STRINGS.specsPortLabel}</span>
-                <strong className="text-sky-400 font-semibold">{activeBlock.port}</strong>
-              </div>
-
-              {activeBlock.uiPort && (
+              {/* Hardware & Network Specs Matrix */}
+              <div className="space-y-2 bg-black/40 p-3.5 rounded-lg border border-white/[0.05] text-xs font-mono">
                 <div className="flex items-center justify-between text-slate-400">
-                  <span>{HOMEPAGE_STRINGS.specsUiPortLabel}</span>
-                  <strong className="text-emerald-400 font-semibold">{activeBlock.uiPort}</strong>
+                  <span>{HOMEPAGE_STRINGS.specsPortLabel}</span>
+                  <strong className="text-sky-400 font-semibold">{activeBlock.port}</strong>
                 </div>
-              )}
 
-              <div className="flex items-center justify-between text-slate-400">
-                <span>{HOMEPAGE_STRINGS.specsBoundaryLabel}</span>
-                <span className="text-slate-200">{HOMEPAGE_STRINGS.specsBoundaryVal}</span>
+                {activeBlock.uiPort && (
+                  <div className="flex items-center justify-between text-slate-400">
+                    <span>{HOMEPAGE_STRINGS.specsUiPortLabel}</span>
+                    <strong className="text-emerald-400 font-semibold">{activeBlock.uiPort}</strong>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between text-slate-400">
+                  <span>{HOMEPAGE_STRINGS.specsBoundaryLabel}</span>
+                  <span className="text-slate-200">{HOMEPAGE_STRINGS.specsBoundaryVal}</span>
+                </div>
+
+                <div className="flex items-center justify-between text-slate-400">
+                  <span>{HOMEPAGE_STRINGS.specsSecurityLabel}</span>
+                  <span className="text-cyan-300">{activeBlock.security}</span>
+                </div>
+
+                <div className="flex items-center justify-between text-slate-400">
+                  <span>{HOMEPAGE_STRINGS.specsVolumeLabel}</span>
+                  <span className="text-slate-300 truncate max-w-[150px]">{activeBlock.storage}</span>
+                </div>
               </div>
 
-              <div className="flex items-center justify-between text-slate-400">
-                <span>{HOMEPAGE_STRINGS.specsSecurityLabel}</span>
-                <span className="text-cyan-300">{activeBlock.security}</span>
+              {/* Deploy Trigger Button */}
+              <div className="pt-1 space-y-2">
+                <button
+                  onClick={() => onDeployBlueprint(activeBlock.blueprintId)}
+                  className="w-full py-2.5 px-4 bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-lg font-semibold text-xs flex items-center justify-center space-x-2 transition-all shadow-sm active:scale-95"
+                >
+                  <Box className="w-4 h-4" />
+                  <span>{HOMEPAGE_STRINGS.deployBlockButton}</span>
+                </button>
+
+                <button
+                  onClick={onNavigateCatalog}
+                  className="w-full py-2 px-4 bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white rounded-lg font-medium text-xs flex items-center justify-center space-x-1.5 transition-colors border border-white/[0.06]"
+                >
+                  <span>{HOMEPAGE_STRINGS.viewBlueprintButton}</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
               </div>
-
-              <div className="flex items-center justify-between text-slate-400">
-                <span>{HOMEPAGE_STRINGS.specsVolumeLabel}</span>
-                <span className="text-slate-300 truncate max-w-[150px]">{activeBlock.storage}</span>
-              </div>
-            </div>
-
-            {/* Deploy Trigger Button */}
-            <div className="pt-1 space-y-2">
-              <button
-                onClick={() => onDeployBlueprint(activeBlock.blueprintId)}
-                className="w-full py-2.5 px-4 bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-lg font-semibold text-xs flex items-center justify-center space-x-2 transition-all shadow-sm active:scale-95"
-              >
-                <Box className="w-4 h-4" />
-                <span>{HOMEPAGE_STRINGS.deployBlockButton}</span>
-              </button>
-
-              <button
-                onClick={onNavigateCatalog}
-                className="w-full py-2 px-4 bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white rounded-lg font-medium text-xs flex items-center justify-center space-x-1.5 transition-colors border border-white/[0.06]"
-              >
-                <span>{HOMEPAGE_STRINGS.viewBlueprintButton}</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* 3. DEFENSE-IN-DEPTH ARCHITECTURAL STACK */}
       <section className="space-y-6">

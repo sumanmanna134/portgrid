@@ -35,7 +35,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="font-semibold text-[15px] tracking-tight text-white group-hover:text-sky-300 transition-colors">
                 {NAVBAR_STRINGS.brandName}
               </span>
-              <span className="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-full bg-white/[0.06] text-slate-300 border border-white/[0.08]">
+              <span className="text-[10px] font-semibold tracking-wider uppercase px-2 py-0.5 rounded-md bg-white/[0.06] text-slate-300 border border-white/[0.08]">
                 {NAVBAR_STRINGS.brandBadge}
               </span>
             </div>
