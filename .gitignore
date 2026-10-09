@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Production builds
+dist/
+*/dist/
+build/
+*/build/
+
+# Local sensitive runtime data & cryptographic keys
+backend/data/.master.key
+backend/data/*.log
+.env
+.env.*
+!.env.example
+
+# Operating System files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# IDE configurations
+.idea/
+.vscode/

@@ -1,0 +1,5 @@
+{
+  "makerCheckerEnabled": true,
+  "cryptoShreddingEnabled": true,
+  "securityProfile": "BANK_GRADE_STRICT"
+}
