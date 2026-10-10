@@ -9,6 +9,7 @@ PortGrid is a self-hosted developer platform that eliminates the complexity of c
 
 - [Shipping and Deployment Guide](docs/SHIPPING_AND_DEPLOYMENT.md): Containerization, multi-arch builds, Docker-outside-of-Docker socket forwarding, and distribution channels.
 - [Security Architecture Specification](docs/SECURITY_ARCHITECTURE.md): FIPS 140-2 AES-256-GCM envelope encryption, Maker-Checker dual control, NIST SP 800-88 cryptographic shredding, and SHA-256 Merkle audit trail.
+- [BYOC Cloud Architecture Specification](docs/BYOC_CLOUD_ARCHITECTURE.md): Multi-tenant AWS control plane, customer cloud onboarding via Terraform, AWS STS AssumeRole, and ECS Fargate provisioning.
 
 ---
 
@@ -121,6 +122,7 @@ portgrid/
 │   │   └── main.tsx
 │   └── package.json
 ├── docs/                      # Platform Documentation
+│   ├── BYOC_CLOUD_ARCHITECTURE.md
 │   ├── SECURITY_ARCHITECTURE.md
 │   └── SHIPPING_AND_DEPLOYMENT.md
 ├── Dockerfile                 # Multi-Stage Production Container Image

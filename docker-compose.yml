@@ -1,6 +1,6 @@
 services:
   portgrid:
-    image: portgrid/portgrid:latest
+    image: mannasuman134/postgrid
     build:
       context: .
       dockerfile: Dockerfile

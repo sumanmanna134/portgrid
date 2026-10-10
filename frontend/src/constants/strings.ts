@@ -48,7 +48,7 @@ export const NAVBAR_STRINGS = {
 export const DASHBOARD_STRINGS = {
   title: 'Runtime Overview',
   subtitle: 'Cloud engines and their admin consoles, running together on your local cluster.',
-  deployButton: 'Deploy Service',
+  deployButton: 'Deploy',
   emptyTitle: 'No services deployed',
   emptySubtitle: 'Start your local stack by deploying PostgreSQL, Kafka, Redis, Keycloak or custom blueprints.',
   browseCatalogButton: 'Browse Service Catalog',
