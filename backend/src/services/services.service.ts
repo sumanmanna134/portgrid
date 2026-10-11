@@ -291,12 +291,12 @@ export class ServicesService {
         env: uiEnv,
         aliases: [blueprint.companionUi.namePrefix],
       });
-      uiUrl = `http://localhost:${uiPort}`;
+      uiUrl = `http://127.0.0.1:${uiPort}`;
     } else if (blueprint.companionUi && !blueprint.companionUi.image && uiPort) {
       if (blueprint.id === 'keycloak') {
-        uiUrl = `http://localhost:${uiPort}/admin`;
+        uiUrl = `http://127.0.0.1:${uiPort}/admin`;
       } else {
-        uiUrl = `http://localhost:${uiPort}`;
+        uiUrl = `http://127.0.0.1:${uiPort}`;
       }
     }
 
@@ -547,5 +547,12 @@ export class ServicesService {
       return '';
     }
     return this.dockerService.getContainerLogs(instance.engineContainerId, tail);
+  }
+
+  /**
+   * Get Real-time Docker Image Pull Progress
+   */
+  getPullProgress() {
+    return this.dockerService.getCurrentPullProgress();
   }
 }

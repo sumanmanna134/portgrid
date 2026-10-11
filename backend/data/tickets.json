@@ -1,1 +1,272 @@
-[]
+[
+  {
+    "id": "TKT-C24E5E",
+    "createdAt": "2026-10-11T15:56:30.804Z",
+    "action": "UNINSTALL_SERVICE",
+    "maker": {
+      "userId": "engineer_operator",
+      "role": "MAKER",
+      "ipAddress": "127.0.0.1"
+    },
+    "status": "APPROVED",
+    "resource": {
+      "id": "zeppelin-b325f7",
+      "name": "Apache Zeppelin (#b325f7)",
+      "type": "zeppelin"
+    },
+    "payload": {
+      "removeVolumes": true
+    },
+    "expiresAt": "2026-10-11T16:56:30.804Z",
+    "checker": {
+      "userId": "sec_officer_lead",
+      "role": "CHECKER_SECURITY_OFFICER",
+      "ipAddress": "127.0.0.1",
+      "decisionAt": "2026-10-11T15:56:48.817Z",
+      "comment": "Dual authorization verified and signed by Security Checker."
+    }
+  },
+  {
+    "id": "TKT-0A3D0C",
+    "createdAt": "2026-10-11T15:56:41.548Z",
+    "action": "UNINSTALL_SERVICE",
+    "maker": {
+      "userId": "engineer_operator",
+      "role": "MAKER",
+      "ipAddress": "127.0.0.1"
+    },
+    "status": "EXECUTED",
+    "resource": {
+      "id": "zeppelin-b325f7",
+      "name": "Apache Zeppelin (#b325f7)",
+      "type": "zeppelin"
+    },
+    "payload": {
+      "removeVolumes": true
+    },
+    "expiresAt": "2026-10-11T16:56:41.548Z",
+    "checker": {
+      "userId": "sec_officer_lead",
+      "role": "CHECKER_SECURITY_OFFICER",
+      "ipAddress": "127.0.0.1",
+      "decisionAt": "2026-10-11T15:56:46.318Z",
+      "comment": "Dual authorization verified and signed by Security Checker."
+    }
+  },
+  {
+    "id": "TKT-FA60D4",
+    "createdAt": "2026-10-11T15:59:04.995Z",
+    "action": "UNINSTALL_SERVICE",
+    "maker": {
+      "userId": "engineer_operator",
+      "role": "MAKER",
+      "ipAddress": "127.0.0.1"
+    },
+    "status": "EXECUTED",
+    "resource": {
+      "id": "zeppelin-9119bc",
+      "name": "Apache Zeppelin (#9119bc)",
+      "type": "zeppelin"
+    },
+    "payload": {
+      "removeVolumes": true
+    },
+    "expiresAt": "2026-10-11T16:59:04.995Z",
+    "checker": {
+      "userId": "sec_officer_lead",
+      "role": "CHECKER_SECURITY_OFFICER",
+      "ipAddress": "127.0.0.1",
+      "decisionAt": "2026-10-11T15:59:07.348Z",
+      "comment": "Dual authorization verified and signed by Security Checker."
+    }
+  },
+  {
+    "id": "TKT-07BE06",
+    "createdAt": "2026-10-11T16:56:49.737Z",
+    "action": "UNINSTALL_SERVICE",
+    "maker": {
+      "userId": "engineer_operator",
+      "role": "MAKER",
+      "ipAddress": "127.0.0.1"
+    },
+    "status": "EXECUTED",
+    "resource": {
+      "id": "rabbitmq-7a6d5f",
+      "name": "RabbitMQ & Management UI (#7a6d5f)",
+      "type": "rabbitmq"
+    },
+    "payload": {
+      "removeVolumes": true
+    },
+    "expiresAt": "2026-10-11T17:56:49.737Z",
+    "checker": {
+      "userId": "sec_officer_lead",
+      "role": "CHECKER_SECURITY_OFFICER",
+      "ipAddress": "127.0.0.1",
+      "decisionAt": "2026-10-11T16:56:55.654Z",
+      "comment": "Dual authorization verified and signed by Security Checker."
+    }
+  },
+  {
+    "id": "TKT-FE896D",
+    "createdAt": "2026-10-11T17:26:22.715Z",
+    "action": "UNINSTALL_SERVICE",
+    "maker": {
+      "userId": "engineer_operator",
+      "role": "MAKER",
+      "ipAddress": "127.0.0.1"
+    },
+    "status": "EXECUTED",
+    "resource": {
+      "id": "rabbitmq-c92c94",
+      "name": "RabbitMQ & Management UI (#c92c94)",
+      "type": "rabbitmq"
+    },
+    "payload": {
+      "removeVolumes": true
+    },
+    "expiresAt": "2026-10-11T18:26:22.715Z",
+    "checker": {
+      "userId": "sec_officer_lead",
+      "role": "CHECKER_SECURITY_OFFICER",
+      "ipAddress": "127.0.0.1",
+      "decisionAt": "2026-10-11T17:26:29.932Z",
+      "comment": "Dual authorization verified and signed by Security Checker."
+    }
+  },
+  {
+    "id": "TKT-3DC65C",
+    "createdAt": "2026-10-11T17:27:39.665Z",
+    "action": "UNINSTALL_SERVICE",
+    "maker": {
+      "userId": "engineer_operator",
+      "role": "MAKER",
+      "ipAddress": "127.0.0.1"
+    },
+    "status": "EXECUTED",
+    "resource": {
+      "id": "rabbitmq-48944e",
+      "name": "RabbitMQ & Management UI (#48944e)",
+      "type": "rabbitmq"
+    },
+    "payload": {
+      "removeVolumes": true
+    },
+    "expiresAt": "2026-10-11T18:27:39.665Z",
+    "checker": {
+      "userId": "sec_officer_lead",
+      "role": "CHECKER_SECURITY_OFFICER",
+      "ipAddress": "127.0.0.1",
+      "decisionAt": "2026-10-11T17:27:42.813Z",
+      "comment": "Dual authorization verified and signed by Security Checker."
+    }
+  },
+  {
+    "id": "TKT-781223",
+    "createdAt": "2026-10-11T17:45:25.873Z",
+    "action": "UNINSTALL_SERVICE",
+    "maker": {
+      "userId": "engineer_operator",
+      "role": "MAKER",
+      "ipAddress": "127.0.0.1"
+    },
+    "status": "EXECUTED",
+    "resource": {
+      "id": "redis-39ea2d",
+      "name": "Redis 7 & Redis Commander (#39ea2d)",
+      "type": "redis"
+    },
+    "payload": {
+      "removeVolumes": true
+    },
+    "expiresAt": "2026-10-11T18:45:25.873Z",
+    "checker": {
+      "userId": "sec_officer_lead",
+      "role": "CHECKER_SECURITY_OFFICER",
+      "ipAddress": "127.0.0.1",
+      "decisionAt": "2026-10-11T17:45:29.632Z",
+      "comment": "Dual authorization verified and signed by Security Checker."
+    }
+  },
+  {
+    "id": "TKT-21BC3D",
+    "createdAt": "2026-10-11T17:45:36.595Z",
+    "action": "UNINSTALL_SERVICE",
+    "maker": {
+      "userId": "engineer_operator",
+      "role": "MAKER",
+      "ipAddress": "127.0.0.1"
+    },
+    "status": "EXECUTED",
+    "resource": {
+      "id": "rabbitmq-344a03",
+      "name": "RabbitMQ & Management UI (#344a03)",
+      "type": "rabbitmq"
+    },
+    "payload": {
+      "removeVolumes": true
+    },
+    "expiresAt": "2026-10-11T18:45:36.595Z",
+    "checker": {
+      "userId": "sec_officer_lead",
+      "role": "CHECKER_SECURITY_OFFICER",
+      "ipAddress": "127.0.0.1",
+      "decisionAt": "2026-10-11T17:45:38.996Z",
+      "comment": "Dual authorization verified and signed by Security Checker."
+    }
+  },
+  {
+    "id": "TKT-939082",
+    "createdAt": "2026-10-11T17:51:22.422Z",
+    "action": "UNINSTALL_SERVICE",
+    "maker": {
+      "userId": "engineer_operator",
+      "role": "MAKER",
+      "ipAddress": "127.0.0.1"
+    },
+    "status": "EXECUTED",
+    "resource": {
+      "id": "rabbitmq-c3edf0",
+      "name": "RabbitMQ & Management UI (#c3edf0)",
+      "type": "rabbitmq"
+    },
+    "payload": {
+      "removeVolumes": true
+    },
+    "expiresAt": "2026-10-11T18:51:22.422Z",
+    "checker": {
+      "userId": "sec_officer_lead",
+      "role": "CHECKER_SECURITY_OFFICER",
+      "ipAddress": "127.0.0.1",
+      "decisionAt": "2026-10-11T17:51:25.064Z",
+      "comment": "Dual authorization verified and signed by Security Checker."
+    }
+  },
+  {
+    "id": "TKT-4685AB",
+    "createdAt": "2026-10-11T18:01:29.680Z",
+    "action": "UNINSTALL_SERVICE",
+    "maker": {
+      "userId": "engineer_operator",
+      "role": "MAKER",
+      "ipAddress": "127.0.0.1"
+    },
+    "status": "EXECUTED",
+    "resource": {
+      "id": "rabbitmq-db52e5",
+      "name": "RabbitMQ & Management UI (#db52e5)",
+      "type": "rabbitmq"
+    },
+    "payload": {
+      "removeVolumes": true
+    },
+    "expiresAt": "2026-10-11T19:01:29.680Z",
+    "checker": {
+      "userId": "sec_officer_lead",
+      "role": "CHECKER_SECURITY_OFFICER",
+      "ipAddress": "127.0.0.1",
+      "decisionAt": "2026-10-11T18:01:31.689Z",
+      "comment": "Dual authorization verified and signed by Security Checker."
+    }
+  }
+]

@@ -1,1 +1,38 @@
-[]
+[
+  {
+    "id": "zeppelin",
+    "name": "Apache Zeppelin",
+    "category": "Analytics",
+    "icon": "Notebook",
+    "description": "Web-based notebook for interactive data analytics, SQL queries, Spark, Python, and other interpreter integrations.",
+    "isOfficial": false,
+    "engine": {
+      "namePrefix": "portgrid-zeppelin",
+      "image": "apache/zeppelin:0.12.0",
+      "defaultPort": 8080,
+      "internalPort": 8080,
+      "env": {
+        "ZEPPELIN_ADDR": "0.0.0.0",
+        "ZEPPELIN_PORT": "8080"
+      },
+      "volumes": [
+        {
+          "name": "portgrid_zeppelin_notebook",
+          "mountPath": "/opt/zeppelin/notebook"
+        },
+        {
+          "name": "portgrid_zeppelin_conf",
+          "mountPath": "/opt/zeppelin/conf"
+        },
+        {
+          "name": "portgrid_zeppelin_logs",
+          "mountPath": "/opt/zeppelin/logs"
+        }
+      ]
+    },
+    "connectionFormatters": {
+      "uri": "http://localhost:{{ENGINE_PORT}}",
+      "envSnippet": "ZEPPELIN_HOST=localhost\nZEPPELIN_PORT={{ENGINE_PORT}}\nZEPPELIN_URL=http://localhost:{{ENGINE_PORT}}"
+    }
+  }
+]

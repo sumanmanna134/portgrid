@@ -48,6 +48,11 @@ export class ServicesController {
     return this.servicesService.getAllInstances();
   }
 
+  @Get('services/pull-progress')
+  getPullProgress() {
+    return this.servicesService.getPullProgress();
+  }
+
   @Get('services/:id')
   getService(@Param('id') id: string) {
     return this.servicesService.getInstanceById(id);

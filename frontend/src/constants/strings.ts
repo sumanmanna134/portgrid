@@ -95,6 +95,8 @@ export const SERVICE_CARD_STRINGS = {
   configAndKeys: 'Config & Keys',
   logs: 'Logs',
   logsTooltip: 'View Container Logs',
+  liveTerminalLogs: 'Live Terminal Logs',
+  liveTerminalTooltip: 'Open Full-Screen Live Streaming Terminal',
   delete: 'Delete',
   deleteTooltip: 'Remove Service',
   startTooltip: 'Start service',
@@ -103,6 +105,9 @@ export const SERVICE_CARD_STRINGS = {
 
 export const INSTALL_MODAL_STRINGS = {
   titlePrefix: 'Deploy',
+  pullProgressTitle: 'Streaming Image Pull',
+  pullProgressSubtext: 'Downloading container layers from registry...',
+  pullProgressCached: 'Image cached locally. Proceeding to runtime initialization.',
   subtitle: 'Configure custom instance parameters or deploy with defaults',
   customNameLabel: 'Custom Instance Name',
   optionalLabel: '(Optional)',
@@ -152,9 +157,16 @@ export const INSTALL_MODAL_STRINGS = {
   logComplete: '>>> Container deployment verified healthy. Service online and ready for traffic.',
 
   // Action buttons
-  viewCredentialsButton: 'View Credentials & Keys',
-  openConsoleButton: 'Open Web Console ↗',
-  goToServicesButton: 'View in Active Services',
+  viewCredentialsButton: 'Credentials',
+  openConsoleButton: 'Console',
+  openConsoleTooltip: 'Open Companion Web Management Dashboard',
+  liveLogsButton: 'Live Logs',
+  hideLogsButton: 'Hide Logs',
+  liveTerminalButton: 'Terminal',
+  deploymentLogsTitle: 'Container Initialization Stream',
+  streamingLogsPlaceholder: 'Streaming container initialization stdout and stderr...',
+  companionWarmingNote: 'Note: Companion management console may take a few moments to finish boot initialization.',
+  goToServicesButton: 'Services',
   deployFailedTitle: 'Deployment Interrupted',
   retryButton: 'Retry Deployment',
   portAssignedLabel: 'Port Binding:',
@@ -504,6 +516,25 @@ export const HOMEPAGE_STRINGS = {
   blockDockerVolume: 'Read-Only Root Filesystem',
 } as const;
 
+export const TERMINAL_PAGE_STRINGS = {
+  title: 'Container Terminal Logs',
+  subtitle: 'Live real-time stdout and stderr stream directly from container cgroups runtime',
+  backToServices: 'Back to Active Services',
+  selectService: 'Active Container:',
+  liveBadge: 'LIVE STREAM',
+  pausedBadge: 'STREAM PAUSED',
+  pauseStream: 'Pause Stream',
+  resumeStream: 'Resume Stream',
+  clearTerminal: 'Clear Screen',
+  copyLogs: 'Copy Terminal Logs',
+  copiedLogs: 'Logs Copied',
+  noLogsRecorded: 'Waiting for container output... No stdout/stderr lines emitted yet.',
+  connecting: 'Connecting to container stream...',
+  linesCount: (count: number) => `${count} lines`,
+  autoScrollLocked: 'Auto-Scroll Locked',
+  autoScrollUnlocked: 'Auto-Scroll Paused',
+} as const;
+
 export const UI_STRINGS = {
   common: COMMON_STRINGS,
   navbar: NAVBAR_STRINGS,
@@ -515,6 +546,7 @@ export const UI_STRINGS = {
   uninstallModal: UNINSTALL_MODAL_STRINGS,
   credentialsModal: CREDENTIALS_MODAL_STRINGS,
   logsModal: LOGS_MODAL_STRINGS,
+  terminalPage: TERMINAL_PAGE_STRINGS,
   auditModal: AUDIT_MODAL_STRINGS,
   workflowModal: WORKFLOW_MODAL_STRINGS,
 } as const;

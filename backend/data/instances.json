@@ -1,1 +1,76 @@
-[]
+[
+  {
+    "id": "postgresql-386224",
+    "blueprintId": "postgresql",
+    "name": "PostgreSQL 16 & pgAdmin 4 (#386224)",
+    "status": "RUNNING",
+    "createdAt": "2026-10-11T07:33:34.088Z",
+    "enginePort": 5432,
+    "uiPort": 5050,
+    "engineContainerId": "e4f0def529ad43657cded11f0dce6b6200b9620615585ae82978abccbc138876",
+    "uiContainerId": "1291033932ab7b6d624db44ab742049ddedb7b5164bf32b40ab5d9ca2ca75c49",
+    "volumes": [
+      "portgrid_pg_data_386224"
+    ],
+    "secrets": {
+      "username": "postgres",
+      "password": "enc:v1:4b286d5f63fedf9a8baeea1d:473bee011ff3205558d96fc286c37cf2:0529f67dd9951eef05e260431f87e3522d5a0a99",
+      "uiUsername": "admin@portgrid.com",
+      "uiNote": "Auto-configured web UI for PostgreSQL. Login: admin@portgrid.com with generated password. Host: {{ENGINE_HOST}}"
+    },
+    "connectionStrings": {
+      "uri": "postgresql://postgres:97MVjC4XgQiehiCQ0lxb@localhost:5432/devdb",
+      "jdbc": "jdbc:postgresql://localhost:5432/devdb?user=postgres&password=97MVjC4XgQiehiCQ0lxb",
+      "envSnippet": "DB_HOST=localhost\nDB_PORT=5432\nDB_USER=postgres\nDB_PASSWORD=97MVjC4XgQiehiCQ0lxb\nDB_NAME=devdb\nDATABASE_URL=postgresql://postgres:97MVjC4XgQiehiCQ0lxb@localhost:5432/devdb"
+    },
+    "uiUrl": "http://localhost:5050"
+  },
+  {
+    "id": "zeppelin-48d29d",
+    "blueprintId": "zeppelin",
+    "name": "Apache Zeppelin (#48d29d)",
+    "status": "RUNNING",
+    "createdAt": "2026-10-11T16:11:59.707Z",
+    "enginePort": 8080,
+    "engineContainerId": "5161f3499ef2bab10692b72effe74c4af9e2cf65600d193e969c9ddc79eb2dba",
+    "volumes": [
+      "portgrid_zeppelin_notebook_48d29d",
+      "portgrid_zeppelin_conf_48d29d",
+      "portgrid_zeppelin_logs_48d29d"
+    ],
+    "secrets": {
+      "username": "admin",
+      "password": "enc:v1:3bf1fec1f6b3de85d7cab6e7:5e4340cd7f807cfc43c6f81fcb212482:af9987161cdaf5aa15712fbcd222b1a644eb54cb",
+      "uiUsername": "admin",
+      "uiNote": ""
+    },
+    "connectionStrings": {
+      "uri": "http://localhost:8080",
+      "envSnippet": "ZEPPELIN_HOST=localhost\nZEPPELIN_PORT=8080\nZEPPELIN_URL=http://localhost:8080"
+    }
+  },
+  {
+    "id": "rabbitmq-df5778",
+    "blueprintId": "rabbitmq",
+    "name": "RabbitMQ & Management UI (#df5778)",
+    "status": "RUNNING",
+    "createdAt": "2026-10-11T18:02:16.570Z",
+    "enginePort": 5672,
+    "uiPort": 15672,
+    "engineContainerId": "900a041b0d05f9ae4d5aec3a4a83e9833202852f70720a7f978155f760429397",
+    "volumes": [
+      "portgrid_rabbitmq_data_df5778"
+    ],
+    "secrets": {
+      "username": "guest",
+      "password": "enc:v1:e831f932502ad78c024b37de:2d90363092f96c08303d39170a4539c8:b4427a8b2de248c0f890da4b3f0f9cf80b087c15",
+      "uiUsername": "guest",
+      "uiNote": "RabbitMQ Management UI is exposed on port 15672. Sign in with user \"guest\" and your generated password."
+    },
+    "connectionStrings": {
+      "uri": "amqp://guest:W61vndL7EZDIebxXLBvX@localhost:5672",
+      "envSnippet": "RABBITMQ_HOST=localhost\nRABBITMQ_PORT=5672\nRABBITMQ_USER=guest\nRABBITMQ_PASSWORD=W61vndL7EZDIebxXLBvX\nRABBITMQ_URL=amqp://guest:W61vndL7EZDIebxXLBvX@localhost:5672"
+    },
+    "uiUrl": "http://127.0.0.1:15672"
+  }
+]

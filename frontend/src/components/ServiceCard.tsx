@@ -15,6 +15,7 @@ import {
   Play,
   Square,
   ShieldCheck,
+  ArrowRight,
 } from 'lucide-react';
 import { InstalledServiceInstance, ContainerMetrics } from '../types';
 import { SERVICE_CARD_STRINGS, COMMON_STRINGS } from '../constants/strings';
@@ -23,6 +24,7 @@ interface ServiceCardProps {
   service: InstalledServiceInstance;
   onOpenCredentials: (service: InstalledServiceInstance) => void;
   onOpenLogs: (service: InstalledServiceInstance) => void;
+  onOpenTerminalLogs?: (service: InstalledServiceInstance) => void;
   onUninstall: (service: InstalledServiceInstance) => void;
   onStop: (serviceId: string) => void;
   onStart?: (serviceId: string) => void;
@@ -50,10 +52,21 @@ const formatBytes = (bytes: number) => {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(1))} ${sizes[i]}`;
 };
 
+const resolveCardConsoleUrl = (url?: string, port?: number) => {
+  if (!port && !url) return '';
+  const currentHost = window.location.hostname || '127.0.0.1';
+  const targetHost = currentHost === 'localhost' ? '127.0.0.1' : currentHost;
+  if (url) {
+    return url.replace('localhost', targetHost);
+  }
+  return `http://${targetHost}:${port}`;
+};
+
 export const ServiceCard: React.FC<ServiceCardProps> = ({
   service,
   onOpenCredentials,
   onOpenLogs,
+  onOpenTerminalLogs,
   onUninstall,
   onStop,
   onStart,
@@ -159,17 +172,23 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
           <div className="mb-4">
             {isRunning ? (
               <a
-                href={service.uiUrl}
+                href={resolveCardConsoleUrl(service.uiUrl, service.uiPort)}
                 target="_blank"
                 rel="noopener noreferrer"
+                onClick={(e) => {
+                  e.preventDefault();
+                  const targetUrl = resolveCardConsoleUrl(service.uiUrl, service.uiPort);
+                  window.open(targetUrl, '_blank', 'noopener,noreferrer');
+                }}
                 className="w-full py-2 px-3.5 bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-transparent hover:from-emerald-500/15 hover:via-teal-500/15 border border-emerald-500/20 rounded-xl flex items-center justify-between text-xs font-medium text-emerald-300 transition-all group"
               >
                 <span className="flex items-center gap-1.5">
                   <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
                   <span>{SERVICE_CARD_STRINGS.openWebConsole}</span>
                 </span>
-                <span className="font-mono text-[11px] text-emerald-400/90 group-hover:translate-x-0.5 transition-transform">
-                  {service.uiUrl.replace('http://', '')} ↗
+                <span className="font-mono text-[11px] text-emerald-400/90 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                  <span>{resolveCardConsoleUrl(service.uiUrl, service.uiPort).replace('http://', '')}</span>
+                  <ExternalLink className="w-3 h-3 text-emerald-400/80" />
                 </span>
               </a>
             ) : (
@@ -186,6 +205,30 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
                 </span>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Live Terminal Streaming Log Button (Active Services) */}
+        {isRunning && onOpenTerminalLogs && (
+          <div className="mb-4">
+            <button
+              onClick={() => onOpenTerminalLogs(service)}
+              className="w-full py-2 px-3.5 bg-sky-500/10 hover:bg-sky-500/20 border border-sky-500/25 rounded-xl flex items-center justify-between text-xs font-medium text-sky-300 transition-all group shadow-sm active:scale-[0.99]"
+              title={SERVICE_CARD_STRINGS.liveTerminalTooltip}
+            >
+              <span className="flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-sky-500"></span>
+                </span>
+                <Terminal className="w-3.5 h-3.5 text-sky-400" />
+                <span className="font-semibold">{SERVICE_CARD_STRINGS.liveTerminalLogs}</span>
+              </span>
+              <span className="font-mono text-[11px] text-sky-400/90 flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                <span>Stream</span>
+                <ArrowRight className="w-3 h-3 text-sky-400" />
+              </span>
+            </button>
           </div>
         )}
 
@@ -238,7 +281,7 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
             </span>
             <span className="font-mono text-slate-300">
               {metrics
-                ? `↓ ${formatBytes(metrics.networkRxBytes)}  ↑ ${formatBytes(metrics.networkTxBytes)}`
+                ? `Rx ${formatBytes(metrics.networkRxBytes)}  Tx ${formatBytes(metrics.networkTxBytes)}`
                 : COMMON_STRINGS.zeroBytes}
             </span>
           </div>
@@ -268,9 +311,13 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({
         </button>
 
         <button
-          onClick={() => onOpenLogs(service)}
+          onClick={() =>
+            onOpenTerminalLogs && isRunning ? onOpenTerminalLogs(service) : onOpenLogs(service)
+          }
           className="py-2 px-2 bg-white/[0.03] hover:bg-white/[0.06] text-slate-300 hover:text-white rounded-lg text-xs font-medium flex items-center justify-center space-x-1 transition-all border border-white/[0.05]"
-          title={SERVICE_CARD_STRINGS.logsTooltip}
+          title={
+            isRunning ? SERVICE_CARD_STRINGS.liveTerminalTooltip : SERVICE_CARD_STRINGS.logsTooltip
+          }
         >
           <Terminal className="w-3.5 h-3.5" />
           <span>{SERVICE_CARD_STRINGS.logs}</span>

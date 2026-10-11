@@ -9,12 +9,14 @@ import { InstallModal } from './components/InstallModal';
 import { WorkflowEditorModal } from './components/WorkflowEditorModal';
 import { AuditModal } from './components/AuditModal';
 import { HomePage } from './components/HomePage';
+import { TerminalLogsPage } from './components/TerminalLogsPage';
 import { ServiceBlueprint, InstalledServiceInstance, ApprovalTicket, GovernanceSettings } from './types';
 import { DASHBOARD_STRINGS, CATALOG_STRINGS } from './constants/strings';
 import { Plus, Box, Sparkles, CheckCircle2, Search, Filter } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'home' | 'services' | 'catalog'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'services' | 'catalog' | 'logs'>('home');
+  const [terminalServiceId, setTerminalServiceId] = useState<string | null>(null);
   const [blueprints, setBlueprints] = useState<ServiceBlueprint[]>([]);
   const [services, setServices] = useState<InstalledServiceInstance[]>([]);
   const [installingId, setInstallingId] = useState<string | null>(null);
@@ -132,6 +134,11 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleOpenTerminalLogs = (service: InstalledServiceInstance) => {
+    setTerminalServiceId(service.id);
+    setActiveTab('logs');
+  };
+
   const handleSaveCustomBlueprint = async (blueprint: ServiceBlueprint, isEdit: boolean) => {
     const url = isEdit ? `/api/catalog/custom/${blueprint.id}` : '/api/catalog/custom';
     const method = isEdit ? 'PUT' : 'POST';
@@ -147,6 +154,9 @@ export const App: React.FC = () => {
     }
 
     await fetchCatalog();
+    setActiveTab('catalog');
+    setCatalogCategory('Custom');
+    setCatalogSearch('');
     showToast(DASHBOARD_STRINGS.toastOnboarded(blueprint.name));
   };
 
@@ -336,6 +346,7 @@ export const App: React.FC = () => {
                     service={svc}
                     onOpenCredentials={setCredentialsService}
                     onOpenLogs={setLogsService}
+                    onOpenTerminalLogs={handleOpenTerminalLogs}
                     onUninstall={setUninstallTarget}
                     onStop={handleStop}
                     onStart={handleStart}
@@ -420,6 +431,15 @@ export const App: React.FC = () => {
             </div>
           </div>
         )}
+
+        {/* Full-Screen Live Terminal Logs Tab */}
+        {activeTab === 'logs' && (
+          <TerminalLogsPage
+            services={services}
+            initialServiceId={terminalServiceId}
+            onBack={() => setActiveTab('services')}
+          />
+        )}
       </main>
 
       {/* Modals & Dialogs */}
@@ -442,6 +462,10 @@ export const App: React.FC = () => {
         onViewCredentials={(newInstance) => {
           setSelectedBlueprintForInstall(null);
           setCredentialsService(newInstance);
+        }}
+        onOpenTerminalLogs={(newInstance) => {
+          setSelectedBlueprintForInstall(null);
+          handleOpenTerminalLogs(newInstance);
         }}
         onDone={(newInstance) => {
           setSelectedBlueprintForInstall(null);

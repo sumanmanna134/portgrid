@@ -3,8 +3,8 @@ import { Layers, Box, Cpu, Activity, LayoutGrid, Terminal, ShieldCheck } from 'l
 import { NAVBAR_STRINGS } from '../constants/strings';
 
 interface NavbarProps {
-  activeTab: 'home' | 'services' | 'catalog';
-  setActiveTab: (tab: 'home' | 'services' | 'catalog') => void;
+  activeTab: 'home' | 'services' | 'catalog' | 'logs';
+  setActiveTab: (tab: 'home' | 'services' | 'catalog' | 'logs') => void;
   installedCount: number;
   runningCount: number;
   onOpenAudit?: () => void;

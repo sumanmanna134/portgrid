@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   X,
   Server,
@@ -18,6 +18,8 @@ import {
   ShieldCheck,
   Check,
   Loader2,
+  ExternalLink,
+  Terminal,
 } from 'lucide-react';
 import { ServiceBlueprint, InstalledServiceInstance } from '../types';
 import { INSTALL_MODAL_STRINGS, COMMON_STRINGS } from '../constants/strings';
@@ -36,6 +38,7 @@ interface InstallModalProps {
     customUiPort?: number;
   }) => Promise<InstalledServiceInstance | null>;
   onViewCredentials?: (instance: InstalledServiceInstance) => void;
+  onOpenTerminalLogs?: (instance: InstalledServiceInstance) => void;
   onDone?: (instance: InstalledServiceInstance) => void;
 }
 
@@ -64,6 +67,7 @@ export const InstallModal: React.FC<InstallModalProps> = ({
   onClose,
   onDeploy,
   onViewCredentials,
+  onOpenTerminalLogs,
   onDone,
 }) => {
   // Form fields
@@ -78,6 +82,74 @@ export const InstallModal: React.FC<InstallModalProps> = ({
   const [selectedBlockIndex, setSelectedBlockIndex] = useState(0);
   const [deployedInstance, setDeployedInstance] = useState<InstalledServiceInstance | null>(null);
   const [deployError, setDeployError] = useState<string | null>(null);
+  const [pullProgress, setPullProgress] = useState<{
+    image: string;
+    percent: number;
+    currentBytes: number;
+    totalBytes: number;
+    status: string;
+    active: boolean;
+    formatted: string;
+  } | null>(null);
+  const [showLiveLogs, setShowLiveLogs] = useState(false);
+  const [liveLogs, setLiveLogs] = useState<string>('');
+  const liveLogsEndRef = useRef<HTMLDivElement>(null);
+
+  // Dynamic console URL resolver mapping localhost to 127.0.0.1 for IPv4 Docker compatibility
+  const resolveConsoleUrl = (url?: string, port?: number) => {
+    if (!port && !url) return '';
+    const targetPort = port || (url ? parseInt(new URL(url).port, 10) : 0);
+    const currentHost = window.location.hostname || '127.0.0.1';
+    const targetHost = currentHost === 'localhost' ? '127.0.0.1' : currentHost;
+    if (url) {
+      return url.replace('localhost', targetHost);
+    }
+    return `http://${targetHost}:${targetPort}`;
+  };
+
+  // Live log polling during deployment or after completion
+  useEffect(() => {
+    if (!showLiveLogs) return;
+    let isMounted = true;
+
+    const pollLogs = async () => {
+      try {
+        if (deployedInstance?.id) {
+          const res = await fetch(`/api/services/${deployedInstance.id}/logs`);
+          if (res.ok && isMounted) {
+            const text = await res.text();
+            if (text) setLiveLogs(text);
+          }
+        } else {
+          const res = await fetch('/api/services/pull-progress');
+          if (res.ok && isMounted) {
+            const data = await res.json();
+            if (data && data.formatted) {
+              setLiveLogs((prev) => {
+                if (prev.includes(data.formatted)) return prev;
+                return prev ? `${prev}\n${data.formatted}` : data.formatted;
+              });
+            }
+          }
+        }
+      } catch {
+        // Ignore polling errors
+      }
+    };
+
+    pollLogs();
+    const interval = setInterval(pollLogs, 1200);
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [showLiveLogs, deployedInstance?.id]);
+
+  useEffect(() => {
+    if (showLiveLogs && liveLogsEndRef.current) {
+      liveLogsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [liveLogs, showLiveLogs]);
 
   useEffect(() => {
     if (blueprint) {
@@ -90,6 +162,9 @@ export const InstallModal: React.FC<InstallModalProps> = ({
       setSelectedBlockIndex(0);
       setDeployedInstance(null);
       setDeployError(null);
+      setPullProgress(null);
+      setShowLiveLogs(false);
+      setLiveLogs('');
     }
   }, [blueprint, isOpen]);
 
@@ -134,8 +209,14 @@ export const InstallModal: React.FC<InstallModalProps> = ({
     {
       id: 5,
       title: INSTALL_MODAL_STRINGS.block5Title,
-      spec: INSTALL_MODAL_STRINGS.block5Spec,
-      desc: INSTALL_MODAL_STRINGS.step5Desc,
+      spec:
+        pullProgress && pullProgress.active
+          ? `${INSTALL_MODAL_STRINGS.block5Spec} (${pullProgress.percent}%)`
+          : INSTALL_MODAL_STRINGS.block5Spec,
+      desc:
+        pullProgress && pullProgress.active && pullProgress.formatted
+          ? pullProgress.formatted
+          : INSTALL_MODAL_STRINGS.step5Desc,
       icon: <ShieldCheck className="w-4 h-4 text-emerald-300" />,
     },
   ];
@@ -189,8 +270,34 @@ export const InstallModal: React.FC<InstallModalProps> = ({
     setSelectedBlockIndex(4);
     setProgress(96);
 
-    // Await API completion
-    await apiPromise;
+    let pullPollInterval: ReturnType<typeof setInterval> | null = null;
+    try {
+      pullPollInterval = setInterval(async () => {
+        try {
+          const res = await fetch('/api/services/pull-progress');
+          if (res.ok) {
+            const data = await res.json();
+            if (data && (data.active || data.percent > 0)) {
+              setPullProgress(data);
+              if (data.percent > 0) {
+                // Scale 96% to 99.8% based on pull percent
+                const scaled = 96 + (data.percent / 100) * 3.8;
+                setProgress((prev) => Math.max(prev, Math.min(99.8, scaled)));
+              }
+            }
+          }
+        } catch {
+          // Ignore transient polling errors
+        }
+      }, 400);
+
+      // Await API completion
+      await apiPromise;
+    } finally {
+      if (pullPollInterval) {
+        clearInterval(pullPollInterval);
+      }
+    }
 
     if (apiError) {
       setDeployError(apiError);
@@ -226,7 +333,7 @@ export const InstallModal: React.FC<InstallModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-in fade-in duration-200">
       <div className="w-full max-w-xl max-h-[90vh] flex flex-col rounded-2xl bg-[#090d16] border border-white/[0.08] shadow-[0_32px_80px_-16px_rgba(0,0,0,0.85)] overflow-hidden transition-all duration-300">
-        
+
         {/* MODAL HEADER */}
         <div className="flex-shrink-0 px-6 sm:px-7 py-5 border-b border-white/[0.06] flex items-center justify-between bg-white/[0.015]">
           <div className="flex items-center space-x-3.5">
@@ -250,11 +357,10 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                 </h3>
                 {isDeploying && (
                   <span
-                    className={`text-[10px] font-mono px-2 py-0.5 rounded font-medium border ${
-                      isCompleted
+                    className={`text-[10px] font-mono px-2 py-0.5 rounded font-medium border ${isCompleted
                         ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/25'
                         : 'bg-sky-500/10 text-sky-400 border-sky-500/25'
-                    }`}
+                      }`}
                   >
                     {isCompleted
                       ? INSTALL_MODAL_STRINGS.statusOnline
@@ -306,9 +412,8 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3.5">
                       <div
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center border shadow-sm transition-all ${
-                          !isCompleted ? 'relative ring-1 ring-sky-500/30' : ''
-                        }`}
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center border shadow-sm transition-all ${!isCompleted ? 'relative ring-1 ring-sky-500/30' : ''
+                          }`}
                         style={{
                           backgroundColor: `${theme.color}15`,
                           borderColor: `${theme.color}35`,
@@ -329,11 +434,10 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                             {customName || blueprint.name}
                           </h3>
                           <span
-                            className={`text-[10px] font-mono px-2 py-0.5 rounded font-semibold border flex items-center gap-1.5 ${
-                              isCompleted
+                            className={`text-[10px] font-mono px-2 py-0.5 rounded font-semibold border flex items-center gap-1.5 ${isCompleted
                                 ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30'
                                 : 'bg-sky-500/15 text-sky-300 border-sky-500/30'
-                            }`}
+                              }`}
                           >
                             {!isCompleted && (
                               <Loader2 className="w-2.5 h-2.5 animate-spin text-sky-400 shrink-0" />
@@ -426,6 +530,35 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                 </div>
               </div>
 
+              {/* Image Pull Live Streaming Bar */}
+              {step === 5 && !isCompleted && pullProgress && pullProgress.active && (
+                <div className="p-3.5 rounded-xl bg-sky-500/[0.06] border border-sky-500/20 space-y-2 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center space-x-2">
+                      <Loader2 className="w-3.5 h-3.5 text-sky-400 animate-spin shrink-0" />
+                      <span className="font-semibold text-white font-mono text-[11px]">
+                        {INSTALL_MODAL_STRINGS.pullProgressTitle}
+                      </span>
+                    </div>
+                    <span className="font-mono text-sky-300 text-[11px] font-semibold">
+                      {pullProgress.percent}%
+                    </span>
+                  </div>
+                  <div className="h-1.5 w-full bg-white/[0.08] rounded-full overflow-hidden relative">
+                    <div
+                      className="h-full rounded-full bg-sky-400 transition-all duration-300 ease-out"
+                      style={{ width: `${Math.max(2, pullProgress.percent)}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
+                    <span className="truncate max-w-[320px]">
+                      {pullProgress.status || INSTALL_MODAL_STRINGS.pullProgressSubtext}
+                    </span>
+                    <span>{pullProgress.percent}%</span>
+                  </div>
+                </div>
+              )}
+
               {/* Interactive Block Selector Strip (Click to inspect block) */}
               <div className="grid grid-cols-5 gap-1.5 pt-1">
                 {enclaveBlocks.map((blk, idx) => {
@@ -438,13 +571,12 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                       key={blk.id}
                       type="button"
                       onClick={() => setSelectedBlockIndex(idx)}
-                      className={`p-2 rounded-lg border text-left flex flex-col justify-between transition-all ${
-                        isSelected
+                      className={`p-2 rounded-lg border text-left flex flex-col justify-between transition-all ${isSelected
                           ? 'bg-sky-500/15 border-sky-500/40 text-white shadow-sm'
                           : isAssembled
-                          ? 'bg-white/[0.03] hover:bg-white/[0.06] border-white/[0.08] text-slate-300'
-                          : 'bg-white/[0.01] border-white/[0.04] text-slate-600 opacity-60'
-                      }`}
+                            ? 'bg-white/[0.03] hover:bg-white/[0.06] border-white/[0.08] text-slate-300'
+                            : 'bg-white/[0.01] border-white/[0.04] text-slate-600 opacity-60'
+                        }`}
                     >
                       <div className="flex items-center justify-between w-full mb-1">
                         <span className="text-[10px] font-mono font-semibold">
@@ -485,6 +617,49 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                 </p>
               </div>
 
+              {/* Live Logs Collapsible Terminal Drawer */}
+              {showLiveLogs && (
+                <div className="rounded-xl bg-[#040711] border border-white/[0.08] overflow-hidden shadow-2xl animate-in fade-in duration-200">
+                  <div className="px-3.5 py-2 bg-[#080d19] border-b border-white/[0.06] flex items-center justify-between text-[11px] font-mono">
+                    <div className="flex items-center space-x-2">
+                      <span className="w-2.5 h-2.5 rounded-full bg-rose-500/80 inline-block" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-amber-500/80 inline-block" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/80 inline-block" />
+                      <span className="text-slate-300 font-medium ml-1">
+                        {INSTALL_MODAL_STRINGS.deploymentLogsTitle}
+                      </span>
+                      <span className="relative flex h-2 w-2 ml-1">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowLiveLogs(false)}
+                      className="text-slate-400 hover:text-white text-[10px] px-1.5 py-0.5 rounded hover:bg-white/[0.06] transition-colors"
+                    >
+                      {INSTALL_MODAL_STRINGS.hideLogsButton}
+                    </button>
+                  </div>
+                  <div className="p-3 max-h-40 overflow-y-auto font-mono text-[11px] leading-relaxed select-text space-y-0.5 bg-[#02050e] text-slate-300">
+                    {liveLogs ? (
+                      liveLogs.split('\n').map((line, idx) => (
+                        <div key={idx} className="flex items-start gap-2">
+                          <span className="text-slate-600 select-none text-[10px] w-6 shrink-0 text-right">{idx + 1}</span>
+                          <span className="break-all">{line}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="flex items-center gap-2 text-slate-500 italic py-2">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-400" />
+                        <span>{pullProgress?.status || INSTALL_MODAL_STRINGS.streamingLogsPlaceholder}</span>
+                      </div>
+                    )}
+                    <div ref={liveLogsEndRef} />
+                  </div>
+                </div>
+              )}
+
               {/* Completion Summary Card */}
               {isCompleted && (
                 <div className="p-4 rounded-xl bg-emerald-500/[0.04] border border-emerald-500/20 space-y-3 animate-in fade-in duration-300">
@@ -511,6 +686,12 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                       </div>
                     )}
                   </div>
+
+                  {deployedInstance.uiPort && (
+                    <p className="text-[10px] text-slate-500 font-normal italic pt-0.5">
+                      {INSTALL_MODAL_STRINGS.companionWarmingNote}
+                    </p>
+                  )}
                 </div>
               )}
             </div>
@@ -610,40 +791,52 @@ export const InstallModal: React.FC<InstallModalProps> = ({
         </div>
 
         {/* MODAL FIXED FOOTER */}
-        <div className="flex-shrink-0 px-6 sm:px-7 py-5 sm:py-6 border-t border-white/[0.06] bg-white/[0.015] flex items-center justify-between">
+        <div className="flex-shrink-0 px-6 sm:px-7 py-4 sm:py-5 border-t border-white/[0.06] bg-white/[0.015] flex items-center justify-between">
           {isDeploying ? (
             isCompleted ? (
-              <div className="flex items-center justify-between w-full gap-3">
-                {onViewCredentials && (
-                  <button
-                    onClick={() => {
-                      onClose();
-                      onViewCredentials(deployedInstance);
-                    }}
-                    className="px-4.5 py-2.5 bg-white/[0.06] hover:bg-white/[0.1] text-slate-200 hover:text-white rounded-lg text-xs font-medium transition-colors border border-white/[0.08]"
-                  >
-                    {INSTALL_MODAL_STRINGS.viewCredentialsButton}
-                  </button>
-                )}
+              <div className="flex items-center justify-between w-full gap-2">
+                <div className="flex items-center gap-2 shrink-0">
+                  {onViewCredentials && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        onClose();
+                        onViewCredentials(deployedInstance);
+                      }}
+                      className="px-3.5 py-2 bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 hover:text-white rounded-xl text-xs font-medium transition-all border border-white/[0.1] flex items-center gap-1.5 active:scale-95 shadow-sm whitespace-nowrap shrink-0"
+                    >
+                      <Key className="w-3.5 h-3.5 text-amber-400" />
+                      <span>{INSTALL_MODAL_STRINGS.viewCredentialsButton}</span>
+                    </button>
+                  )}
+                </div>
 
-                <div className="flex items-center space-x-2.5 ml-auto">
-                  {deployedInstance.uiUrl && (
+                <div className="flex items-center gap-2 shrink-0 ml-auto">
+                  {deployedInstance.uiPort && (
                     <a
-                      href={deployedInstance.uiUrl}
+                      href={resolveConsoleUrl(deployedInstance.uiUrl, deployedInstance.uiPort)}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="px-4.5 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-semibold rounded-lg text-xs flex items-center space-x-1.5 transition-all shadow-md active:scale-95"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        const url = resolveConsoleUrl(deployedInstance.uiUrl, deployedInstance.uiPort);
+                        window.open(url, '_blank', 'noopener,noreferrer');
+                      }}
+                      className="px-3.5 py-2 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 hover:text-emerald-200 border border-emerald-500/30 rounded-xl text-xs font-medium flex items-center gap-1.5 transition-all shadow-sm active:scale-95 whitespace-nowrap shrink-0"
+                      title={INSTALL_MODAL_STRINGS.openConsoleTooltip}
                     >
+                      <ExternalLink className="w-3.5 h-3.5 text-emerald-400" />
                       <span>{INSTALL_MODAL_STRINGS.openConsoleButton}</span>
                     </a>
                   )}
 
                   <button
+                    type="button"
                     onClick={() => {
                       if (onDone) onDone(deployedInstance);
                       else onClose();
                     }}
-                    className="px-5 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 rounded-lg text-xs font-semibold transition-all shadow-sm active:scale-95"
+                    className="px-4 py-2 bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold rounded-xl text-xs transition-all shadow-sm active:scale-95 whitespace-nowrap shrink-0"
                   >
                     {INSTALL_MODAL_STRINGS.goToServicesButton}
                   </button>
@@ -664,7 +857,25 @@ export const InstallModal: React.FC<InstallModalProps> = ({
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+
+                <div className="flex items-center gap-2.5">
+                  {/* Live Log Button During Deployment */}
+                  <button
+                    type="button"
+                    onClick={() => setShowLiveLogs((prev) => !prev)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-medium border flex items-center gap-1.5 transition-all active:scale-95 ${showLiveLogs
+                        ? 'bg-sky-500/20 text-sky-300 border-sky-500/35 shadow-sm'
+                        : 'bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white border-white/[0.08]'
+                      }`}
+                  >
+                    <Terminal className="w-3 h-3 text-sky-400" />
+                    <span>
+                      {showLiveLogs
+                        ? INSTALL_MODAL_STRINGS.hideLogsButton
+                        : INSTALL_MODAL_STRINGS.liveLogsButton}
+                    </span>
+                  </button>
+
                   <span className="text-[11px] text-slate-400 font-mono">
                     {INSTALL_MODAL_STRINGS.stepCount(Math.min(5, step), 5)}
                   </span>
@@ -679,24 +890,24 @@ export const InstallModal: React.FC<InstallModalProps> = ({
               <button
                 type="button"
                 onClick={handleQuickDeploy}
-                className="px-4.5 py-2.5 bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 hover:text-white rounded-lg text-xs font-medium flex items-center space-x-2 transition-colors border border-white/[0.06]"
+                className="px-4 py-2 bg-white/[0.04] hover:bg-white/[0.08] text-slate-200 hover:text-white rounded-xl text-xs font-medium flex items-center gap-2 transition-all border border-white/[0.1] shadow-sm active:scale-95 whitespace-nowrap shrink-0"
               >
                 <Server className="w-3.5 h-3.5 text-sky-400" />
                 <span>{INSTALL_MODAL_STRINGS.useDefaultsButton}</span>
               </button>
 
-              <div className="flex items-center space-x-2.5">
+              <div className="flex items-center gap-2 shrink-0 ml-auto">
                 <button
                   type="button"
                   onClick={onClose}
-                  className="px-4 py-2.5 bg-transparent hover:bg-white/[0.05] text-slate-400 hover:text-white rounded-lg text-xs font-medium transition-colors"
+                  className="px-3.5 py-2 bg-transparent hover:bg-white/[0.05] text-slate-400 hover:text-white rounded-xl text-xs font-medium transition-colors whitespace-nowrap shrink-0"
                 >
                   {COMMON_STRINGS.cancel}
                 </button>
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  className="px-5 py-2.5 bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold rounded-lg text-xs flex items-center space-x-2 transition-all shadow-sm active:scale-95"
+                  className="px-4 py-2 bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold rounded-xl text-xs flex items-center space-x-1.5 transition-all shadow-sm active:scale-95 whitespace-nowrap shrink-0"
                 >
                   <span>{INSTALL_MODAL_STRINGS.deployContainerButton}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
