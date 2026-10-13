@@ -19,11 +19,35 @@ export interface PortBindingSpec {
   containerPort: number;
 }
 
+export interface ImagePullProgress {
+  image: string;
+  percent: number;
+  currentBytes: number;
+  totalBytes: number;
+  status: string;
+  active: boolean;
+  formatted: string;
+}
+
 @Injectable()
 export class DockerService implements OnModuleInit {
   private readonly logger = new Logger(DockerService.name);
   private docker: Docker;
   public readonly networkName = 'portgrid-net';
+
+  private currentPullProgress: ImagePullProgress = {
+    image: '',
+    percent: 0,
+    currentBytes: 0,
+    totalBytes: 0,
+    status: 'idle',
+    active: false,
+    formatted: '',
+  };
+
+  getCurrentPullProgress(): ImagePullProgress {
+    return this.currentPullProgress;
+  }
 
   constructor() {
     this.docker = this.initDockerClient();
@@ -124,20 +148,122 @@ export class DockerService implements OnModuleInit {
 
     if (exists) {
       this.logger.log(`Image ${image} already present locally.`);
+      this.currentPullProgress = {
+        image,
+        percent: 100,
+        currentBytes: 0,
+        totalBytes: 0,
+        status: 'Image cached locally',
+        active: false,
+        formatted: `${image} (Cached locally)`,
+      };
       return;
     }
 
     this.logger.log(`Pulling image: ${image}... This may take a moment.`);
+    this.currentPullProgress = {
+      image,
+      percent: 0,
+      currentBytes: 0,
+      totalBytes: 0,
+      status: 'Connecting to registry...',
+      active: true,
+      formatted: `Pulling ${image}: 0%`,
+    };
+
+    const layerMap = new Map<string, { current: number; total: number; status: string }>();
+    let lastLoggedPercent = -1;
+
     await new Promise<void>((resolve, reject) => {
       this.docker.pull(image, (err: any, stream: any) => {
-        if (err) return reject(err);
-        this.docker.modem.followProgress(stream, (followErr: any) => {
-          if (followErr) return reject(followErr);
-          resolve();
-        });
+        if (err) {
+          this.currentPullProgress = {
+            image,
+            percent: 0,
+            currentBytes: 0,
+            totalBytes: 0,
+            status: `Error: ${err.message}`,
+            active: false,
+            formatted: `Pull failed: ${err.message}`,
+          };
+          return reject(err);
+        }
+
+        this.docker.modem.followProgress(
+          stream,
+          (followErr: any) => {
+            if (followErr) {
+              this.currentPullProgress = {
+                image,
+                percent: 0,
+                currentBytes: 0,
+                totalBytes: 0,
+                status: `Error: ${followErr.message}`,
+                active: false,
+                formatted: `Pull failed: ${followErr.message}`,
+              };
+              return reject(followErr);
+            }
+            this.currentPullProgress = {
+              image,
+              percent: 100,
+              currentBytes: 0,
+              totalBytes: 0,
+              status: 'Pull complete',
+              active: false,
+              formatted: `Successfully pulled ${image} (100%)`,
+            };
+            this.logger.log(`Successfully pulled image ${image} (100%)`);
+            resolve();
+          },
+          (event: any) => {
+            if (!event) return;
+            const layerId = event.id || 'manifest';
+            const current = event.progressDetail?.current || 0;
+            const total = event.progressDetail?.total || 0;
+            const status = event.status || 'Downloading';
+
+            layerMap.set(layerId, { current, total, status });
+
+            let sumCurrent = 0;
+            let sumTotal = 0;
+            for (const layer of layerMap.values()) {
+              sumCurrent += layer.current;
+              sumTotal += layer.total;
+            }
+
+            let calculatedPercent = 0;
+            if (sumTotal > 0) {
+              calculatedPercent = Math.min(100, Math.round((sumCurrent / sumTotal) * 100));
+            }
+
+            const currentMB = (sumCurrent / (1024 * 1024)).toFixed(1);
+            const totalMB = (sumTotal / (1024 * 1024)).toFixed(1);
+
+            this.currentPullProgress = {
+              image,
+              percent: calculatedPercent,
+              currentBytes: sumCurrent,
+              totalBytes: sumTotal,
+              status: `${status} (${currentMB} MB / ${totalMB} MB)`,
+              active: true,
+              formatted: `Pulling ${image}: ${calculatedPercent}% (${currentMB} MB / ${totalMB} MB)`,
+            };
+
+            // Stream progress in logs every 5% increments
+            if (
+              calculatedPercent >= lastLoggedPercent + 5 ||
+              (calculatedPercent === 100 && lastLoggedPercent < 100)
+            ) {
+              lastLoggedPercent = calculatedPercent;
+              this.logger.log(
+                `[Docker Pull] ${image}: ${calculatedPercent}% (${status} - ${currentMB} MB / ${totalMB} MB)`,
+              );
+            }
+          },
+        );
       });
     });
-    this.logger.log(`Successfully pulled image ${image}`);
   }
 
   /**

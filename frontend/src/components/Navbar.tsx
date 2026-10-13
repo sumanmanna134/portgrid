@@ -3,10 +3,11 @@ import { Layers, Box, Cpu, Activity, LayoutGrid, Terminal, ShieldCheck } from 'l
 import { NAVBAR_STRINGS } from '../constants/strings';
 
 interface NavbarProps {
-  activeTab: 'home' | 'services' | 'catalog';
-  setActiveTab: (tab: 'home' | 'services' | 'catalog') => void;
+  activeTab: 'home' | 'services' | 'catalog' | 'logs';
+  setActiveTab: (tab: 'home' | 'services' | 'catalog' | 'logs') => void;
   installedCount: number;
   runningCount: number;
+  blueprintsCount?: number;
   onOpenAudit?: () => void;
   pendingTicketsCount?: number;
 }
@@ -16,12 +17,13 @@ export const Navbar: React.FC<NavbarProps> = ({
   setActiveTab,
   installedCount,
   runningCount,
+  blueprintsCount = 0,
   onOpenAudit,
   pendingTicketsCount = 0,
 }) => {
   return (
     <header className="sticky top-0 z-40 border-b border-white/[0.07] bg-[#080c14]/80 backdrop-blur-2xl transition-all">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div className="w-full max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 h-16 flex items-center justify-between">
         {/* Brand Identity */}
         <div
           onClick={() => setActiveTab('home')}
@@ -39,34 +41,35 @@ export const Navbar: React.FC<NavbarProps> = ({
                 {NAVBAR_STRINGS.brandBadge}
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 font-normal">{NAVBAR_STRINGS.brandSubtitle}</p>
+            <p className="text-[11px] text-slate-400 font-normal hidden lg:block">{NAVBAR_STRINGS.brandSubtitle}</p>
           </div>
         </div>
 
         {/* Apple macOS Style Segmented Control Tabs */}
-        <div className="flex items-center bg-white/[0.04] p-1 rounded-xl border border-white/[0.06] shadow-inner">
+        <div className="flex items-center bg-white/[0.04] p-1 rounded-xl border border-white/[0.06] shadow-inner shrink-0">
           <button
             onClick={() => setActiveTab('home')}
-            className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${
+            className={`flex items-center space-x-1.5 sm:space-x-2 px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${
               activeTab === 'home'
                 ? 'bg-white/[0.12] text-white shadow-[0_1px_8px_rgba(0,0,0,0.3)] border border-white/[0.1]'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.02]'
             }`}
           >
             <LayoutGrid className="w-3.5 h-3.5 text-sky-400" />
-            <span>{NAVBAR_STRINGS.homeTab}</span>
+            <span className="hidden sm:inline">{NAVBAR_STRINGS.homeTab}</span>
           </button>
 
           <button
             onClick={() => setActiveTab('services')}
-            className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${
+            className={`flex items-center space-x-1.5 sm:space-x-2 px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${
               activeTab === 'services'
                 ? 'bg-white/[0.12] text-white shadow-[0_1px_8px_rgba(0,0,0,0.3)] border border-white/[0.1]'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.02]'
             }`}
           >
             <Box className="w-3.5 h-3.5" />
-            <span>{NAVBAR_STRINGS.activeServicesTab}</span>
+            <span className="hidden sm:inline">{NAVBAR_STRINGS.activeServicesTab}</span>
+            <span className="sm:hidden">Services</span>
             <span
               className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-semibold ${
                 activeTab === 'services'
@@ -80,16 +83,45 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <button
             onClick={() => setActiveTab('catalog')}
-            className={`flex items-center space-x-2 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${
+            className={`flex items-center space-x-1.5 sm:space-x-2 px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-150 ${
               activeTab === 'catalog'
                 ? 'bg-white/[0.12] text-white shadow-[0_1px_8px_rgba(0,0,0,0.3)] border border-white/[0.1]'
                 : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.02]'
             }`}
           >
             <Layers className="w-3.5 h-3.5" />
-            <span>{NAVBAR_STRINGS.catalogTab}</span>
+            <span className="hidden sm:inline">{NAVBAR_STRINGS.catalogTab}</span>
+            <span className="sm:hidden">Catalog</span>
+            {blueprintsCount > 0 && (
+              <span
+                className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-semibold ${
+                  activeTab === 'catalog'
+                    ? 'bg-sky-500/20 text-sky-300 border border-sky-400/30'
+                    : 'bg-white/[0.06] text-slate-400'
+                }`}
+              >
+                {blueprintsCount}
+              </span>
+            )}
           </button>
         </div>
+
+        {/* Mobile Security Shield Icon Button */}
+        {onOpenAudit && (
+          <div className="flex md:hidden items-center ml-1">
+            <button
+              onClick={onOpenAudit}
+              className={`p-2 rounded-lg text-xs font-medium transition-all active:scale-95 border ${
+                pendingTicketsCount > 0
+                  ? 'bg-amber-500/15 border-amber-500/35 text-amber-300'
+                  : 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300'
+              }`}
+              title={NAVBAR_STRINGS.securityShieldTooltip}
+            >
+              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            </button>
+          </div>
+        )}
 
         {/* Bank-Grade Security Shield & Cluster Indicators */}
         <div className="hidden md:flex items-center space-x-3 text-xs">

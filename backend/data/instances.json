@@ -1,1 +1,28 @@
-[]
+[
+  {
+    "id": "postgresql-795f39",
+    "blueprintId": "postgresql",
+    "name": "prod-pgadmin",
+    "status": "STOPPED",
+    "createdAt": "2026-10-11T20:40:29.795Z",
+    "enginePort": 5432,
+    "uiPort": 5050,
+    "engineContainerId": "ea809df958fa7e8231280d7a2aad697a3665390a811d17df587432bf9274dca0",
+    "uiContainerId": "3988c32391d8bc52adb3773e8e6c0a43c4eec4b201a2ef6511081bac289036b7",
+    "volumes": [
+      "portgrid_pg_data_795f39"
+    ],
+    "secrets": {
+      "username": "postgres",
+      "password": "enc:v1:6f42e44a95ab8836bf583d10:0299f74df9ba449125cdfaf22b237222:6d5806e68255bf811db9b5c14f5086beb2af13e3",
+      "uiUsername": "admin@portgrid.com",
+      "uiNote": "Auto-configured web UI for PostgreSQL. Login: admin@portgrid.com with generated password. Host: {{ENGINE_HOST}}"
+    },
+    "connectionStrings": {
+      "uri": "postgresql://postgres:LBOpf18EqceaqsfyuIOL@localhost:5432/devdb",
+      "jdbc": "jdbc:postgresql://localhost:5432/devdb?user=postgres&password=LBOpf18EqceaqsfyuIOL",
+      "envSnippet": "DB_HOST=localhost\nDB_PORT=5432\nDB_USER=postgres\nDB_PASSWORD=LBOpf18EqceaqsfyuIOL\nDB_NAME=devdb\nDATABASE_URL=postgresql://postgres:LBOpf18EqceaqsfyuIOL@localhost:5432/devdb"
+    },
+    "uiUrl": "http://127.0.0.1:5050"
+  }
+]

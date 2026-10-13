@@ -9,13 +9,16 @@ import { InstallModal } from './components/InstallModal';
 import { WorkflowEditorModal } from './components/WorkflowEditorModal';
 import { AuditModal } from './components/AuditModal';
 import { HomePage } from './components/HomePage';
+import { TerminalLogsPage } from './components/TerminalLogsPage';
 import { ServiceBlueprint, InstalledServiceInstance, ApprovalTicket, GovernanceSettings } from './types';
 import { DASHBOARD_STRINGS, CATALOG_STRINGS } from './constants/strings';
 import { Plus, Box, Sparkles, CheckCircle2, Search, Filter } from 'lucide-react';
+import { DEFAULT_OFFICIAL_BLUEPRINTS } from './constants/defaultBlueprints';
 
 export const App: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<'home' | 'services' | 'catalog'>('home');
-  const [blueprints, setBlueprints] = useState<ServiceBlueprint[]>([]);
+  const [activeTab, setActiveTab] = useState<'home' | 'services' | 'catalog' | 'logs'>('home');
+  const [terminalServiceId, setTerminalServiceId] = useState<string | null>(null);
+  const [blueprints, setBlueprints] = useState<ServiceBlueprint[]>(DEFAULT_OFFICIAL_BLUEPRINTS);
   const [services, setServices] = useState<InstalledServiceInstance[]>([]);
   const [installingId, setInstallingId] = useState<string | null>(null);
 
@@ -53,7 +56,9 @@ export const App: React.FC = () => {
       const res = await fetch('/api/catalog');
       if (res.ok) {
         const data = await res.json();
-        setBlueprints(data);
+        if (Array.isArray(data) && data.length > 0) {
+          setBlueprints(data);
+        }
       }
     } catch (err) {
       console.error('Error fetching catalog:', err);
@@ -96,6 +101,7 @@ export const App: React.FC = () => {
     fetchServices();
     fetchGovernance();
     const interval = setInterval(() => {
+      fetchCatalog();
       fetchServices();
       fetchGovernance();
     }, 4000);
@@ -132,6 +138,11 @@ export const App: React.FC = () => {
     }
   };
 
+  const handleOpenTerminalLogs = (service: InstalledServiceInstance) => {
+    setTerminalServiceId(service.id);
+    setActiveTab('logs');
+  };
+
   const handleSaveCustomBlueprint = async (blueprint: ServiceBlueprint, isEdit: boolean) => {
     const url = isEdit ? `/api/catalog/custom/${blueprint.id}` : '/api/catalog/custom';
     const method = isEdit ? 'PUT' : 'POST';
@@ -147,6 +158,9 @@ export const App: React.FC = () => {
     }
 
     await fetchCatalog();
+    setActiveTab('catalog');
+    setCatalogCategory('Custom');
+    setCatalogSearch('');
     showToast(DASHBOARD_STRINGS.toastOnboarded(blueprint.name));
   };
 
@@ -266,12 +280,13 @@ export const App: React.FC = () => {
         setActiveTab={setActiveTab}
         installedCount={services.length}
         runningCount={runningCount}
+        blueprintsCount={blueprints.length}
         pendingTicketsCount={pendingTicketsCount}
         onOpenAudit={() => setIsAuditModalOpen(true)}
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 w-full max-w-[1536px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 py-6 sm:py-8">
         {/* Homepage Overview Tab */}
         {activeTab === 'home' && (
           <HomePage
@@ -329,13 +344,14 @@ export const App: React.FC = () => {
                 </button>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {services.map((svc) => (
                   <ServiceCard
                     key={svc.id}
                     service={svc}
                     onOpenCredentials={setCredentialsService}
                     onOpenLogs={setLogsService}
+                    onOpenTerminalLogs={handleOpenTerminalLogs}
                     onUninstall={setUninstallTarget}
                     onStop={handleStop}
                     onStart={handleStart}
@@ -402,23 +418,47 @@ export const App: React.FC = () => {
             </div>
 
             {/* Catalog Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {filteredBlueprints.map((bp) => (
-                <CatalogCard
-                  key={bp.id}
-                  blueprint={bp}
-                  isInstalling={installingId === bp.id}
-                  isInstalled={services.some((s) => s.blueprintId === bp.id)}
-                  onSelect={setSelectedBlueprintForInstall}
-                  onEdit={(customBp) => {
-                    setEditingCustomBlueprint(customBp);
-                    setIsWorkflowEditorOpen(true);
+            {filteredBlueprints.length === 0 ? (
+              <div className="glass-surface rounded-xl p-8 text-center max-w-md mx-auto my-8 border border-white/[0.06]">
+                <p className="text-xs text-slate-400 mb-3">No blueprints match current search or category filter.</p>
+                <button
+                  onClick={() => {
+                    setCatalogSearch('');
+                    setCatalogCategory('All');
                   }}
-                  onDelete={handleDeleteCustomBlueprint}
-                />
-              ))}
-            </div>
+                  className="px-3.5 py-1.5 bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-semibold rounded-lg transition-colors"
+                >
+                  Reset Filters
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredBlueprints.map((bp) => (
+                  <CatalogCard
+                    key={bp.id}
+                    blueprint={bp}
+                    isInstalling={installingId === bp.id}
+                    isInstalled={services.some((s) => s.blueprintId === bp.id)}
+                    onSelect={setSelectedBlueprintForInstall}
+                    onEdit={(customBp) => {
+                      setEditingCustomBlueprint(customBp);
+                      setIsWorkflowEditorOpen(true);
+                    }}
+                    onDelete={handleDeleteCustomBlueprint}
+                  />
+                ))}
+              </div>
+            )}
           </div>
+        )}
+
+        {/* Full-Screen Live Terminal Logs Tab */}
+        {activeTab === 'logs' && (
+          <TerminalLogsPage
+            services={services}
+            initialServiceId={terminalServiceId}
+            onBack={() => setActiveTab('services')}
+          />
         )}
       </main>
 
@@ -442,6 +482,10 @@ export const App: React.FC = () => {
         onViewCredentials={(newInstance) => {
           setSelectedBlueprintForInstall(null);
           setCredentialsService(newInstance);
+        }}
+        onOpenTerminalLogs={(newInstance) => {
+          setSelectedBlueprintForInstall(null);
+          handleOpenTerminalLogs(newInstance);
         }}
         onDone={(newInstance) => {
           setSelectedBlueprintForInstall(null);

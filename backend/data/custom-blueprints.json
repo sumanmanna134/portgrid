@@ -1,1 +1,73 @@
-[]
+[
+  {
+    "id": "mongodb",
+    "name": "MongoDB 7 & Mongo Express",
+    "category": "Database",
+    "icon": "Database",
+    "description": "Document database paired with Mongo Express web administration console.",
+    "engine": {
+      "namePrefix": "portgrid-mongo",
+      "image": "mongo:7",
+      "defaultPort": 27017,
+      "internalPort": 27017,
+      "env": {
+        "MONGO_INITDB_ROOT_USERNAME": "admin",
+        "MONGO_INITDB_ROOT_PASSWORD": "{{GENERATED_PASSWORD}}"
+      },
+      "volumes": [
+        {
+          "name": "portgrid_mongo_data",
+          "mountPath": "/data/db"
+        }
+      ]
+    },
+    "companionUi": {
+      "name": "Mongo Express",
+      "namePrefix": "portgrid-mongo-ui",
+      "image": "mongo-express:latest",
+      "defaultPort": 8081,
+      "internalPort": 8081,
+      "env": {
+        "ME_CONFIG_MONGODB_URL": "mongodb://admin:{{GENERATED_PASSWORD}}@{{ENGINE_HOST}}:27017/?authSource=admin",
+        "ME_CONFIG_MONGODB_SERVER": "{{ENGINE_HOST}}",
+        "ME_CONFIG_MONGODB_ADMINUSERNAME": "admin",
+        "ME_CONFIG_MONGODB_ADMINPASSWORD": "{{GENERATED_PASSWORD}}",
+        "ME_CONFIG_BASICAUTH": "false",
+        "ME_CONFIG_SITE_SESSIONSECRET": "portgrid-secret"
+      }
+    },
+    "connectionFormatters": {
+      "uri": "mongodb://admin:{{GENERATED_PASSWORD}}@localhost:{{ENGINE_PORT}}/?authSource=admin",
+      "envSnippet": "MONGO_HOST=localhost\nMONGO_PORT={{ENGINE_PORT}}\nMONGO_USER=admin\nMONGO_PASS={{GENERATED_PASSWORD}}\nMONGO_URL=mongodb://admin:{{GENERATED_PASSWORD}}@localhost:{{ENGINE_PORT}}/?authSource=admin"
+    },
+    "isOfficial": false
+  },
+  {
+    "id": "clickhouse",
+    "name": "ClickHouse OLAP Database",
+    "category": "Analytics",
+    "icon": "Database",
+    "description": "Ultra-fast column-oriented database management system for real-time analytics.",
+    "engine": {
+      "namePrefix": "portgrid-clickhouse",
+      "image": "clickhouse/clickhouse-server:latest",
+      "defaultPort": 8123,
+      "internalPort": 8123,
+      "env": {
+        "CLICKHOUSE_USER": "default",
+        "CLICKHOUSE_PASSWORD": "{{GENERATED_PASSWORD}}"
+      },
+      "volumes": [
+        {
+          "name": "portgrid_clickhouse_data",
+          "mountPath": "/var/lib/clickhouse"
+        }
+      ]
+    },
+    "connectionFormatters": {
+      "uri": "http://default:{{GENERATED_PASSWORD}}@localhost:{{ENGINE_PORT}}",
+      "envSnippet": "CLICKHOUSE_HOST=localhost\nCLICKHOUSE_PORT={{ENGINE_PORT}}\nCLICKHOUSE_USER=default\nCLICKHOUSE_PASSWORD={{GENERATED_PASSWORD}}"
+    },
+    "isOfficial": false
+  }
+]

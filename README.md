@@ -4,17 +4,18 @@
 PortGrid is a self-hosted developer platform that eliminates the complexity of configuring, wiring, and managing database and messaging infrastructure for local and team environments.
 
 ---
-
+<!-- 
 ## Technical Specifications & Documentation
 
 - [Shipping and Deployment Guide](docs/SHIPPING_AND_DEPLOYMENT.md): Containerization, multi-arch builds, Docker-outside-of-Docker socket forwarding, and distribution channels.
 - [Security Architecture Specification](docs/SECURITY_ARCHITECTURE.md): FIPS 140-2 AES-256-GCM envelope encryption, Maker-Checker dual control, NIST SP 800-88 cryptographic shredding, and SHA-256 Merkle audit trail.
+- [BYOC Cloud Architecture Specification](docs/BYOC_CLOUD_ARCHITECTURE.md): Multi-tenant AWS control plane, customer cloud onboarding via Terraform, AWS STS AssumeRole, and ECS Fargate provisioning.
 
----
+--- -->
 
 ## Key Capabilities
 
-- **Bank-Grade and Critical Fintech Security:**
+- **Security:**
   - **FIPS 140-2 AES-256-GCM Envelope Encryption**: Sensitive credentials encrypted at rest with authenticated 128-bit tags and 256-bit master key isolation.
   - **Maker-Checker Dual Control (Four-Eyes Principle)**: Destructive de-provisioning requires explicit dual-authorization tickets (`#TKT-XXXX`) approved by a designated Security Checker.
   - **NIST SP 800-88 Rev 1 Cryptographic Shredding**: In-memory credential zeroing (`Buffer.fill(0)`), key purging, and volume destruction with verifiable cryptographic receipts.
@@ -50,7 +51,34 @@ PortGrid is a self-hosted developer platform that eliminates the complexity of c
 
 ## Quick Start
 
-### Method 1: Instant Docker Container (Recommended)
+### Method 1: Official PortGrid CLI (Recommended for Windows, macOS, Linux)
+
+Install the PortGrid CLI globally via npm or run instantly without prior installation using npx:
+
+```bash
+# Install globally (PowerShell, macOS Terminal, Linux shell)
+npm install -g @portgrid/cli
+
+# Start PortGrid with loopback isolation & FIPS vault
+portgrid up
+
+# Or zero-install run via npx:
+npx @portgrid/cli up
+```
+
+#### Core CLI Commands:
+- `portgrid up`: Spawns container, generates FIPS master key, probes readiness, and opens browser
+- `portgrid down`: Gracefully halts the PortGrid instance
+- `portgrid restart`: Reboots the container and runs health verification
+- `portgrid status`: Real-time health, port bindings, resource usage, and vault posture
+- `portgrid logs -f`: Live container stdout/stderr streaming
+- `portgrid doctor`: Audits host OS, Docker daemon, socket interop, RAM, and port availability
+- `portgrid update`: Pulls latest Docker image and upgrades with zero data loss
+- `portgrid open`: Opens dashboard at `http://127.0.0.1:3000`
+
+---
+
+### Method 2: Instant Docker Container
 
 Run the unified single-port PortGrid container with host Docker socket forwarding:
 
@@ -61,7 +89,7 @@ docker run -d \
   -p 3000:3000 \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v portgrid_data:/app/data \
-  portgrid/portgrid:latest
+  mannasuman134/postgrid:latest
 ```
 
 Open your browser at: [http://localhost:3000](http://localhost:3000)
@@ -99,7 +127,7 @@ Access the interfaces:
 
 ---
 
-## Architectural Design
+<!-- ## Architectural Design
 
 ```
 portgrid/
@@ -120,11 +148,8 @@ portgrid/
 │   │   ├── App.tsx
 │   │   └── main.tsx
 │   └── package.json
-├── docs/                      # Platform Documentation
-│   ├── SECURITY_ARCHITECTURE.md
-│   └── SHIPPING_AND_DEPLOYMENT.md
 ├── Dockerfile                 # Multi-Stage Production Container Image
 ├── docker-compose.yml         # 1-Command Startup Compose Definition
 ├── start.sh                   # Unified Local Developer Startup Script
 └── README.md
-```
+``` -->

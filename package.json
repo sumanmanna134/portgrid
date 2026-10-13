@@ -1,12 +1,41 @@
 {
-  "name": "portgrid",
-  "version": "1.0.0",
+  "name": "@portgrid/cli",
+  "version": "1.2.5",
   "description": "PortGrid: Local Developer Infrastructure Orchestrator & PaaS",
+  "bin": {
+    "portgrid": "bin/portgrid.js",
+    "postgrid": "bin/portgrid.js"
+  },
+  "files": [
+    "bin",
+    "README.md"
+  ],
   "scripts": {
     "dev:backend": "npm --prefix backend run start:dev",
     "dev:frontend": "npm --prefix frontend run dev",
     "build": "npm --prefix backend run build && npm --prefix frontend run build",
-    "start": "npm --prefix backend run start:prod"
+    "start": "npm --prefix backend run start:prod",
+    "cli": "node ./bin/portgrid.js",
+    "cli:doctor": "node ./bin/portgrid.js doctor",
+    "cli:status": "node ./bin/portgrid.js status",
+    "release": "./scripts/publish-npm.sh"
+  },
+  "keywords": [
+    "portgrid",
+    "paas",
+    "developer-tools",
+    "docker",
+    "orchestrator",
+    "local-infrastructure",
+    "cli"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sumanmanna134/portgrid.git"
+  },
+  "homepage": "https://sumanmanna134.github.io/portgrid/",
+  "bugs": {
+    "url": "https://github.com/sumanmanna134/portgrid/issues"
   },
   "author": "Suman Manna & Antigravity",
   "license": "MIT"
