@@ -57,6 +57,29 @@ validate_service() {
     die "Cannot validate ${service_name} startup script."
 }
 
+free_port_if_occupied() {
+  local port="$1"
+  local desc="$2"
+  local pids
+
+  if command -v lsof >/dev/null 2>&1; then
+    pids=$(lsof -ti :"$port" 2>/dev/null || true)
+    if [[ -n "$pids" ]]; then
+      log "Port ${port} (${desc}) is held by stale PID(s): ${pids}. Freeing socket..."
+      for pid in $pids; do
+        kill -15 "$pid" 2>/dev/null || true
+      done
+      sleep 0.5
+      for pid in $pids; do
+        if kill -0 "$pid" 2>/dev/null; then
+          kill -9 "$pid" 2>/dev/null || true
+        fi
+      done
+      log "Port ${port} (${desc}) cleared successfully."
+    fi
+  fi
+}
+
 signal_tree() {
   local signal="$1"
   local pid="$2"
@@ -210,11 +233,23 @@ main() {
   [[ "$SHUTDOWN_TIMEOUT" =~ ^[1-9][0-9]*$ ]] ||
     die "PORTGRID_SHUTDOWN_TIMEOUT must be a positive integer."
 
+  # Ensure loopback ports 3000 and 4000 are freed from stale zombie processes
+  free_port_if_occupied 4000 "Backend Control Plane"
+  free_port_if_occupied 3000 "Frontend Dashboard"
+
   # Register traps before starting any services.
   trap cleanup EXIT
   trap 'exit 130' INT
   trap 'exit 143' TERM
   trap 'exit 129' HUP
+
+  # Synchronize frontend production dist build
+  log "Synchronizing frontend compilation assets..."
+  (
+    cd "$FRONTEND_DIR"
+    rm -rf node_modules/.vite 2>/dev/null || true
+    npm run build >/dev/null 2>&1 || true
+  )
 
   log "Starting ${APP_NAME} backend..."
   (

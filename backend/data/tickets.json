@@ -268,5 +268,194 @@
       "decisionAt": "2026-10-11T18:01:31.689Z",
       "comment": "Dual authorization verified and signed by Security Checker."
     }
+  },
+  {
+    "id": "TKT-7FA425",
+    "createdAt": "2026-10-11T19:53:41.436Z",
+    "action": "UNINSTALL_SERVICE",
+    "maker": {
+      "userId": "engineer_operator",
+      "role": "MAKER",
+      "ipAddress": "127.0.0.1"
+    },
+    "status": "APPROVED",
+    "resource": {
+      "id": "postgresql-386224",
+      "name": "PostgreSQL 16 & pgAdmin 4 (#386224)",
+      "type": "postgresql"
+    },
+    "payload": {
+      "removeVolumes": true
+    },
+    "expiresAt": "2026-10-11T20:53:41.436Z",
+    "checker": {
+      "userId": "sec_officer_lead",
+      "role": "CHECKER_SECURITY_OFFICER",
+      "ipAddress": "127.0.0.1",
+      "decisionAt": "2026-10-11T19:53:53.927Z",
+      "comment": "Dual authorization verified and signed by Security Checker."
+    }
+  },
+  {
+    "id": "TKT-C18A13",
+    "createdAt": "2026-10-11T19:53:49.558Z",
+    "action": "UNINSTALL_SERVICE",
+    "maker": {
+      "userId": "engineer_operator",
+      "role": "MAKER",
+      "ipAddress": "127.0.0.1"
+    },
+    "status": "EXECUTED",
+    "resource": {
+      "id": "postgresql-386224",
+      "name": "PostgreSQL 16 & pgAdmin 4 (#386224)",
+      "type": "postgresql"
+    },
+    "payload": {
+      "removeVolumes": true
+    },
+    "expiresAt": "2026-10-11T20:53:49.558Z",
+    "checker": {
+      "userId": "sec_officer_lead",
+      "role": "CHECKER_SECURITY_OFFICER",
+      "ipAddress": "127.0.0.1",
+      "decisionAt": "2026-10-11T19:53:53.177Z",
+      "comment": "Dual authorization verified and signed by Security Checker."
+    }
+  },
+  {
+    "id": "TKT-16FA17",
+    "createdAt": "2026-10-11T19:54:01.714Z",
+    "action": "UNINSTALL_SERVICE",
+    "maker": {
+      "userId": "engineer_operator",
+      "role": "MAKER",
+      "ipAddress": "127.0.0.1"
+    },
+    "status": "EXECUTED",
+    "resource": {
+      "id": "zeppelin-48d29d",
+      "name": "Apache Zeppelin (#48d29d)",
+      "type": "zeppelin"
+    },
+    "payload": {
+      "removeVolumes": true
+    },
+    "expiresAt": "2026-10-11T20:54:01.714Z",
+    "checker": {
+      "userId": "sec_officer_lead",
+      "role": "CHECKER_SECURITY_OFFICER",
+      "ipAddress": "127.0.0.1",
+      "decisionAt": "2026-10-11T19:54:03.910Z",
+      "comment": "Dual authorization verified and signed by Security Checker."
+    }
+  },
+  {
+    "id": "TKT-3FE27A",
+    "createdAt": "2026-10-11T19:54:08.063Z",
+    "action": "UNINSTALL_SERVICE",
+    "maker": {
+      "userId": "engineer_operator",
+      "role": "MAKER",
+      "ipAddress": "127.0.0.1"
+    },
+    "status": "EXECUTED",
+    "resource": {
+      "id": "rabbitmq-df5778",
+      "name": "RabbitMQ & Management UI (#df5778)",
+      "type": "rabbitmq"
+    },
+    "payload": {
+      "removeVolumes": true
+    },
+    "expiresAt": "2026-10-11T20:54:08.063Z",
+    "checker": {
+      "userId": "sec_officer_lead",
+      "role": "CHECKER_SECURITY_OFFICER",
+      "ipAddress": "127.0.0.1",
+      "decisionAt": "2026-10-11T19:54:10.950Z",
+      "comment": "Dual authorization verified and signed by Security Checker."
+    }
+  },
+  {
+    "id": "TKT-3C2EF8",
+    "createdAt": "2026-10-11T19:54:16.249Z",
+    "action": "UNINSTALL_SERVICE",
+    "maker": {
+      "userId": "engineer_operator",
+      "role": "MAKER",
+      "ipAddress": "127.0.0.1"
+    },
+    "status": "EXECUTED",
+    "resource": {
+      "id": "zeppelin-6e4eee",
+      "name": "jep10305",
+      "type": "zeppelin"
+    },
+    "payload": {
+      "removeVolumes": true
+    },
+    "expiresAt": "2026-10-11T20:54:16.249Z",
+    "checker": {
+      "userId": "sec_officer_lead",
+      "role": "CHECKER_SECURITY_OFFICER",
+      "ipAddress": "127.0.0.1",
+      "decisionAt": "2026-10-11T19:54:19.363Z",
+      "comment": "Dual authorization verified and signed by Security Checker."
+    }
+  },
+  {
+    "id": "TKT-A31485",
+    "createdAt": "2026-10-11T20:39:35.809Z",
+    "action": "UNINSTALL_SERVICE",
+    "maker": {
+      "userId": "engineer_operator",
+      "role": "MAKER",
+      "ipAddress": "127.0.0.1"
+    },
+    "status": "EXECUTED",
+    "resource": {
+      "id": "postgresql-51e778",
+      "name": "PostgreSQL 16 & pgAdmin 4 (#51e778)",
+      "type": "postgresql"
+    },
+    "payload": {
+      "removeVolumes": true
+    },
+    "expiresAt": "2026-10-11T21:39:35.809Z",
+    "checker": {
+      "userId": "sec_officer_lead",
+      "role": "CHECKER_SECURITY_OFFICER",
+      "ipAddress": "127.0.0.1",
+      "decisionAt": "2026-10-11T20:39:40.424Z",
+      "comment": "Dual authorization verified and signed by Security Checker."
+    }
+  },
+  {
+    "id": "TKT-636BF0",
+    "createdAt": "2026-10-11T20:44:57.584Z",
+    "action": "UNINSTALL_SERVICE",
+    "maker": {
+      "userId": "engineer_operator",
+      "role": "MAKER",
+      "ipAddress": "127.0.0.1"
+    },
+    "status": "EXECUTED",
+    "resource": {
+      "id": "clickhouse-afab2f",
+      "name": "ClickHouse OLAP Database (#afab2f)",
+      "type": "clickhouse"
+    },
+    "payload": {
+      "removeVolumes": true
+    },
+    "expiresAt": "2026-10-11T21:44:57.584Z",
+    "checker": {
+      "userId": "sec_officer_lead",
+      "role": "CHECKER_SECURITY_OFFICER",
+      "ipAddress": "127.0.0.1",
+      "decisionAt": "2026-10-11T20:45:10.536Z",
+      "comment": "approve"
+    }
   }
 ]

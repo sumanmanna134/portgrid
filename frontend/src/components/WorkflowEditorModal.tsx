@@ -32,7 +32,7 @@ const TEMPLATES: Record<string, Partial<ServiceBlueprint>> = {
     description: 'Document database paired with Mongo Express web administration console.',
     engine: {
       namePrefix: 'portgrid-mongo',
-      image: 'mongo:7-alpine',
+      image: 'mongo:7',
       defaultPort: 27017,
       internalPort: 27017,
       env: {
@@ -48,9 +48,12 @@ const TEMPLATES: Record<string, Partial<ServiceBlueprint>> = {
       defaultPort: 8081,
       internalPort: 8081,
       env: {
+        ME_CONFIG_MONGODB_URL: 'mongodb://admin:{{GENERATED_PASSWORD}}@{{ENGINE_HOST}}:27017/?authSource=admin',
+        ME_CONFIG_MONGODB_SERVER: '{{ENGINE_HOST}}',
         ME_CONFIG_MONGODB_ADMINUSERNAME: 'admin',
         ME_CONFIG_MONGODB_ADMINPASSWORD: '{{GENERATED_PASSWORD}}',
-        ME_CONFIG_MONGODB_SERVER: '{{ENGINE_HOST}}',
+        ME_CONFIG_BASICAUTH: 'false',
+        ME_CONFIG_SITE_SESSIONSECRET: 'portgrid-secret',
       },
     },
     connectionFormatters: {
@@ -66,7 +69,7 @@ const TEMPLATES: Record<string, Partial<ServiceBlueprint>> = {
     description: 'Ultra-fast column-oriented database management system for real-time analytics.',
     engine: {
       namePrefix: 'portgrid-clickhouse',
-      image: 'clickhouse/clickhouse-server:24.3-alpine',
+      image: 'clickhouse/clickhouse-server:latest',
       defaultPort: 8123,
       internalPort: 8123,
       env: {

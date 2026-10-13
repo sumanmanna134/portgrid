@@ -44,9 +44,11 @@ async function bootstrap() {
     path.join(__dirname, 'public'),
   ].filter(Boolean) as string[];
 
+  const isProduction = process.env.NODE_ENV === 'production';
   const staticDir = candidateFrontendDirs.find((dir) => fs.existsSync(path.join(dir, 'index.html')));
-  if (staticDir) {
-    logger.log(`Serving unified frontend UI from: ${staticDir}`);
+
+  if (isProduction && staticDir) {
+    logger.log(`Serving unified production frontend UI from: ${staticDir}`);
     expressApp.use(express.static(staticDir));
     expressApp.get('*', (req: any, res: any, next: any) => {
       if (req.path.startsWith('/api')) {
@@ -54,10 +56,15 @@ async function bootstrap() {
       }
       res.sendFile(path.join(staticDir, 'index.html'));
     });
+  } else if (!isProduction) {
+    // In local development, redirect root web navigation to live Vite dev server on port 3000
+    expressApp.get('/', (req: any, res: any) => {
+      res.redirect('http://localhost:3000');
+    });
   }
 
   const port = process.env.PORT || 4000;
-  await app.listen(port);
+  await app.listen(port, '0.0.0.0');
   logger.log(`=======================================================`);
   logger.log(`PortGrid Control Plane is running on http://localhost:${port}`);
   logger.log(`Catalog API: http://localhost:${port}/api/catalog`);

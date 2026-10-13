@@ -387,7 +387,7 @@ export const WORKFLOW_MODAL_STRINGS = {
   descriptionPlaceholder: 'Short summary of this service...',
   sec2Title: '2. Engine Container Specification',
   dockerImageLabel: 'Docker Image',
-  dockerImagePlaceholder: 'e.g. mongo:7-alpine',
+  dockerImagePlaceholder: 'e.g. mongo:7',
   defaultPortLabel: 'Default Port',
   defaultPortPlaceholder: 'e.g. 27017',
   volumeMountLabel: 'Persistent Volume Mount Path',
@@ -440,10 +440,16 @@ export const HOMEPAGE_STRINGS = {
   fipsBadge: 'FIPS 140-2',
   nodesSuffix: ' Available',
 
-  // Quick Deploy Section
+  // Quick Deploy / One-Click Launch Section
   quickDeployBadge: 'One-Click Launch',
   quickDeployTitle: 'Popular Service Blueprints',
   quickDeploySubtitle: 'Deploy containerized engines and companion web consoles directly to 127.0.0.1.',
+  oneClickLaunchTitle: 'One-Click Launch',
+  oneClickLaunchSubtitle: 'Popular service blueprints and deployments',
+  seeAllLink: 'Explore All Blueprints',
+  readMoreLink: 'Read more',
+  deployNowLink: 'Deploy Now',
+  officialRibbon: 'OFFICIAL',
   deployButton: 'Deploy',
   portLabel: 'Port',
 
@@ -480,7 +486,7 @@ export const HOMEPAGE_STRINGS = {
   specsVolumeLabel: 'Storage Policy:',
   deployBlockButton: 'Deploy to Local Cluster',
   viewBlueprintButton: 'View Full Blueprint',
-  statusRunning: 'ONLINE IN CLUSTER',
+  statusRunning: 'LIVE',
   statusAvailable: 'READY',
 
   // 3D Block entities (Preserved for Next Release)
@@ -517,16 +523,16 @@ export const HOMEPAGE_STRINGS = {
 } as const;
 
 export const TERMINAL_PAGE_STRINGS = {
-  title: 'Container Terminal Logs',
+  title: 'Logs',
   subtitle: 'Live real-time stdout and stderr stream directly from container cgroups runtime',
-  backToServices: 'Back to Active Services',
+  backToServices: 'Back',
   selectService: 'Active Container:',
-  liveBadge: 'LIVE STREAM',
+  liveBadge: 'LIVE',
   pausedBadge: 'STREAM PAUSED',
-  pauseStream: 'Pause Stream',
-  resumeStream: 'Resume Stream',
-  clearTerminal: 'Clear Screen',
-  copyLogs: 'Copy Terminal Logs',
+  pauseStream: 'Pause',
+  resumeStream: 'Resume',
+  clearTerminal: 'Clear',
+  copyLogs: 'Copy',
   copiedLogs: 'Logs Copied',
   noLogsRecorded: 'Waiting for container output... No stdout/stderr lines emitted yet.',
   connecting: 'Connecting to container stream...',
