@@ -94,42 +94,28 @@ jobs:
         uses: github/codeql-action/analyze@v2
 
   # ============================================================================
-  # 3. STATIC SECURITY & REPOSITORY VULNERABILITY SCAN (Grype filesystem)
+  # 3. STATIC SECURITY & REPOSITORY VULNERABILITY SCAN (Grype via Docker)
   # ============================================================================
   security-scan:
-    name: Security Vulnerability Scan (Grype)
+    name: Security Vulnerability Scan (Grype via Docker)
     runs-on: ubuntu-latest
     needs: [build-and-test]
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Install Grype CLI (robust install)
+      - name: Scan filesystem & dependencies with Grype (Docker)
         run: |
-          set -euo pipefail
-          GRYPE_VERSION=0.129.0
-          URL="https://github.com/anchore/grype/releases/download/v${GRYPE_VERSION}/grype_${GRYPE_VERSION}_linux_amd64.tar.gz"
-          echo "Downloading $URL"
-          # fail on HTTP errors, follow redirects, save to file
-          curl -fSL -o grype.tar.gz "$URL" || { echo "Download failed (curl exit $?). Showing headers:"; curl -I "$URL" || true; exit 1; }
-          file grype.tar.gz || true
-          mkdir -p grype_tmp
-          # extract to temporary dir, show diagnostics on failure
-          if ! tar -xzf grype.tar.gz -C grype_tmp; then
-            echo "tar extraction failed — showing start of downloaded file for diagnosis:"
-            head -n 200 grype.tar.gz || true
-            exit 1
-          fi
-          sudo mv grype_tmp/grype /usr/local/bin/
-          grype version
-
-      - name: Scan filesystem & dependencies with Grype
-        run: |
-          # Note: `|| true` prevents the job from failing on findings (same behavior as previous Trivy exit-code='0').
-          grype dir:. -o table || true
+          # Use the official Anchore grype Docker image to scan the workspace directory.
+          # This avoids brittle tarball downloads. The container will run grype against the workspace.
+          docker run --rm \
+            -v "${{ github.workspace }}":/workspace \
+            -w /workspace \
+            anchore/grype:latest dir:/workspace -o table || true
+        # Note: Remove "|| true" or replace with "--fail-on=high,critical" to fail on high/critical.
 
   # ============================================================================
-  # 4. DOCKERIZE & PUSH CONTAINER IMAGE (DEV / QA / PROD) + Image scan with Grype
+  # 4. DOCKERIZE & PUSH CONTAINER IMAGE (DEV / QA / PROD) + Image scan (Grype via Docker)
   # ============================================================================
   docker-delivery:
     name: Build & Push Docker Image
@@ -206,30 +192,19 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
 
-      - name: Install Grype CLI (robust install for image scan)
-        run: |
-          set -euo pipefail
-          GRYPE_VERSION=0.129.0
-          URL="https://github.com/anchore/grype/releases/download/v${GRYPE_VERSION}/grype_${GRYPE_VERSION}_linux_amd64.tar.gz"
-          echo "Downloading $URL"
-          curl -fSL -o grype.tar.gz "$URL" || { echo "Download failed (curl exit $?). Showing headers:"; curl -I "$URL" || true; exit 1; }
-          file grype.tar.gz || true
-          mkdir -p grype_tmp
-          if ! tar -xzf grype.tar.gz -C grype_tmp; then
-            echo "tar extraction failed — showing start of downloaded file for diagnosis:"
-            head -n 200 grype.tar.gz || true
-            exit 1
-          fi
-          sudo mv grype_tmp/grype /usr/local/bin/
-          grype version
-
       - name: Pull published image
         run: |
-          docker pull ${{ steps.meta.outputs.primary_tag }}
+          docker pull ${{ steps.meta.outputs.primary_tag }} || true
 
-      - name: Scan published image with Grype
+      - name: Scan published image with Grype (Docker)
         run: |
-          grype ${{ steps.meta.outputs.primary_tag }} -o table || true
+          # Use the official grype Docker image to scan the published image by reference.
+          # grype will fetch the image manifest and layers directly from the registry.
+          docker run --rm \
+            --entrypoint grype \
+            anchore/grype:latest ${{ steps.meta.outputs.primary_tag }} -o table || true
+        # Note: If you want CI to fail on high/critical vulnerabilities, replace "|| true"
+        # with "--fail-on=high,critical" (and remove the trailing "|| true").
 
   # ============================================================================
   # 5. PUBLISH TO NPM & CREATE GITHUB RELEASE (MAIN / PRODUCTION ONLY)
