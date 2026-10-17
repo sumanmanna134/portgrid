@@ -104,12 +104,23 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Install Grype CLI
+      - name: Install Grype CLI (robust install)
         run: |
+          set -euo pipefail
           GRYPE_VERSION=0.129.0
-          curl -sL "https://github.com/anchore/grype/releases/download/v${GRYPE_VERSION}/grype_${GRYPE_VERSION}_linux_amd64.tar.gz" -o grype.tar.gz
-          tar -xzf grype.tar.gz
-          sudo mv grype /usr/local/bin/
+          URL="https://github.com/anchore/grype/releases/download/v${GRYPE_VERSION}/grype_${GRYPE_VERSION}_linux_amd64.tar.gz"
+          echo "Downloading $URL"
+          # fail on HTTP errors, follow redirects, save to file
+          curl -fSL -o grype.tar.gz "$URL" || { echo "Download failed (curl exit $?). Showing headers:"; curl -I "$URL" || true; exit 1; }
+          file grype.tar.gz || true
+          mkdir -p grype_tmp
+          # extract to temporary dir, show diagnostics on failure
+          if ! tar -xzf grype.tar.gz -C grype_tmp; then
+            echo "tar extraction failed — showing start of downloaded file for diagnosis:"
+            head -n 200 grype.tar.gz || true
+            exit 1
+          fi
+          sudo mv grype_tmp/grype /usr/local/bin/
           grype version
 
       - name: Scan filesystem & dependencies with Grype
@@ -195,12 +206,21 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
 
-      - name: Install Grype CLI (for image scan)
+      - name: Install Grype CLI (robust install for image scan)
         run: |
+          set -euo pipefail
           GRYPE_VERSION=0.129.0
-          curl -sL "https://github.com/anchore/grype/releases/download/v${GRYPE_VERSION}/grype_${GRYPE_VERSION}_linux_amd64.tar.gz" -o grype.tar.gz
-          tar -xzf grype.tar.gz
-          sudo mv grype /usr/local/bin/
+          URL="https://github.com/anchore/grype/releases/download/v${GRYPE_VERSION}/grype_${GRYPE_VERSION}_linux_amd64.tar.gz"
+          echo "Downloading $URL"
+          curl -fSL -o grype.tar.gz "$URL" || { echo "Download failed (curl exit $?). Showing headers:"; curl -I "$URL" || true; exit 1; }
+          file grype.tar.gz || true
+          mkdir -p grype_tmp
+          if ! tar -xzf grype.tar.gz -C grype_tmp; then
+            echo "tar extraction failed — showing start of downloaded file for diagnosis:"
+            head -n 200 grype.tar.gz || true
+            exit 1
+          fi
+          sudo mv grype_tmp/grype /usr/local/bin/
           grype version
 
       - name: Pull published image
