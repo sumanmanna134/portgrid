@@ -77,6 +77,11 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
+      - name: Setup Trivy
+        uses: aquasecurity/setup-trivy@v2
+        with:
+          version: v0.28.0
+
       - name: Scan Filesystem & Dependencies with Trivy
         uses: aquasecurity/trivy-action@v0.28.0
         with:
@@ -115,7 +120,7 @@ jobs:
           BRANCH="${GITHUB_REF_NAME}"
           SHA_SHORT="${GITHUB_SHA::7}"
           VERSION="${{ steps.version.outputs.pkg_version }}"
-          
+
           # Default to dev
           ENV="dev"
           TAGS="mannasuman134/postgrid:dev,mannasuman134/postgrid:dev-${SHA_SHORT}"
@@ -134,7 +139,7 @@ jobs:
           echo "target_env=${ENV}" >> "$GITHUB_OUTPUT"
           echo "tags=${TAGS}" >> "$GITHUB_OUTPUT"
           echo "primary_tag=${PRIMARY}" >> "$GITHUB_OUTPUT"
-          
+
           echo "Target Environment: ${ENV}"
           echo "Docker Image Tags:  ${TAGS}"
 
