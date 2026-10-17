@@ -67,32 +67,55 @@ jobs:
           npm audit --audit-level=high || true
 
   # ============================================================================
-  # 2. STATIC SECURITY & REPOSITORY VULNERABILITY SCAN
+  # 2. CODE SCANNING (CodeQL)
+  # ============================================================================
+  code-scanning:
+    name: Code scanning - CodeQL
+    runs-on: ubuntu-latest
+    needs: [build-and-test]
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript, typescript
+
+      - name: Build project (for CodeQL)
+        run: |
+          npm ci || npm install
+          npm run build || true
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v2
+
+  # ============================================================================
+  # 3. STATIC SECURITY & REPOSITORY VULNERABILITY SCAN (Grype via Docker)
   # ============================================================================
   security-scan:
-    name: Security Vulnerability Scan
+    name: Security Vulnerability Scan (Grype via Docker)
     runs-on: ubuntu-latest
     needs: [build-and-test]
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Setup Trivy
-        uses: aquasecurity/setup-trivy@v2
-        with:
-          version: v0.28.0
-
-      - name: Scan Filesystem & Dependencies with Trivy
-        uses: aquasecurity/trivy-action@v0.28.0
-        with:
-          scan-type: 'fs'
-          scan-ref: '.'
-          format: 'table'
-          severity: 'CRITICAL,HIGH'
-          exit-code: '0'
+      - name: Scan filesystem & dependencies with Grype (Docker)
+        run: |
+          # Use the official Anchore grype Docker image to scan the workspace directory.
+          # This avoids brittle tarball downloads. The container will run grype against the workspace.
+          docker run --rm \
+            -v "${{ github.workspace }}":/workspace \
+            -w /workspace \
+            anchore/grype:latest dir:/workspace -o table || true
+        # Note: Remove "|| true" or replace with "--fail-on=high,critical" to fail on high/critical.
 
   # ============================================================================
-  # 3. DOCKERIZE & PUSH CONTAINER IMAGE (DEV / QA / PROD)
+  # 4. DOCKERIZE & PUSH CONTAINER IMAGE (DEV / QA / PROD) + Image scan (Grype via Docker)
   # ============================================================================
   docker-delivery:
     name: Build & Push Docker Image
@@ -169,16 +192,22 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
 
-      - name: Scan Published Image with Trivy
-        uses: aquasecurity/trivy-action@v0.28.0
-        with:
-          image-ref: ${{ steps.meta.outputs.primary_tag }}
-          format: 'table'
-          severity: 'CRITICAL,HIGH'
-          exit-code: '0'
+      - name: Pull published image
+        run: |
+          docker pull ${{ steps.meta.outputs.primary_tag }} || true
+
+      - name: Scan published image with Grype (Docker)
+        run: |
+          # Use the official grype Docker image to scan the published image by reference.
+          # grype will fetch the image manifest and layers directly from the registry.
+          docker run --rm \
+            --entrypoint grype \
+            anchore/grype:latest ${{ steps.meta.outputs.primary_tag }} -o table || true
+        # Note: If you want CI to fail on high/critical vulnerabilities, replace "|| true"
+        # with "--fail-on=high,critical" (and remove the trailing "|| true").
 
   # ============================================================================
-  # 4. PUBLISH TO NPM & CREATE GITHUB RELEASE (MAIN / PRODUCTION ONLY)
+  # 5. PUBLISH TO NPM & CREATE GITHUB RELEASE (MAIN / PRODUCTION ONLY)
   # ============================================================================
   npm-publish-and-release:
     name: NPM Publish & GitHub Release (Prod)
