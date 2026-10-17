@@ -109,8 +109,14 @@ docker compose up -d
 From the root directory:
 
 ```bash
-./start.sh
+# Start local development mode (hot reload enabled)
+./start.sh dev      # or: ./start-dev.sh
+
+# Start QA validation mode
+./start.sh qa       # or: ./start-qa.sh
 ```
+
+For complete instructions across Development, QA, and Production release pipelines, refer to the [Deployment & Operations Guide](DEPLOYMENT_AND_OPERATIONS_GUIDE.md).
 
 Or start manually:
 ```bash

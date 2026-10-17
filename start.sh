@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 
+# ==============================================================================
+# PortGrid: Multi-Environment Startup Automation
+# Environments: dev (default), qa, prod
+# ==============================================================================
+
 set -Eeuo pipefail
 
 readonly APP_NAME="PortGrid"
@@ -7,18 +12,24 @@ readonly ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)"
 readonly BACKEND_DIR="${ROOT_DIR}/backend"
 readonly FRONTEND_DIR="${ROOT_DIR}/frontend"
 
-readonly BACKEND_SCRIPT="${PORTGRID_BACKEND_SCRIPT:-start:dev}"
-readonly FRONTEND_SCRIPT="${PORTGRID_FRONTEND_SCRIPT:-dev}"
-readonly SHUTDOWN_TIMEOUT="${PORTGRID_SHUTDOWN_TIMEOUT:-10}"
+# Target environment resolution (cli argument or env variable, default: dev)
+ENV_ARG="${1:-${PORTGRID_ENV:-dev}}"
+# Shift if first argument is an environment name
+if [[ "$ENV_ARG" == "dev" || "$ENV_ARG" == "qa" || "$ENV_ARG" == "prod" ]]; then
+  shift || true
+fi
 
+readonly TARGET_ENV="${ENV_ARG}"
+readonly SHUTDOWN_TIMEOUT="${PORTGRID_SHUTDOWN_TIMEOUT:-10}"
 readonly DASHBOARD_URL="${PORTGRID_DASHBOARD_URL:-http://localhost:3000}"
 readonly API_URL="${PORTGRID_API_URL:-http://localhost:4000/api}"
 
 BACKEND_PID=""
 FRONTEND_PID=""
+QA_CONTAINER_NAME="portgrid-qa"
 
 log() {
-  printf '[%s] %s\n' "$(date '+%H:%M:%S')" "$*"
+  printf '[%s] [%s] %s\n' "$(date '+%H:%M:%S')" "${TARGET_ENV^^}" "$*"
 }
 
 die() {
@@ -31,32 +42,6 @@ require_command() {
     die "Required command '$1' was not found. Please install it and retry."
 }
 
-validate_service() {
-  local service_name="$1"
-  local service_dir="$2"
-  local script_name="$3"
-  local package_file="${service_dir}/package.json"
-
-  [[ -d "$service_dir" ]] ||
-    die "${service_name} directory not found: ${service_dir}"
-
-  [[ -f "$package_file" ]] ||
-    die "${service_name} package.json not found: ${package_file}"
-
-  node -e '
-    const fs = require("node:fs");
-    const file = process.argv[1];
-    const script = process.argv[2];
-    const pkg = JSON.parse(fs.readFileSync(file, "utf8"));
-
-    if (!pkg.scripts || typeof pkg.scripts[script] !== "string") {
-      console.error(`Missing npm script "${script}" in ${file}`);
-      process.exit(1);
-    }
-  ' "$package_file" "$script_name" ||
-    die "Cannot validate ${service_name} startup script."
-}
-
 free_port_if_occupied() {
   local port="$1"
   local desc="$2"
@@ -65,7 +50,7 @@ free_port_if_occupied() {
   if command -v lsof >/dev/null 2>&1; then
     pids=$(lsof -ti :"$port" 2>/dev/null || true)
     if [[ -n "$pids" ]]; then
-      log "Port ${port} (${desc}) is held by stale PID(s): ${pids}. Freeing socket..."
+      log "Port ${port} (${desc}) is held by PID(s): ${pids}. Clearing socket..."
       for pid in $pids; do
         kill -15 "$pid" 2>/dev/null || true
       done
@@ -75,7 +60,6 @@ free_port_if_occupied() {
           kill -9 "$pid" 2>/dev/null || true
         fi
       done
-      log "Port ${port} (${desc}) cleared successfully."
     fi
   fi
 }
@@ -103,7 +87,13 @@ stop_processes() {
   local deadline
   local running
 
-  # Request graceful shutdown of both process trees.
+  if [[ "$TARGET_ENV" == "qa" && -n "${DOCKER_QA_RUNNING:-}" ]]; then
+    log "Stopping QA container '${QA_CONTAINER_NAME}'..."
+    docker stop "$QA_CONTAINER_NAME" >/dev/null 2>&1 || true
+    docker rm -f "$QA_CONTAINER_NAME" >/dev/null 2>&1 || true
+    return
+  fi
+
   for pid in "$BACKEND_PID" "$FRONTEND_PID"; do
     [[ -n "$pid" ]] || continue
     signal_tree TERM "$pid"
@@ -111,172 +101,203 @@ stop_processes() {
 
   deadline=$((SECONDS + SHUTDOWN_TIMEOUT))
 
-  # Allow time for npm scripts and their children to terminate.
   while (( SECONDS < deadline )); do
     running=0
-
     for pid in "$BACKEND_PID" "$FRONTEND_PID"; do
       [[ -n "$pid" ]] || continue
-
       if kill -0 "$pid" 2>/dev/null; then
         running=1
       fi
     done
-
     (( running == 0 )) && break
     sleep 0.2
   done
 
-  # Force-stop any remaining top-level processes.
   for pid in "$BACKEND_PID" "$FRONTEND_PID"; do
     [[ -n "$pid" ]] || continue
-
     if kill -0 "$pid" 2>/dev/null; then
       log "Graceful shutdown timed out for PID ${pid}; sending SIGKILL."
       signal_tree KILL "$pid"
     fi
-
     wait "$pid" 2>/dev/null || true
   done
 }
 
 cleanup() {
   local exit_code=$?
-
-  # Prevent recursive EXIT handling.
   trap - EXIT INT TERM HUP
-
-  log "Shutting down ${APP_NAME}..."
+  log "Shutting down ${APP_NAME} (${TARGET_ENV})..."
   stop_processes
   log "${APP_NAME} shutdown complete."
-
   exit "$exit_code"
-}
-
-report_unexpected_exit() {
-  local service_name="$1"
-  local pid="$2"
-  local status
-
-  if wait "$pid"; then
-    status=0
-  else
-    status=$?
-  fi
-
-  log "ERROR: ${service_name} exited unexpectedly with status ${status}."
-
-  # A service exiting successfully still ends the combined session.
-  if (( status == 0 )); then
-    status=1
-  fi
-
-  exit "$status"
-}
-
-monitor_processes() {
-  while true; do
-    if ! kill -0 "$BACKEND_PID" 2>/dev/null; then
-      report_unexpected_exit "Backend" "$BACKEND_PID"
-    fi
-
-    if ! kill -0 "$FRONTEND_PID" 2>/dev/null; then
-      report_unexpected_exit "Frontend" "$FRONTEND_PID"
-    fi
-
-    sleep 1
-  done
 }
 
 check_docker() {
   require_command docker
-
-  local docker_version
-
-  if ! docker_version="$(docker info --format '{{.ServerVersion}}' 2>&1)"; then
-    log "ERROR: Docker Engine is not running or is inaccessible."
-
-    case "$(uname -s)" in
-      Darwin)
-        log "Start Docker Desktop and wait until the engine is running."
-        ;;
-      Linux)
-        log "Check Docker status with: sudo systemctl status docker"
-        log "Start Docker with: sudo systemctl start docker"
-        log "Also verify your Docker socket permissions."
-        ;;
-      MINGW*|MSYS*|CYGWIN*)
-        log "Start Docker Desktop and wait for the engine to become ready."
-        ;;
-      *)
-        log "Start your Docker Engine and verify that the current user can access it."
-        ;;
-    esac
-
-    log "Docker diagnostic: ${docker_version}"
-    die "Docker is required by PortGrid. Startup aborted."
+  if ! docker info >/dev/null 2>&1; then
+    die "Docker daemon is not active. Please start Docker engine and retry."
   fi
-
-  log "Docker Engine is ready (version ${docker_version})."
 }
 
-main() {
-  log "Validating ${APP_NAME} environment..."
-
-  check_docker
+start_dev() {
+  log "Starting ${APP_NAME} in LOCAL DEVELOPMENT mode (hot reload enabled)..."
+  
   require_command node
   require_command npm
+  check_docker
 
-  validate_service "Backend" "$BACKEND_DIR" "$BACKEND_SCRIPT"
-  validate_service "Frontend" "$FRONTEND_DIR" "$FRONTEND_SCRIPT"
-
-  [[ "$SHUTDOWN_TIMEOUT" =~ ^[1-9][0-9]*$ ]] ||
-    die "PORTGRID_SHUTDOWN_TIMEOUT must be a positive integer."
-
-  # Ensure loopback ports 3000 and 4000 are freed from stale zombie processes
-  free_port_if_occupied 4000 "Backend Control Plane"
+  free_port_if_occupied 4000 "Backend API"
   free_port_if_occupied 3000 "Frontend Dashboard"
 
-  # Register traps before starting any services.
   trap cleanup EXIT
   trap 'exit 130' INT
   trap 'exit 143' TERM
-  trap 'exit 129' HUP
 
-  # Synchronize frontend production dist build
-  log "Synchronizing frontend compilation assets..."
-  (
-    cd "$FRONTEND_DIR"
-    rm -rf node_modules/.vite 2>/dev/null || true
-    npm run build >/dev/null 2>&1 || true
-  )
-
-  log "Starting ${APP_NAME} backend..."
+  log "Launching NestJS backend in watch mode..."
   (
     cd "$BACKEND_DIR"
-    exec npm run "$BACKEND_SCRIPT"
+    export NODE_ENV=development
+    exec npm run start:dev
   ) &
   BACKEND_PID=$!
 
-  log "Backend process launched (PID ${BACKEND_PID})."
-
-  log "Starting ${APP_NAME} frontend..."
+  log "Launching Vite frontend in development HMR mode..."
   (
     cd "$FRONTEND_DIR"
-    exec npm run "$FRONTEND_SCRIPT"
+    export NODE_ENV=development
+    exec npm run dev
   ) &
   FRONTEND_PID=$!
 
-  log "Frontend process launched (PID ${FRONTEND_PID})."
-
   printf '\n'
-  log "${APP_NAME} development environment launched."
-  printf '  Dashboard:      %s\n' "$DASHBOARD_URL"
-  printf '  Control Plane:  %s\n' "$API_URL"
+  log "============================================================"
+  log "  PortGrid DEV Environment is Active"
+  log "  Frontend Console: http://localhost:3000"
+  log "  Backend API:      http://localhost:4000/api"
+  log "============================================================"
   printf '\n'
-  log "Press Ctrl+C to stop both services."
+  log "Press Ctrl+C to stop dev session."
 
-  monitor_processes
+  while true; do
+    if ! kill -0 "$BACKEND_PID" 2>/dev/null; then
+      die "Backend process crashed."
+    fi
+    if ! kill -0 "$FRONTEND_PID" 2>/dev/null; then
+      die "Frontend process crashed."
+    fi
+    sleep 1
+  done
+}
+
+start_qa() {
+  local USE_CONTAINER=true
+  # Check if user requested local compiled QA mode instead of container
+  if [[ "${1:-}" == "--local" ]]; then
+    USE_CONTAINER=false
+  fi
+
+  check_docker
+
+  if [[ "$USE_CONTAINER" == "true" ]]; then
+    log "Starting ${APP_NAME} in QA mode via Docker image (mannasuman134/postgrid:qa)..."
+    free_port_if_occupied 3000 "PortGrid QA Container"
+
+    DOCKER_QA_RUNNING="1"
+    trap cleanup EXIT
+    trap 'exit 130' INT
+    trap 'exit 143' TERM
+
+    # Pull latest QA image if accessible, fallback to local if offline
+    log "Checking for QA image updates..."
+    docker pull mannasuman134/postgrid:qa 2>/dev/null || log "Using cached QA image."
+
+    # Remove any stale QA container
+    docker rm -f "$QA_CONTAINER_NAME" >/dev/null 2>&1 || true
+
+    # Resolve docker socket
+    local DOCKER_SOCK="/var/run/docker.sock"
+    if [[ -S "${HOME}/.docker/run/docker.sock" ]]; then
+      DOCKER_SOCK="${HOME}/.docker/run/docker.sock"
+    fi
+
+    log "Spawning QA container '${QA_CONTAINER_NAME}' on port 3000..."
+    docker run --name "$QA_CONTAINER_NAME" \
+      -p 127.0.0.1:3000:3000 \
+      -v "${DOCKER_SOCK}:/var/run/docker.sock" \
+      -e NODE_ENV=qa \
+      -e PORTGRID_ENV=qa \
+      mannasuman134/postgrid:qa
+
+  else
+    log "Starting ${APP_NAME} in LOCAL QA COMPILED mode..."
+    require_command node
+    require_command npm
+
+    free_port_if_occupied 3000 "Production Bundle Preview"
+    free_port_if_occupied 4000 "Backend Control Plane"
+
+    trap cleanup EXIT
+    trap 'exit 130' INT
+
+    log "Compiling production bundles for QA validation..."
+    npm run build
+
+    log "Launching backend with NODE_ENV=qa..."
+    (
+      cd "$BACKEND_DIR"
+      export NODE_ENV=qa
+      exec npm run start:prod
+    ) &
+    BACKEND_PID=$!
+
+    log "Serving compiled frontend..."
+    (
+      cd "$FRONTEND_DIR"
+      exec npm run preview -- --port 3000
+    ) &
+    FRONTEND_PID=$!
+
+    printf '\n'
+    log "============================================================"
+    log "  PortGrid LOCAL QA Environment is Active"
+    log "  QA Console: http://localhost:3000"
+    log "============================================================"
+    printf '\n'
+    log "Press Ctrl+C to terminate QA test."
+
+    while true; do
+      if ! kill -0 "$BACKEND_PID" 2>/dev/null; then die "Backend stopped."; fi
+      if ! kill -0 "$FRONTEND_PID" 2>/dev/null; then die "Frontend stopped."; fi
+      sleep 1
+    done
+  fi
+}
+
+start_prod() {
+  log "Starting ${APP_NAME} in PRODUCTION mode via CLI orchestrator..."
+  check_docker
+  node "${ROOT_DIR}/bin/portgrid.js" up --env prod "$@"
+}
+
+main() {
+  case "$TARGET_ENV" in
+    dev|development)
+      start_dev "$@"
+      ;;
+    qa|test|testing)
+      start_qa "$@"
+      ;;
+    prod|production)
+      start_prod "$@"
+      ;;
+    *)
+      printf "Usage: %s [dev|qa|prod]\n" "$0"
+      printf "  dev  : Local hot-reloading development server (default)\n"
+      printf "  qa   : QA validation mode (dockerized mannasuman134/postgrid:qa or --local)\n"
+      printf "  prod : Production orchestrator (mannasuman134/postgrid:latest)\n"
+      exit 1
+      ;;
+  esac
 }
 
 main "$@"

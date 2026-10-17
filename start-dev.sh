@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Quickstart script for PortGrid Local Development
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec "${SCRIPT_DIR}/start.sh" dev "$@"
