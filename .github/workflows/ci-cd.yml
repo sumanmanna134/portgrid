@@ -77,9 +77,8 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      # Use the Trivy action pinned to the major version to avoid missing-tag errors.
       - name: Scan Filesystem & Dependencies with Trivy
-        uses: aquasecurity/trivy-action@v0
+        uses: aquasecurity/trivy-action@v0.28.0
         with:
           scan-type: 'fs'
           scan-ref: '.'
@@ -117,7 +116,6 @@ jobs:
           SHA_SHORT="${GITHUB_SHA::7}"
           VERSION="${{ steps.version.outputs.pkg_version }}"
 
-          # Default to dev
           ENV="dev"
           TAGS="mannasuman134/postgrid:dev,mannasuman134/postgrid:dev-${SHA_SHORT}"
           PRIMARY="mannasuman134/postgrid:dev"
@@ -166,7 +164,7 @@ jobs:
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
 
       - name: Scan Published Image with Trivy
-        uses: aquasecurity/trivy-action@v0
+        uses: aquasecurity/trivy-action@v0.28.0
         with:
           image-ref: ${{ steps.meta.outputs.primary_tag }}
           format: 'table'
