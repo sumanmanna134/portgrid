@@ -78,6 +78,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Scan Filesystem & Dependencies with Trivy
+        # Use the published Trivy action directly. No separate setup step is required.
         uses: aquasecurity/trivy-action@v0.28.0
         with:
           scan-type: 'fs'
@@ -116,6 +117,7 @@ jobs:
           SHA_SHORT="${GITHUB_SHA::7}"
           VERSION="${{ steps.version.outputs.pkg_version }}"
 
+          # Default to dev
           ENV="dev"
           TAGS="mannasuman134/postgrid:dev,mannasuman134/postgrid:dev-${SHA_SHORT}"
           PRIMARY="mannasuman134/postgrid:dev"
