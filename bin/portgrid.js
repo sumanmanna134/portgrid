@@ -19,12 +19,57 @@ const http = require('http');
 const https = require('https');
 const net = require('net');
 
-const CLI_VERSION = '1.2.3';
+let CLI_VERSION = '1.2.5';
+try {
+  const pkgPath = path.join(__dirname, '..', 'package.json');
+  if (fs.existsSync(pkgPath)) {
+    CLI_VERSION = JSON.parse(fs.readFileSync(pkgPath, 'utf8')).version || CLI_VERSION;
+  }
+} catch (_) {}
 const DEFAULT_IMAGE = 'mannasuman134/postgrid:latest';
 const DEFAULT_CONTAINER = 'portgrid';
 const DEFAULT_PORT = 3000;
 const DEFAULT_BIND = '127.0.0.1';
 const DEFAULT_VOLUME = 'portgrid_data';
+
+const ENV_IMAGES = {
+  dev: 'mannasuman134/postgrid:dev',
+  qa: 'mannasuman134/postgrid:qa',
+  prod: 'mannasuman134/postgrid:latest',
+  production: 'mannasuman134/postgrid:latest',
+};
+
+function getPersistedEnvironment() {
+  try {
+    const envFile = path.join(os.homedir(), '.portgrid', 'environment');
+    if (fs.existsSync(envFile)) {
+      const val = fs.readFileSync(envFile, 'utf8').trim().toLowerCase();
+      if (ENV_IMAGES[val]) return val;
+    }
+  } catch (_) {}
+  return null;
+}
+
+function resolveTargetEnvironment(options = {}) {
+  if (options.dev) return 'dev';
+  if (options.qa) return 'qa';
+  if (options.prod) return 'prod';
+  if (options.env) {
+    const raw = String(options.env).toLowerCase().trim();
+    if (ENV_IMAGES[raw]) return raw;
+  }
+  if (process.env.PORTGRID_ENV) {
+    const raw = String(process.env.PORTGRID_ENV).toLowerCase().trim();
+    if (ENV_IMAGES[raw]) return raw;
+  }
+  return getPersistedEnvironment() || 'prod';
+}
+
+function resolveTargetImage(options = {}) {
+  if (options.image) return options.image;
+  const targetEnv = resolveTargetEnvironment(options);
+  return ENV_IMAGES[targetEnv] || DEFAULT_IMAGE;
+}
 
 const isWindows = process.platform === 'win32';
 const isMac = process.platform === 'darwin';
@@ -87,6 +132,7 @@ function printHelp() {
   console.log(`  down                         Gracefully stop orchestrator & all managed services`);
   console.log(`  restart                      Restart the PortGrid orchestrator container`);
   console.log(`  ps, status                   List orchestrator and all active service enclaves`);
+  console.log(`  env [dev|qa|prod]            View or set active environment (dev, qa, prod)`);
   console.log(`  doctor                       Audit system prerequisites, Docker socket, and RAM\n`);
   console.log(`${colors.bold}SERVICE ORCHESTRATION COMMANDS:${colors.reset}`);
   console.log(`  catalog, blueprints          Browse available service blueprints`);
@@ -103,6 +149,10 @@ function printHelp() {
   console.log(`  destroy                      Hard purge container and persistent volume`);
   console.log(`  version, -v                  Display CLI version\n`);
   console.log(`${colors.bold}COMMON OPTIONS:${colors.reset}`);
+  console.log(`  --env <dev|qa|prod>          Target deployment environment (default: prod)`);
+  console.log(`  --dev                        Shortcut for --env dev (image: mannasuman134/postgrid:dev)`);
+  console.log(`  --qa                         Shortcut for --env qa (image: mannasuman134/postgrid:qa)`);
+  console.log(`  --prod                       Shortcut for --env prod (image: mannasuman134/postgrid:latest)`);
   console.log(`  --port, --ui-port <number>   Host port for PortGrid UI (default: 3000)`);
   console.log(`  --bind <address>             Loopback binding interface (default: 127.0.0.1)`);
   console.log(`  --json                       Format command output as structured JSON`);
@@ -114,7 +164,10 @@ function printHelp() {
   console.log(`  --no-open                    Do not launch browser window automatically`);
   console.log(`  --help, -h                   Show this help reference\n`);
   console.log(`${colors.bold}EXAMPLES:${colors.reset}`);
-  console.log(`  $ portgrid up                                   # Launch PortGrid orchestrator`);
+  console.log(`  $ portgrid up                                   # Launch PortGrid in prod mode`);
+  console.log(`  $ portgrid up --dev                             # Launch dev container (:dev)`);
+  console.log(`  $ portgrid up --qa                              # Launch QA container (:qa)`);
+  console.log(`  $ portgrid env qa                               # Set default environment to QA`);
   console.log(`  $ portgrid ps                                   # View all active services & ports`);
   console.log(`  $ portgrid deploy postgres                      # Deploy PostgreSQL 16 + pgAdmin`);
   console.log(`  $ portgrid deploy redis                         # Deploy Redis Stack + Insight`);
@@ -1136,16 +1189,58 @@ function cmdDestroy(purgeData = false) {
 }
 
 /**
+ * Command: env [get|set]
+ */
+function cmdEnv(targetEnv = null) {
+  const configDir = path.join(os.homedir(), '.portgrid');
+  const envFile = path.join(configDir, 'environment');
+  if (!fs.existsSync(configDir)) {
+    try { fs.mkdirSync(configDir, { recursive: true, mode: 0o700 }); } catch (_) {}
+  }
+
+  if (targetEnv) {
+    const normalized = targetEnv.toLowerCase().trim();
+    if (!ENV_IMAGES[normalized]) {
+      die(`Invalid environment '${targetEnv}'. Supported values: dev, qa, prod.`);
+    }
+    try {
+      fs.writeFileSync(envFile, normalized, 'utf8');
+      success(`PortGrid default environment configured: ${colors.bold}${colors.cyan}${normalized.toUpperCase()}${colors.reset} (${ENV_IMAGES[normalized]})`);
+    } catch (err) {
+      info(`Target environment for session: ${colors.bold}${colors.cyan}${normalized.toUpperCase()}${colors.reset} (${ENV_IMAGES[normalized]})`);
+      warn(`Could not persist setting to ${envFile} (${err.message}). Set PORTGRID_ENV=${normalized} to make permanent.`);
+    }
+    return;
+  }
+
+  const current = resolveTargetEnvironment();
+  printBanner();
+  console.log(`${colors.bold}ACTIVE PORTGRID ENVIRONMENT:${colors.reset}\n`);
+  console.log(`  Environment:         ${colors.bold}${colors.cyan}${current.toUpperCase()}${colors.reset}`);
+  console.log(`  Container Image:     ${colors.cyan}${ENV_IMAGES[current] || DEFAULT_IMAGE}${colors.reset}`);
+  console.log(`\nAvailable Environments:`);
+  console.log(`  - ${colors.cyan}dev${colors.reset}  : mannasuman134/postgrid:dev`);
+  console.log(`  - ${colors.cyan}qa${colors.reset}   : mannasuman134/postgrid:qa`);
+  console.log(`  - ${colors.cyan}prod${colors.reset} : mannasuman134/postgrid:latest`);
+  console.log(`\nTo switch default environment:`);
+  console.log(`  $ portgrid env dev`);
+  console.log(`  $ portgrid env qa`);
+  console.log(`  $ portgrid env prod\n`);
+}
+
+/**
  * Command: up / start
  */
 async function cmdUp(options = {}) {
   printBanner();
+  const targetEnv = resolveTargetEnvironment(options);
   const targetPort = options.uiPort || options.port || DEFAULT_PORT;
   const targetBind = options.bind || DEFAULT_BIND;
-  const targetImage = options.image || DEFAULT_IMAGE;
+  const targetImage = resolveTargetImage(options);
   const shouldPull = Boolean(options.pull);
   const autoOpen = options.open !== false;
 
+  log(`Target Environment: ${colors.bold}${colors.cyan}${targetEnv.toUpperCase()}${colors.reset} (Image: ${targetImage})`);
   log(`Executing preflight system checks...`);
 
   if (!isDockerInstalled()) {
@@ -1342,6 +1437,11 @@ async function cmdDoctor() {
     info(`Port ${DEFAULT_PORT} is currently active on ${DEFAULT_BIND}`);
   }
 
+  // 8. Active Target Environment
+  const activeEnv = resolveTargetEnvironment();
+  const activeImage = resolveTargetImage();
+  success(`Target Environment: ${activeEnv.toUpperCase()} (${activeImage})`);
+
   console.log(`\n${colors.green}${colors.bold}[PASSED]${colors.reset} System meets all operational prerequisites for PortGrid.\n`);
 }
 
@@ -1350,13 +1450,14 @@ async function cmdDoctor() {
  */
 async function cmdUpdate(options = {}) {
   printBanner();
-  log(`Starting PortGrid update pipeline...`);
+  const targetEnv = resolveTargetEnvironment(options);
+  const targetImage = resolveTargetImage(options);
+  log(`Starting PortGrid update pipeline for [${targetEnv.toUpperCase()}]...`);
 
   if (!isDockerRunning()) {
     die(`Docker daemon is not active. Cannot update container.`);
   }
 
-  const targetImage = options.image || DEFAULT_IMAGE;
   log(`Pulling newest Docker image: ${targetImage}...`);
 
   const pullRes = child_process.spawnSync('docker', ['pull', targetImage], {
@@ -1373,6 +1474,7 @@ async function cmdUpdate(options = {}) {
   execDocker(['rm', '-f', DEFAULT_CONTAINER]);
 
   await cmdUp({
+    env: targetEnv,
     port: DEFAULT_PORT,
     bind: DEFAULT_BIND,
     image: targetImage,
@@ -1380,7 +1482,7 @@ async function cmdUpdate(options = {}) {
     open: false,
   });
 
-  success(`Update completed successfully. All data volumes preserved.`);
+  success(`Update completed successfully for ${targetEnv.toUpperCase()}. All data volumes preserved.`);
 }
 
 /**
@@ -1431,12 +1533,25 @@ async function main() {
       flags.watch = true;
     } else if (arg === '--export-json' && args[i + 1]) {
       flags.exportJson = args[++i];
+    } else if (arg === '--env' && args[i + 1]) {
+      flags.env = args[++i];
+    } else if (arg === '--dev') {
+      flags.env = 'dev';
+    } else if (arg === '--qa') {
+      flags.env = 'qa';
+    } else if (arg === '--prod') {
+      flags.env = 'prod';
     } else if (!arg.startsWith('-')) {
       positional.push(arg);
     }
   }
 
   switch (command) {
+    case 'env':
+    case 'environment':
+      cmdEnv(positional[0] || null);
+      break;
+
     case 'up':
     case 'start':
       if (positional.length > 0) {
