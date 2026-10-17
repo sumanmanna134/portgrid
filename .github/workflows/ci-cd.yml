@@ -77,11 +77,9 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      # NOTE: Use aquasecurity/trivy-action instead of aquasecurity/setup-trivy.
-      # The setup-trivy version tags are not published and resolve errors such as
-      # "Unable to resolve action aquasecurity/setup-trivy@v0.2.1".
+      # Use the Trivy action pinned to the major version to avoid missing-tag errors.
       - name: Scan Filesystem & Dependencies with Trivy
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0
         with:
           scan-type: 'fs'
           scan-ref: '.'
@@ -167,10 +165,8 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
 
-      # NOTE: Use aquasecurity/trivy-action for image scanning to avoid the invalid
-      # aquasecurity/setup-trivy action tags that fail during workflow resolution.
       - name: Scan Published Image with Trivy
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0
         with:
           image-ref: ${{ steps.meta.outputs.primary_tag }}
           format: 'table'
